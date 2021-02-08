@@ -2,7 +2,7 @@
   "name": "tts-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "tts-bot.js",
   "dependencies": {
     "discord.js": "^12.5.1",
     "ffmpeg-static": "^4.2.7",

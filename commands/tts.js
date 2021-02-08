@@ -18,7 +18,7 @@ module.exports = {
         const speech = args.join(" ");
         const gtts = new gTTS(speech, "en");
 
-        gtts.save("voice.mp3", function (err, result) { });
+        gtts.save("voice.mp3", function (err, result) { console.log(err) });
 
         const guild = client.guilds.cache.find(guild => guild.id === '633161578363224066');
         const voiceChannel = guild.channels.cache.find(channel => channel.id == "633161578363224070");
