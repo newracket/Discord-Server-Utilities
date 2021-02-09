@@ -15,13 +15,13 @@ module.exports = {
     else {
       if (!client.playing) {
         client.playing = true;
-        const speech = args.join(" ");
+        const guild = client.guilds.cache.find(guild => guild.id === '633161578363224066');
+        const voiceChannel = guild.channels.cache.find(channel => channel.id == "633161578363224070");
+        const speech = guild.member(message.author).nickname + " says " + args.join(" ");
         const gtts = new gTTS(speech, "en");
 
         gtts.save("voice.mp3", function (err, result) { console.log(err) });
 
-        const guild = client.guilds.cache.find(guild => guild.id === '633161578363224066');
-        const voiceChannel = guild.channels.cache.find(channel => channel.id == "633161578363224070");
 
         voiceChannel.join().then(connection => {
           const dispatcher = connection.play('./voice.mp3');
