@@ -2,3 +2,4 @@ node_modules/
 voice.mp3
 package.json
 package-lock.json
+config.json
