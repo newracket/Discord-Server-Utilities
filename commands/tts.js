@@ -21,7 +21,12 @@ module.exports = {
 
         const nicks = JSON.parse(fs.readFileSync("nicks.json"));
         const nickname = nicks[message.author.id] != undefined ? nicks[message.author.id] : guild.member(message.author).nickname;
-        const speech = nickname + " says " + args.join(" ");
+        const speech = nickname + " says " + args.map(e => {
+          if (e[0] == "<" && e[1] == ":" && e[e.length - 1] == ">") {
+            return e.split(":")[1];
+          }
+          return e;
+        }).join(" ");
         const gtts = new gTTS(speech, "en");
 
         gtts.save("voice.mp3", function (err, result) { console.log(err) });
