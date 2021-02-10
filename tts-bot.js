@@ -13,7 +13,6 @@ for (const file of commandFiles) {
 client.once('ready', () => {
   console.log('Ready!');
   client.playing = false;
-  client.user.setActivity(`aniket is so cas`);
 });
 
 client.on('message', (message) => {
@@ -24,12 +23,12 @@ client.on('message', (message) => {
 
   let commandObject = client.commands.get(command) || client.commands.find(c => c.aliases && c.aliases.includes(command));
   if (commandObject) {
-    try {
-      commandObject.execute(message, args, client);
-    }
-    catch {
-      message.channel.send("Error");
-    }
+    // try {
+    commandObject.execute(message, args, client);
+    // }
+    // catch {
+    //   message.channel.send("Error");
+    // }
   }
   else {
     message.channel.send("The command was not recognized.");
