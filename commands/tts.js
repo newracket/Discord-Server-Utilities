@@ -1,5 +1,6 @@
 const gTTS = require("gtts");
 const say = require("say");
+const fs = require("fs");
 
 module.exports = {
   name: "tts",
@@ -17,11 +18,13 @@ module.exports = {
         client.playing = true;
         const guild = client.guilds.cache.find(guild => guild.id === '633161578363224066');
         const voiceChannel = guild.channels.cache.find(channel => channel.id == "633161578363224070");
-        const speech = guild.member(message.author).nickname + " says " + args.join(" ");
+
+        const nicks = JSON.parse(fs.readFileSync("nicks.json"));
+        const nickname = nicks[message.author.id] != undefined ? nicks[message.author.id] : guild.member(message.author).nickname;
+        const speech = nickname + " says " + args.join(" ");
         const gtts = new gTTS(speech, "en");
 
         gtts.save("voice.mp3", function (err, result) { console.log(err) });
-
 
         voiceChannel.join().then(connection => {
           const dispatcher = connection.play('./voice.mp3');
