@@ -1,7 +1,7 @@
 module.exports = {
   name: "8ball",
   execute(message, args, client) {
-    const casWords = ["cas", "bad", "garbage", "trash"];
+    const casWords = ["cas", "bad", "garbage", "trash", "garbonzo", "dogshit"];
     const sweatyWords = ["good", "amazing", "sweat", "sweaty"];
     const names = ["justin", "john", "alan", "achintya", "oscar", "aaron", "david", "gio", "eric"];
     const reverseWords = ["no", "not"];
