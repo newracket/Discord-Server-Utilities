@@ -10,8 +10,7 @@ module.exports = {
 
     db.all(`SELECT * FROM reminders`, [], (err, rows) => {
       if (err) {
-        message.channel.send(`Error when selecting reminders from database. ${err}`);
-        return;
+        return console.log(err);
       }
 
       rows.forEach((row, i) => {
@@ -23,11 +22,11 @@ module.exports = {
             client.guilds.cache.find(guild => guild.id == '633161578363224066').members.cache.find(member => member.id == row.who).send(row.content);
           }
 
-          // db.run(`DELETE FROM reminders WHERE id=${parseInt(row.id)}`, err => {
-          //   if (err) {
-          //     return console.log(err);
-          //   }
-          // });
+          db.run(`DELETE FROM reminders WHERE id=${parseInt(row.id)}`, err => {
+            if (err) {
+              return console.log(err);
+            }
+          });
         }
       });
     });
