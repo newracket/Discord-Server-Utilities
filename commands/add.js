@@ -23,6 +23,7 @@ module.exports = {
       });
 
       const matchingRole = client.guilds.cache.find(guild => guild.id == '633161578363224066').roles.cache.find(role => role.name.toLowerCase() == args[0].toLowerCase() || role.id == args[0]);
+      
       if (args[0] == "dm") {
         messageType = "dm";
         args.splice(0, 1);
