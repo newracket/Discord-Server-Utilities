@@ -3,6 +3,8 @@ const Discord = require('discord.js');
 const client = new Discord.Client({ ws: { intents: ['GUILDS', 'GUILD_PRESENCES', 'GUILD_MESSAGES', 'GUILD_VOICE_STATES'] } });
 const { token, prefix } = require("./config.json");
 
+process.env.TZ = 'America/Los_Angeles';
+
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
@@ -27,12 +29,12 @@ client.on('message', message => {
 
   let commandObject = client.commands.get(command) || client.commands.find(c => c.aliases && c.aliases.includes(command));
   if (commandObject) {
-    try {
+    // try {
       commandObject.execute(message, args, client);
-    }
-    catch {
-      message.channel.send("Error");
-    }
+    // }
+    // catch {
+    //   message.channel.send("Error");
+    // }
   }
   else {
     message.channel.send("The command was not recognized.");

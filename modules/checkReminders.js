@@ -5,8 +5,6 @@ module.exports = {
   name: "checkReminders",
   execute(client) {
     const announcementsChannel = client.channels.cache.find(channel => channel.id == "633820399922315275");
-    const today = new Date();
-    today.setHours(today.getHours() - 8);
 
     db.all(`SELECT * FROM reminders`, [], (err, rows) => {
       if (err) {

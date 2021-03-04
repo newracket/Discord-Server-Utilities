@@ -27,6 +27,8 @@ module.exports = {
         args.splice(args.indexOf("dm"), 1);
       }
 
+      args = args.filter(w => w != "in");
+
       if (args.join(" ").includes("me")) {
         remindObject = parseReminder(`remind ${args.join(" ")}`);
       }
