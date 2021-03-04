@@ -4,10 +4,10 @@ const db = new sqlite3.Database('reminders.db');
 
 module.exports = {
   name: "add",
-  description: "Adds reminder",
+  description: "Adds reminder. Format: .add [role name (only if one word), role id (if multiple words), everyone (pings everyone), dm (dms you), or ignore (will just normally send message)] [message/date any format].",
   execute(message, args, client) {
     let remindObject;
-    let messageType = "announcement";
+    let messageType = "none";
 
     db.serialize(() => {
       db.run(`CREATE TABLE IF NOT EXISTS reminders (
@@ -22,9 +22,18 @@ module.exports = {
         }
       });
 
-      if (args.includes("dm")) {
+      const matchingRole = client.guilds.cache.find(guild => guild.id == '633161578363224066').roles.cache.find(role => role.name.toLowerCase() == args[0].toLowerCase() || role.id == args[0]);
+      if (args[0] == "dm") {
         messageType = "dm";
-        args.splice(args.indexOf("dm"), 1);
+        args.splice(0, 1);
+      }
+      else if (args[0] == "everyone") {
+        messageType = "everyone";
+        args.splice(0, 1);
+      }
+      else if (matchingRole != undefined) {
+        messageType = matchingRole.name;
+        args.splice(0, 1);
       }
 
       args = args.filter(w => w != "in");
