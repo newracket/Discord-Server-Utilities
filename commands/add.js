@@ -29,7 +29,7 @@ module.exports = {
 
       args = args.filter(w => w != "in");
 
-      if (args.join(" ").includes("me")) {
+      if (args.includes("me")) {
         remindObject = parseReminder(`remind ${args.join(" ")}`);
       }
       else {
