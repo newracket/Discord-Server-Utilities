@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Discord = require('discord.js');
-const client = new Discord.Client();
-const { token, prefix } = require("./config.json")
+const client = new Discord.Client({ ws: { intents: ['GUILDS', 'GUILD_PRESENCES', 'GUILD_MESSAGES'] } });
+const { token, prefix } = require("./config.json");
 
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -14,11 +14,12 @@ client.once('ready', () => {
   console.log('Ready!');
   client.playing = false;
 
-  // const eightball = require("./commands/8ball");
-  // eightball.execute();
+  const checkReminders = require("./modules/checkReminders");
+  checkReminders.execute(client);
+  setInterval(function() { checkReminders.execute(client) }, 60000);
 });
 
-client.on('message', (message) => {
+client.on('message', message => {
   const args = message.content.slice(prefix.length).split(/ +/);
   const command = args.shift().toLowerCase();
 
