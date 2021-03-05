@@ -15,7 +15,7 @@ module.exports = {
         const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
 
         if (strikes[member.id] == undefined) {
-          message.guild.channels.cache.find(channel => channel.id == "633171389159047169").send("1")
+          message.guild.channels.cache.find(channel => channel.id == "807858265031573504").send("1")
             .then(newMessage => {
               strikes[member.id] = { "messageId": newMessage.id, "value": 1 };
 
@@ -23,7 +23,7 @@ module.exports = {
             });
         }
         else if (strikes[member.id].value < 3) {
-          message.guild.channels.cache.find(channel => channel.id == "633171389159047169").messages.fetch(strikes[member.id].messageId)
+          message.guild.channels.cache.find(channel => channel.id == "807858265031573504").messages.fetch(strikes[member.id].messageId)
             .then(newMessage => {
               strikes[member.id].value += 1;
               newMessage.edit(strikes[member.id].value);
