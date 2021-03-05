@@ -1,0 +1,60 @@
+const fs = require("fs");
+const { sweatranks, casranks } = require("../ranks.json");
+const strikes = JSON.parse(fs.readFileSync("./strikes.json"));
+
+module.exports = {
+  name: "promote",
+  description: "Promotes a member",
+  execute(message, args, client) {
+    if (!["greektoxic", "newracket"].includes(message.author.username)) {
+      return message.channel.send("You do not have permissions to promote someone.");
+    }
+
+    message.mentions.members.forEach(member => {
+      if (casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).length > 0) {
+        const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
+
+        if (strikes[member.id] == undefined) {
+          message.guild.channels.cache.find(channel => channel.id == "807858265031573504").send(`${member.nickname} - 1`)
+            .then(newMessage => {
+              strikes[member.id] = { "messageId": newMessage.id, "value": 1 };
+              message.channel.send(`${member.nickname} was given his first strike.`);
+
+              fs.writeFileSync("strikes.json", JSON.stringify(strikes));
+            });
+        }
+        else if (strikes[member.id].value < 3) {
+          message.guild.channels.cache.find(channel => channel.id == "807858265031573504").messages.fetch(strikes[member.id].messageId)
+            .then(newMessage => {
+              strikes[member.id].value += 1;
+
+              if (strikes[member.id].value == 3) {
+                newMessage.edit(`${member.nickname} - ${strikes[member.id].value} (Removed ${lastRank} Role)`);
+                message.channel.send(`${member.nickname} was given his last strike. He has now been promoted.`);
+
+                member.roles.remove(message.guild.roles.cache.find(role => role.name == lastRank));
+                delete strikes[member.id];
+              }
+              else {
+                newMessage.edit(`${member.nickname} - ${strikes[member.id].value}`);
+                message.channel.send(`${member.nickname} was given his second strike.`);
+              }
+
+              fs.writeFileSync("strikes.json", JSON.stringify(strikes));
+            });
+        }
+      }
+      else {
+        const lastRank = sweatranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
+
+        if (sweatranks.indexOf(lastRank) != sweatranks.length - 1) {
+          member.roles.add(message.guild.roles.cache.find(role => role.name == sweatranks[sweatranks.indexOf(lastRank) + 1]));
+          message.channel.send(`${member.nickname} was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}.`);
+        }
+        else {
+          message.channel.send("Error. This person is already maximum sweat.");
+        }
+      }
+    });
+  }
+}
