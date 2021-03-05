@@ -15,9 +15,10 @@ module.exports = {
         const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
 
         if (strikes[member.id] == undefined) {
-          message.guild.channels.cache.find(channel => channel.id == "807858265031573504").send("1")
+          message.guild.channels.cache.find(channel => channel.id == "807858265031573504").send(`${member.nickname} - 1`)
             .then(newMessage => {
               strikes[member.id] = { "messageId": newMessage.id, "value": 1 };
+              message.channel.send(`${member.nickname} was given his first strike.`);
 
               fs.writeFileSync("strikes.json", JSON.stringify(strikes));
             });
@@ -26,11 +27,17 @@ module.exports = {
           message.guild.channels.cache.find(channel => channel.id == "807858265031573504").messages.fetch(strikes[member.id].messageId)
             .then(newMessage => {
               strikes[member.id].value += 1;
-              newMessage.edit(strikes[member.id].value);
 
               if (strikes[member.id].value == 3) {
+                newMessage.edit(`${member.nickname} - ${strikes[member.id].value} (Removed ${lastRank} Role)`);
+                message.channel.send(`${member.nickname} was given his last strike. He has now been promoted.`);
+
                 member.roles.remove(message.guild.roles.cache.find(role => role.name == lastRank));
                 delete strikes[member.id];
+              }
+              else {
+                newMessage.edit(`${member.nickname} - ${strikes[member.id].value}`);
+                message.channel.send(`${member.nickname} was given his second strike.`);
               }
 
               fs.writeFileSync("strikes.json", JSON.stringify(strikes));
@@ -42,6 +49,7 @@ module.exports = {
 
         if (sweatranks.indexOf(lastRank) != sweatranks.length - 1) {
           member.roles.add(message.guild.roles.cache.find(role => role.name == sweatranks[sweatranks.indexOf(lastRank) + 1]));
+          message.channel.send(`${member.nickname} was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}.`);
         }
         else {
           message.channel.send("Error. This person is already maximum sweat.");
