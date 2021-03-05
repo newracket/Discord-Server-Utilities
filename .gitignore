@@ -4,3 +4,4 @@ package.json
 package-lock.json
 config.json
 reminders.db
+strikes.json
