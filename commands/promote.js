@@ -4,9 +4,9 @@ const strikes = JSON.parse(fs.readFileSync("./strikes.json"));
 
 module.exports = {
   name: "promote",
-  description: "Checks reminders (DEBUGGING ONLY)",
+  description: "Promotes a member",
   execute(message, args, client) {
-    if (!["greentoxic", "newracket"].includes(message.author.username)) {
+    if (!["greektoxic", "newracket"].includes(message.author.username)) {
       return message.channel.send("You do not have permissions to promote someone.");
     }
 
