@@ -1,59 +1,33 @@
-const fs = require("fs");
 const { sweatranks, casranks } = require("../ranks.json");
-const strikes = JSON.parse(fs.readFileSync("./strikes.json"));
 
 module.exports = {
-  name: "promote",
-  description: "Promotes a member",
+  name: "givecas",
+  description: "Gives cas role to a member",
   execute(message, args, client) {
     if (!["greektoxic", "newracket"].includes(message.author.username)) {
       return message.channel.send("You do not have permissions to promote someone.");
     }
 
     message.mentions.members.forEach(member => {
-      if (casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).length > 0) {
-        const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
+      const memberRoles = member.roles.cache.map(role => role.name);
+      const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
 
-        if (strikes[member.id] == undefined) {
-          message.guild.channels.cache.find(channel => channel.id == "807858265031573504").send(`${member.nickname} - 1`)
-            .then(newMessage => {
-              strikes[member.id] = { "messageId": newMessage.id, "value": 1 };
-              message.channel.send(`${member.nickname} was given his first strike.`);
-
-              fs.writeFileSync("strikes.json", JSON.stringify(strikes));
-            });
-        }
-        else if (strikes[member.id].value < 3) {
-          message.guild.channels.cache.find(channel => channel.id == "807858265031573504").messages.fetch(strikes[member.id].messageId)
-            .then(newMessage => {
-              strikes[member.id].value += 1;
-
-              if (strikes[member.id].value == 3) {
-                newMessage.edit(`${member.nickname} - ${strikes[member.id].value} (Removed ${lastRank} Role)`);
-                message.channel.send(`${member.nickname} was given his last strike. He has now been promoted.`);
-
-                member.roles.remove(message.guild.roles.cache.find(role => role.name == lastRank));
-                delete strikes[member.id];
-              }
-              else {
-                newMessage.edit(`${member.nickname} - ${strikes[member.id].value}`);
-                message.channel.send(`${member.nickname} was given his second strike.`);
-              }
-
-              fs.writeFileSync("strikes.json", JSON.stringify(strikes));
-            });
-        }
+      if (casranks.indexOf(lastRank) == casranks.length - 1) {
+        return message.channel.send(`This person is already ${lastRank} and cannot get any more cas roles.`);
+      }
+      else if (lastRank != undefined) {
+        member.roles.add(message.guild.roles.cache.find(role => role.name == casranks[casranks.indexOf(lastRank) + 1]))
+          .then(newMember => message.channel.send(`Successfully gave ${casranks[casranks.indexOf(lastRank) + 1]} to ${newMember.nickname}`));
       }
       else {
-        const lastRank = sweatranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
+        sweatranks.forEach(sweatRank => {
+          if (memberRoles.includes(sweatRank)) {
+            member.roles.remove(member.roles.cache.find(role => role.name == sweatRank));
+          }
+        });
 
-        if (sweatranks.indexOf(lastRank) != sweatranks.length - 1) {
-          member.roles.add(message.guild.roles.cache.find(role => role.name == sweatranks[sweatranks.indexOf(lastRank) + 1]));
-          message.channel.send(`${member.nickname} was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}.`);
-        }
-        else {
-          message.channel.send("Error. This person is already maximum sweat.");
-        }
+        member.roles.add(message.guild.roles.cache.find(role => role.name == "Cas"))
+          .then(newMember => message.channel.send(`Successfully gave Cas to ${newMember.nickname}`));
       }
     });
   }
