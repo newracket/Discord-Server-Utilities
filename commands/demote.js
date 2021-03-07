@@ -10,9 +10,9 @@ module.exports = {
   execute(message, args, client) {
     let repeatTimes = 1;
 
-    if (!["greektoxic", "newracket"].includes(message.author.username)) {
-      return message.channel.send("You do not have permissions to promote someone.");
-    }
+    // if (!["greektoxic", "newracket"].includes(message.author.username)) {
+    //   return message.channel.send("You do not have permissions to promote someone.");
+    // }
 
     if (!isNaN(parseInt(args[0]))) {
       repeatTimes = parseInt(args[0]);
