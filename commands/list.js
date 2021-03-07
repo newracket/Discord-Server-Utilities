@@ -4,6 +4,7 @@ const db = new sqlite3.Database('reminders.db');
 module.exports = {
   name: "list",
   description: "Lists reminders",
+  aliases: ["l"],
   execute(message, args, client) {
     let outputText = "```\n";
 

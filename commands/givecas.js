@@ -3,12 +3,14 @@ const { sweatranks, casranks } = require("../ranks.json");
 module.exports = {
   name: "givecas",
   description: "Gives cas role to a member",
+  aliases: ["gc"],
   execute(message, args, client) {
     if (!["greektoxic", "newracket"].includes(message.author.username)) {
       return message.channel.send("You do not have permissions to promote someone.");
     }
 
-    message.mentions.members.forEach(member => {
+    const membersToModify = args.map(arg => message.guild.members.cache.find(member => member.nickname == arg)).filter(e => e != undefined);
+    [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(member => {
       const memberRoles = member.roles.cache.map(role => role.name);
       const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
 

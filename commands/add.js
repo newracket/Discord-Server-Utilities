@@ -5,6 +5,7 @@ const db = new sqlite3.Database('reminders.db');
 module.exports = {
   name: "add",
   description: "Adds reminder. Format: .add [role name (only if one word), role id (if multiple words), everyone (pings everyone), dm (dms you), or ignore (will just normally send message)] [message/date any format].",
+  aliases: ["a"],
   execute(message, args, client) {
     let remindObject;
     let messageType = "none";

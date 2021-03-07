@@ -1,6 +1,7 @@
 module.exports = {
   name: "8ball",
   description: "8ball (totally not rigged)",
+  aliases: ["8"],
   execute(message, args, client) {
     const casWords = ["cas", "bad", "garbage", "trash", "garbonzo", "dogshit"];
     const sweatyWords = ["good", "amazing", "sweat", "sweaty"];

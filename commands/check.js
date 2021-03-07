@@ -5,6 +5,7 @@ const db = new sqlite3.Database('reminders.db');
 module.exports = {
   name: "check",
   description: "Checks reminders (DEBUGGING ONLY)",
+  aliases: ["c"],
   execute(message, args, client) {
     checkReminders.execute(client);
 

@@ -5,6 +5,7 @@ const fs = require("fs");
 module.exports = {
   name: "tts",
   description: "Converts text message to speech and sends in voice channel",
+  aliases: ["t"],
   execute(message, args, client) {
     if (args.length < 0) {
       message.channel.send("No message to say.");

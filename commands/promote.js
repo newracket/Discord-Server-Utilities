@@ -6,6 +6,7 @@ const strikes = JSON.parse(fs.readFileSync("./strikes.json"));
 module.exports = {
   name: "promote",
   description: "Promotes a member",
+  aliases: ["p"],
   messagesToSend: {},
   execute(message, args, client) {
     let repeatTimes = 1;
@@ -21,7 +22,8 @@ module.exports = {
       repeatTimes = parseInt(args.slice(-1));
     }
 
-    message.mentions.members.forEach(member => {
+    const membersToModify = args.map(arg => message.guild.members.cache.find(member => member.nickname == arg)).filter(e => e != undefined);
+    [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(member => {
       this.messagesToSend[member.nickname] = [];
       this.promoteMember(message, member, repeatTimes);
     });

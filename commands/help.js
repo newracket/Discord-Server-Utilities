@@ -1,6 +1,7 @@
 module.exports = {
   name: "help",
   description: "Help command",
+  aliases: ["h"],
   execute(message, args, client) {
     let outputText = "```\nList of commands:\n\n";
 

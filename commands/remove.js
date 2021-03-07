@@ -4,6 +4,7 @@ const db = new sqlite3.Database('reminders.db');
 module.exports = {
   name: "remove",
   description: "Removes reminder",
+  aliases: ["r"],
   execute(message, args, client) {
     db.run(`DELETE FROM reminders WHERE id=${parseInt(args[0])}`, err => {
       if (err) {
