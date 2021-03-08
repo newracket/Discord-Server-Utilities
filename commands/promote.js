@@ -40,7 +40,7 @@ module.exports = {
         message.guild.channels.cache.find(channel => channel.id == strikesChannelId).send(`${member.nickname} - 1`)
           .then(newMessage => {
             strikes[member.id] = { "messageId": newMessage.id, "value": 1 };
-            this.messagesToSend[member.nickname].push(`${member.nickname} was given his first strike.`);
+            this.messagesToSend[member.nickname].push(`<@${member.id}> was given his first strike.`);
 
             fs.writeFileSync("strikes.json", JSON.stringify(strikes));
 
@@ -54,7 +54,7 @@ module.exports = {
 
             if (strikes[member.id].value == 3) {
               newMessage.edit(`${member.nickname} - ${strikes[member.id].value} (Removed ${lastRank} Role)`);
-              this.messagesToSend[member.nickname].push(`${member.nickname} was given his last strike. He has now been promoted.`);
+              this.messagesToSend[member.nickname].push(`<@${member.id}> was given his last strike. He has now been promoted.`);
 
               member.roles.remove(message.guild.roles.cache.find(role => role.name == lastRank))
                 .then(newMember => this.promoteMember(message, newMember, repeatTimes - 1));
@@ -62,7 +62,7 @@ module.exports = {
             }
             else {
               newMessage.edit(`${member.nickname} - ${strikes[member.id].value}`);
-              this.messagesToSend[member.nickname].push(`${member.nickname} was given his second strike.`);
+              this.messagesToSend[member.nickname].push(`<@${member.id}> was given his second strike.`);
 
               this.promoteMember(message, member, repeatTimes - 1);
             }
@@ -77,7 +77,7 @@ module.exports = {
       if (sweatranks.indexOf(lastRank) != sweatranks.length - 1) {
         member.roles.add(message.guild.roles.cache.find(role => role.name == sweatranks[sweatranks.indexOf(lastRank) + 1]))
           .then(newMember => this.promoteMember(message, newMember, repeatTimes - 1));
-        this.messagesToSend[member.nickname].push(`${member.nickname} was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}.`);
+        this.messagesToSend[member.nickname].push(`<@${member.id}> was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}.`);
       }
       else {
         message.channel.send("Error. This person is already maximum sweat.");

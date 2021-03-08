@@ -39,10 +39,10 @@ module.exports = {
         .then(newMember => this.promoteMember(message, newMember, repeatTimes - 1));
 
       if (lastRank == "Sweat") {
-        this.messagesToSend[member.nickname].push(`${member.nickname} was demoted to Member.`);
+        this.messagesToSend[member.nickname].push(`<@${member.id}> was demoted to Member.`);
       }
       else {
-        this.messagesToSend[member.nickname].push(`${member.nickname} was demoted to ${sweatranks[sweatranks.indexOf(lastRank) - 1]}.`);
+        this.messagesToSend[member.nickname].push(`<@${member.id}> was demoted to ${sweatranks[sweatranks.indexOf(lastRank) - 1]}.`);
       }
     }
     else {
@@ -55,7 +55,7 @@ module.exports = {
         member.roles.add(message.guild.roles.cache.find(role => role.name == casranks[casranks.indexOf(lastRank) + 1]))
           .then(newMember => this.promoteMember(message, newMember, repeatTimes - 1));
 
-        this.messagesToSend[member.nickname].push(`${member.nickname} was demoted to ${casranks[casranks.indexOf(lastRank) + 1]}.`);
+        this.messagesToSend[member.nickname].push(`<@${member.id}> was demoted to ${casranks[casranks.indexOf(lastRank) + 1]}.`);
       }
     }
   }

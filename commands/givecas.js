@@ -19,7 +19,7 @@ module.exports = {
       }
       else if (lastRank != undefined) {
         member.roles.add(message.guild.roles.cache.find(role => role.name == casranks[casranks.indexOf(lastRank) + 1]))
-          .then(newMember => message.channel.send(`Successfully gave ${casranks[casranks.indexOf(lastRank) + 1]} to ${newMember.nickname}`));
+          .then(newMember => message.channel.send(`Successfully gave ${casranks[casranks.indexOf(lastRank) + 1]} to <@${newMember.id}>`));
       }
       else {
         sweatranks.forEach(sweatRank => {
@@ -29,7 +29,7 @@ module.exports = {
         });
 
         member.roles.add(message.guild.roles.cache.find(role => role.name == "Cas"))
-          .then(newMember => message.channel.send(`Successfully gave Cas to ${newMember.nickname}`));
+          .then(newMember => message.channel.send(`Successfully gave Cas to <@${newMember.id}>`));
       }
     });
   }
