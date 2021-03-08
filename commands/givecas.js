@@ -5,9 +5,9 @@ module.exports = {
   description: "Gives cas role to a member",
   aliases: ["gc"],
   execute(message, args, client) {
-    // if (!["greektoxic", "newracket"].includes(message.author.username)) {
-    //   return message.channel.send("You do not have permissions to promote someone.");
-    // }
+    if (!["greektoxic", "newracket"].includes(message.author.username)) {
+      return message.channel.send("You do not have permissions to promote someone.");
+    }
 
     const membersToModify = args.map(arg => message.guild.members.cache.find(member => member.nickname == arg)).filter(e => e != undefined);
     [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(member => {
