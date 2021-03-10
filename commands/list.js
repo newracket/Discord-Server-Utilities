@@ -6,7 +6,7 @@ module.exports = {
   description: "Lists reminders",
   aliases: ["l"],
   execute(message, args, client) {
-    let outputText = "```\n";
+    let outputTexts = [];
 
     db.all(`SELECT * FROM reminders`, [], (err, rows) => {
       if (err) {
@@ -16,15 +16,26 @@ module.exports = {
 
       const reminderDateMaxLength = Math.max(...rows.map(row => new Date(row.date).toLocaleString("en-US", { dateStyle: "full", timeStyle: "short" }).length));
       const reminderContentMaxLength = Math.max(...rows.map(row => row.content.length));
+      let text = "```\n";
 
       rows.forEach((row, i) => {
         const reminderDate = new Date(row.date).toLocaleString("en-US", { dateStyle: "full", timeStyle: "short" });
 
-        outputText += `Reminder ${row.id.toString().padStart(2)}: ${reminderDate.padStart(reminderDateMaxLength)} | ${row.content.padEnd(reminderContentMaxLength)} | ${row.messageType}\n`;
+        if (text.length > 1700) {
+          text += "```";
+          outputTexts.push(text);
+          text = "```\n";
+        }
+
+        text += `Reminder ${row.id.toString().padStart(2)}: ${reminderDate.padStart(reminderDateMaxLength)} | ${row.content.padEnd(reminderContentMaxLength)} | ${row.messageType}\n`;
       });
 
-      outputText += "```";
-      message.channel.send(outputText);
+      text += "```";
+      outputTexts.push(text);
+
+      outputTexts.forEach(outputText => {
+        message.channel.send(outputText);
+      });
     });
   }
 }
