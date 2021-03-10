@@ -25,6 +25,9 @@ client.on('message', message => {
   const args = message.content.slice(prefix.length).split(" ");
   const command = args.shift().toLowerCase();
 
+  if (message.content.startsWith(".")) {
+    return message.channel.send("Command prefix has been changed to !");
+  }
   if (!message.content.startsWith(prefix)) return;
 
   let commandObject = client.commands.get(command) || client.commands.find(c => c.aliases && c.aliases.includes(command));
