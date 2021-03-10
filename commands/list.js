@@ -15,11 +15,12 @@ module.exports = {
       }
 
       const reminderDateMaxLength = Math.max(...rows.map(row => new Date(row.date).toLocaleString("en-US", { dateStyle: "full", timeStyle: "short" }).length));
+      const reminderContentMaxLength = Math.max(...rows.map(row => row.content.length));
 
       rows.forEach((row, i) => {
         const reminderDate = new Date(row.date).toLocaleString("en-US", { dateStyle: "full", timeStyle: "short" });
 
-        outputText += `Reminder ${row.id.toString().padStart(2)}: ${reminderDate.padStart(reminderDateMaxLength)} | ${row.content} | ${row.messageType}\n`;
+        outputText += `Reminder ${row.id.toString().padStart(2)}: ${reminderDate.padStart(reminderDateMaxLength)} | ${row.content.padEnd(reminderContentMaxLength)} | ${row.messageType}\n`;
       });
 
       outputText += "```";
