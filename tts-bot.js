@@ -29,12 +29,12 @@ client.on('message', message => {
 
   let commandObject = client.commands.get(command) || client.commands.find(c => c.aliases && c.aliases.includes(command));
   if (commandObject) {
-    // try {
+    try {
       commandObject.execute(message, args, client);
-    // }
-    // catch {
-    //   message.channel.send("Error");
-    // }
+    }
+    catch {
+      message.channel.send("Error");
+    }
   }
   else {
     message.channel.send("The command was not recognized.");

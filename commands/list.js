@@ -19,7 +19,7 @@ module.exports = {
       rows.forEach((row, i) => {
         const reminderDate = new Date(row.date).toLocaleString("en-US", { dateStyle: "full", timeStyle: "short" });
 
-        outputText += `Reminder ${row.id}: ${reminderDate.padStart(reminderDateMaxLength)} | ${row.content}\n`;
+        outputText += `Reminder ${row.id.toString().padStart(2)}: ${reminderDate.padStart(reminderDateMaxLength)} | ${row.content} | ${row.messageType}\n`;
       });
 
       outputText += "```";
