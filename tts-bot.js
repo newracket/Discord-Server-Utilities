@@ -18,16 +18,29 @@ client.once('ready', () => {
 
   const checkReminders = require("./modules/checkReminders");
   checkReminders.execute(client);
-  setInterval(function() { checkReminders.execute(client) }, 60000);
+  setInterval(function () { checkReminders.execute(client) }, 60000);
 });
 
 client.on('message', message => {
+  if (message.author == client.user) {
+    return;
+  }
   const args = message.content.slice(prefix.length).split(" ");
   const command = args.shift().toLowerCase();
+
+  if (message.channel.id == "819649988757291015") {
+    try {
+      return client.commands.get("tts").execute(message, message.content.split(" "), client);
+    }
+    catch (error) {
+      return message.channel.send("Error: " + error);
+    }
+  }
 
   if (message.content.startsWith(".")) {
     return message.channel.send("Command prefix has been changed to !");
   }
+
   if (!message.content.startsWith(prefix)) return;
 
   let commandObject = client.commands.get(command) || client.commands.find(c => c.aliases && c.aliases.includes(command));
@@ -35,8 +48,8 @@ client.on('message', message => {
     try {
       commandObject.execute(message, args, client);
     }
-    catch {
-      message.channel.send("Error");
+    catch (error) {
+      message.channel.send("Error" + error);
     }
   }
   else {
