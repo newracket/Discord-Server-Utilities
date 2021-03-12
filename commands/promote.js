@@ -73,7 +73,7 @@ module.exports = {
     }
     else {
       if (member.id == "301200493307494400") {
-        return message.channel.send(`You may not promote <@${message.author.id}> because he is far too cas.`)
+        return message.channel.send(`You may not promote <@${member.id}> because he is far too cas.`)
       }
       const lastRank = sweatranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
 
