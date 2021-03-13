@@ -25,65 +25,77 @@ module.exports = {
     const membersToModify = args.map(arg => message.guild.members.cache.find(member => member.nickname == arg)).filter(e => e != undefined);
     [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(member => {
       this.messagesToSend[member.nickname] = [];
-      this.promoteMember(message, member, repeatTimes);
+      this.promoteMember(message, client, args, member, member.roles.cache.map(role => role.name), repeatTimes, true);
     });
   },
-  promoteMember(message, member, repeatTimes) {
+  promoteMember(message, client, args, member, roles, repeatTimes, preventPromotion) {
     if (repeatTimes == 0) {
-      return message.channel.send(this.messagesToSend[member.nickname].join("\n"));
+      const rolesDir = message.guild.roles.cache.map(role => { return { name: role.name, id: role.id } });
+      roles = roles.map(role => rolesDir.find(r => r.name == role).id);
+
+      return member.roles.set(roles).then(newMember => message.channel.send(this.messagesToSend[newMember.nickname].join("\n")));
     }
 
-    if (casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).length > 0) {
-      const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
+    if (casranks.filter(rank => roles.includes(rank)).length > 0) {
+      const lastRank = casranks.filter(rank => roles.includes(rank)).pop();
 
       if (strikes[member.id] == undefined) {
-        message.guild.channels.cache.find(channel => channel.id == strikesChannelId).send(`${member.nickname} - 1`)
+        return message.guild.channels.cache.find(channel => channel.id == strikesChannelId).send(`${member.nickname} - 1`)
           .then(newMessage => {
             strikes[member.id] = { "messageId": newMessage.id, "value": 1 };
             this.messagesToSend[member.nickname].push(`<@${member.id}> was given his first strike.`);
 
             fs.writeFileSync("strikes.json", JSON.stringify(strikes));
 
-            return this.promoteMember(message, member, repeatTimes - 1);
+            return this.promoteMember(message, client, args, member, roles, repeatTimes - 1);
           });
       }
       else if (strikes[member.id].value < 3) {
         message.guild.channels.cache.find(channel => channel.id == strikesChannelId).messages.fetch(strikes[member.id].messageId)
           .then(newMessage => {
             strikes[member.id].value += 1;
+            fs.writeFileSync("strikes.json", JSON.stringify(strikes));
 
             if (strikes[member.id].value == 3) {
               newMessage.edit(`${member.nickname} - ${strikes[member.id].value} (Removed ${lastRank} Role)`);
               this.messagesToSend[member.nickname].push(`<@${member.id}> was given his last strike. He has now been promoted.`);
 
-              member.roles.remove(message.guild.roles.cache.find(role => role.name == lastRank))
-                .then(newMember => this.promoteMember(message, newMember, repeatTimes - 1));
+              roles.splice(roles.indexOf(lastRank), 1);
               delete strikes[member.id];
+              return this.promoteMember(message, client, args, member, roles, repeatTimes - 1);
             }
             else {
               newMessage.edit(`${member.nickname} - ${strikes[member.id].value}`);
               this.messagesToSend[member.nickname].push(`<@${member.id}> was given his second strike.`);
 
-              this.promoteMember(message, member, repeatTimes - 1);
+              return this.promoteMember(message, client, args, member, roles, repeatTimes - 1);
             }
-
-            fs.writeFileSync("strikes.json", JSON.stringify(strikes));
           });
       }
     }
     else {
-      if (member.id == "301200493307494400") {
-        return message.channel.send(`You may not promote <@${member.id}> because he is far too cas.`)
+      if (member.id == "301200493307494400" && preventPromotion) {
+        console.log(`Oh. You want to give <@${member.id}> cas role? Good choice.`);
+        require("./givecas").execute(message, args, client);
+        console.log(`There you go. <@${member.id}> is finally at his true role`);
+
+        const that = this;
+        return setTimeout(function() {
+          console.log(`Ok fine, I'll promote him. This promotion is full cap though.`);
+          that.promoteMember(message, client, args, member, roles, repeatTimes);
+        }, 10000);
       }
-      const lastRank = sweatranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
+
+      const lastRank = sweatranks.filter(rank => roles.includes(rank)).pop();
 
       if (sweatranks.indexOf(lastRank) != sweatranks.length - 1) {
-        member.roles.add(message.guild.roles.cache.find(role => role.name == sweatranks[sweatranks.indexOf(lastRank) + 1]))
-          .then(newMember => this.promoteMember(message, newMember, repeatTimes - 1));
+        roles.push(sweatranks[sweatranks.indexOf(lastRank) + 1]);
         this.messagesToSend[member.nickname].push(`<@${member.id}> was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}.`);
+        return this.promoteMember(message, client, args, member, roles, repeatTimes - 1);
       }
       else {
-        message.channel.send("Error. This person is already maximum sweat.");
+        this.promoteMember(message, client, args, member, roles, 0);
+        return message.channel.send("Error. This person is already maximum sweat.");
       }
     }
   }

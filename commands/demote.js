@@ -24,38 +24,41 @@ module.exports = {
     const membersToModify = args.map(arg => message.guild.members.cache.find(member => member.nickname == arg)).filter(e => e != undefined);
     [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(member => {
       this.messagesToSend[member.nickname] = [];
-      this.promoteMember(message, member, repeatTimes);
+      this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
     });
   },
-  promoteMember(message, member, repeatTimes) {
+  promoteMember(message, member, roles, repeatTimes) {
     if (repeatTimes == 0) {
-      return message.channel.send(this.messagesToSend[member.nickname].join("\n"));
+      const rolesDir = message.guild.roles.cache.map(role => { return { name: role.name, id: role.id } });
+      roles = roles.map(role => rolesDir.find(r => r.name == role).id);
+
+      return member.roles.set(roles).then(newMember => message.channel.send(this.messagesToSend[newMember.nickname].join("\n")));
     }
 
-    const lastRank = sweatranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
-
+    const lastRank = sweatranks.filter(rank => roles.includes(rank)).pop();
     if (lastRank != undefined) {
-      member.roles.remove(message.guild.roles.cache.find(role => role.name == lastRank))
-        .then(newMember => this.promoteMember(message, newMember, repeatTimes - 1));
-
       if (lastRank == "Sweat") {
         this.messagesToSend[member.nickname].push(`<@${member.id}> was demoted to Member.`);
       }
       else {
         this.messagesToSend[member.nickname].push(`<@${member.id}> was demoted to ${sweatranks[sweatranks.indexOf(lastRank) - 1]}.`);
       }
+
+      roles.splice(roles.indexOf(lastRank), 1)
+      return this.promoteMember(message, member, roles, repeatTimes - 1);
     }
     else {
-      const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
+      const lastRank = casranks.filter(rank => roles.includes(rank)).pop();
 
       if (casranks.indexOf(lastRank) == casranks.length - 1) {
-        return this.messagesToSend[member.nickname].push("Error. This person is cannot be demoted any further.");
+        this.messagesToSend[member.nickname].push("Error. This person is cannot be demoted any further.");
+        return this.promoteMember(message, member, roles, 0);
       }
       else {
-        member.roles.add(message.guild.roles.cache.find(role => role.name == casranks[casranks.indexOf(lastRank) + 1]))
-          .then(newMember => this.promoteMember(message, newMember, repeatTimes - 1));
-
         this.messagesToSend[member.nickname].push(`<@${member.id}> was demoted to ${casranks[casranks.indexOf(lastRank) + 1]}.`);
+
+        roles.push(casranks[casranks.indexOf(lastRank) + 1])
+        return this.promoteMember(message, member, roles, repeatTimes - 1);
       }
     }
   }

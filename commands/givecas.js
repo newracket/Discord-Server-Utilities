@@ -22,13 +22,10 @@ module.exports = {
           .then(newMember => message.channel.send(`Successfully gave ${casranks[casranks.indexOf(lastRank) + 1]} to <@${newMember.id}>`));
       }
       else {
-        sweatranks.forEach(sweatRank => {
-          if (memberRoles.includes(sweatRank)) {
-            member.roles.remove(member.roles.cache.find(role => role.name == sweatRank));
-          }
-        });
-
-        member.roles.add(message.guild.roles.cache.find(role => role.name == "Cas"))
+        const memberRoles = member.roles.cache.filter(role => !sweatranks.includes(role.name)).map(role => role.id);
+        memberRoles.push(message.guild.roles.cache.find(role => role.name == "Cas").id);
+        
+        member.roles.set(memberRoles)
           .then(newMember => message.channel.send(`Successfully gave Cas to <@${newMember.id}>`));
       }
     });
