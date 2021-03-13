@@ -45,6 +45,10 @@ client.on('message', message => {
 
   let commandObject = client.commands.get(command) || client.commands.find(c => c.aliases && c.aliases.includes(command));
   if (commandObject) {
+    if (client.commandsDisabled) {
+      return message.channel.send("You may not use commands right now.");
+    }
+
     try {
       commandObject.execute(message, args, client);
     }

@@ -54,7 +54,6 @@ module.exports = {
         message.guild.channels.cache.find(channel => channel.id == strikesChannelId).messages.fetch(strikes[member.id].messageId)
           .then(newMessage => {
             strikes[member.id].value += 1;
-            fs.writeFileSync("strikes.json", JSON.stringify(strikes));
 
             if (strikes[member.id].value == 3) {
               newMessage.edit(`${member.nickname} - ${strikes[member.id].value} (Removed ${lastRank} Role)`);
@@ -62,11 +61,14 @@ module.exports = {
 
               roles.splice(roles.indexOf(lastRank), 1);
               delete strikes[member.id];
+              fs.writeFileSync("strikes.json", JSON.stringify(strikes));
+              
               return this.promoteMember(message, client, args, member, roles, repeatTimes - 1);
             }
             else {
               newMessage.edit(`${member.nickname} - ${strikes[member.id].value}`);
               this.messagesToSend[member.nickname].push(`<@${member.id}> was given his second strike.`);
+              fs.writeFileSync("strikes.json", JSON.stringify(strikes));
 
               return this.promoteMember(message, client, args, member, roles, repeatTimes - 1);
             }
@@ -75,13 +77,18 @@ module.exports = {
     }
     else {
       if (member.id == "301200493307494400" && preventPromotion) {
-        console.log(`Oh. You want to give <@${member.id}> cas role? Good choice.`);
+        client.commandsDisabled = true;
+        message.channel.send(`Oh. You want to give <@${member.id}> cas role? Good choice.`);
         require("./givecas").execute(message, args, client);
-        console.log(`There you go. <@${member.id}> is finally at his true role`);
+
+        setTimeout(function() {
+          message.channel.send(`There you go. <@${member.id}> is finally at his true role`);
+        }, 500);
 
         const that = this;
         return setTimeout(function() {
-          console.log(`Ok fine, I'll promote him. This promotion is full cap though.`);
+          message.channel.send(`Ok fine, I'll promote him. This promotion is full cap though.`);
+          client.commandsDisabled = false;
           that.promoteMember(message, client, args, member, roles, repeatTimes);
         }, 10000);
       }
