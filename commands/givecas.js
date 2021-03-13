@@ -5,7 +5,7 @@ module.exports = {
   description: "Gives cas role to a member",
   aliases: ["gc"],
   execute(message, args, client) {
-    if (!["greektoxic", "newracket"].includes(message.author.username)) {
+    if (!["greektoxic", "newracket", "Fury"].includes(message.author.username)) {
       return message.channel.send("You do not have permissions to promote someone.");
     }
 
