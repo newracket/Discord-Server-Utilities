@@ -19,7 +19,8 @@ module.exports = {
       if (!client.playing) {
         client.playing = true;
         const guild = client.guilds.cache.find(guild => guild.id === '633161578363224066');
-        const voiceChannel = guild.channels.cache.find(channel => channel.id == "633161578363224070");
+        // const voiceChannel = guild.channels.cache.find(channel => channel.id == "633161578363224070");
+        const voiceChannel = guild.channels.cache.find(channel => channel.id == "817584778735648770");
 
         const nicks = JSON.parse(fs.readFileSync("nicks.json"));
         const nickname = nicks[message.author.id] != undefined ? nicks[message.author.id] : guild.member(message.author).nickname;
