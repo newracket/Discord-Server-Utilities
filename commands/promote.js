@@ -25,10 +25,10 @@ module.exports = {
     const membersToModify = args.map(arg => message.guild.members.cache.find(member => member.nickname == arg)).filter(e => e != undefined);
     [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(member => {
       this.messagesToSend[member.nickname] = [];
-      this.promoteMember(message, client, args, member, member.roles.cache.map(role => role.name), repeatTimes, true);
+      this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
     });
   },
-  promoteMember(message, client, args, member, roles, repeatTimes, preventPromotion) {
+  promoteMember(message, member, roles, repeatTimes) {
     if (repeatTimes == 0) {
       const rolesDir = message.guild.roles.cache.map(role => { return { name: role.name, id: role.id } });
       roles = roles.map(role => rolesDir.find(r => r.name == role).id);
@@ -47,7 +47,7 @@ module.exports = {
 
             fs.writeFileSync("strikes.json", JSON.stringify(strikes));
 
-            return this.promoteMember(message, client, args, member, roles, repeatTimes - 1);
+            return this.promoteMember(message, member, roles, repeatTimes - 1);
           });
       }
       else if (strikes[member.id].value < 3) {
@@ -62,46 +62,35 @@ module.exports = {
               roles.splice(roles.indexOf(lastRank), 1);
               delete strikes[member.id];
               fs.writeFileSync("strikes.json", JSON.stringify(strikes));
-              
-              return this.promoteMember(message, client, args, member, roles, repeatTimes - 1);
+
+              return this.promoteMember(message, member, roles, repeatTimes - 1);
             }
             else {
               newMessage.edit(`${member.nickname} - ${strikes[member.id].value}`);
               this.messagesToSend[member.nickname].push(`<@${member.id}> was given his second strike.`);
               fs.writeFileSync("strikes.json", JSON.stringify(strikes));
 
-              return this.promoteMember(message, client, args, member, roles, repeatTimes - 1);
+              return this.promoteMember(message, member, roles, repeatTimes - 1);
             }
           });
       }
     }
     else {
-      if (member.id == "301200493307494400" && preventPromotion) {
-        client.commandsDisabled = true;
-        message.channel.send(`Oh. You want to give <@${member.id}> cas role? Good choice.`);
-        require("./givecas").execute(message, args, client);
-
-        setTimeout(function() {
-          message.channel.send(`There you go. <@${member.id}> is finally at his true role`);
-        }, 500);
-
-        const that = this;
-        return setTimeout(function() {
-          message.channel.send(`Ok fine, I'll promote him. This promotion is full cap though.`);
-          client.commandsDisabled = false;
-          that.promoteMember(message, client, args, member, roles, repeatTimes);
-        }, 10000);
-      }
-
       const lastRank = sweatranks.filter(rank => roles.includes(rank)).pop();
 
       if (sweatranks.indexOf(lastRank) != sweatranks.length - 1) {
         roles.push(sweatranks[sweatranks.indexOf(lastRank) + 1]);
-        this.messagesToSend[member.nickname].push(`<@${member.id}> was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}.`);
-        return this.promoteMember(message, client, args, member, roles, repeatTimes - 1);
+
+        if (member.id == "301200493307494400") {
+          this.messagesToSend[member.nickname].push(`<@${member.id}> was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}. This is a cap promotion.`);
+        }
+        else {
+          this.messagesToSend[member.nickname].push(`<@${member.id}> was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}.`);
+        }
+        return this.promoteMember(message, member, roles, repeatTimes - 1);
       }
       else {
-        this.promoteMember(message, client, args, member, roles, 0);
+        this.promoteMember(message, member, roles, 0);
         return message.channel.send("Error. This person is already maximum sweat.");
       }
     }
