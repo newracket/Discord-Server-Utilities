@@ -13,11 +13,7 @@ module.exports = {
       }
 
       const randomIndex = Math.floor(Math.random() * rows.length);
-      message.channel.send(`Your cas role opportunity is to ${rows[randomIndex].casroleopp} in ${rows[randomIndex].daysLimit != 0 ? rows[randomIndex].daysLimit : "infinite"} days. Good luck!`)
-
-      if (rows[randomIndex].daysLimit != 0) {
-        require("./add").execute(message, `none remind me in ${rows[randomIndex].daysLimit} days to ${rows[randomIndex].casroleopp}`.split(" "), client);
-      }
+      message.channel.send(`Your cas role opportunity is to ${rows[randomIndex].casroleopp} in ${rows[randomIndex].daysLimit != 0 ? rows[randomIndex].daysLimit : "infinite"} days. Good luck!`);
     });
   }
 }

@@ -21,11 +21,14 @@ module.exports = {
       repeatTimes = parseInt(args.slice(-1));
     }
 
-    const membersToModify = args.map(arg => message.guild.members.cache.find(member => member.nickname == arg)).filter(e => e != undefined);
-    [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(member => {
-      this.messagesToSend[member.nickname] = [];
-      this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
-    });
+    message.guild.members.fetch()
+      .then(guildMembers => {
+        const membersToModify = args.map(arg => guildMembers.find(member => member.nickname == arg)).filter(e => e != undefined);
+        [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(member => {
+          this.messagesToSend[member.nickname] = [];
+          this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
+        });
+      });
   },
   promoteMember(message, member, roles, repeatTimes) {
     if (repeatTimes == 0) {
