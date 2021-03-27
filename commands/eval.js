@@ -13,7 +13,6 @@ module.exports = {
       if (typeof output != "string") {
         output = output.toString();
       }
-      output = output.split("\r\n").join("");
       const outputTexts = output.match(/.{1,1900}/g);
 
       outputTexts.forEach(outputText => {

@@ -48,7 +48,7 @@ module.exports = {
       }
 
       if (remindObject == null) {
-        message.channel.send("Error.");
+        message.channel.send("Error when parsing.");
         return;
       }
 

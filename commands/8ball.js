@@ -9,7 +9,7 @@ module.exports = {
     const reverseWords = ["no", "not"];
     let messageToSend = true;
 
-    if (message.author.username == "newracketa") {
+    if (message.author.username == "newracket") {
       messageToSend = true;
       if (message.content.includesWords(names)) {
         messageToSend = !messageToSend;

@@ -1,19 +1,19 @@
-const fs = require('fs');
-const Discord = require('discord.js');
-const client = new Discord.Client({ ws: { intents: ['GUILDS', 'GUILD_PRESENCES', 'GUILD_MESSAGES', 'GUILD_VOICE_STATES'] } });
+const fs = require("fs");
+const Discord = require("discord.js");
+const client = new Discord.Client({ ws: { intents: ["GUILDS", "GUILD_PRESENCES", "GUILD_MESSAGES", "GUILD_VOICE_STATES", "DIRECT_MESSAGES"] } });
 const { token, prefix } = require("./config.json");
 
-process.env.TZ = 'America/Los_Angeles';
+process.env.TZ = "America/Los_Angeles";
 
 client.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
 for (const file of commandFiles) {
   const command = require(`./commands/${file}`);
   client.commands.set(command.name, command);
 }
 
-client.once('ready', () => {
-  console.log('Ready!');
+client.once("ready", () => {
+  console.log("Ready!");
   client.playing = false;
 
   const checkReminders = require("./modules/checkReminders");
@@ -21,7 +21,7 @@ client.once('ready', () => {
   setInterval(function () { checkReminders.execute(client) }, 60000);
 });
 
-client.on('message', message => {
+client.on("message", message => {
   if (message.author == client.user) {
     return;
   }
@@ -53,7 +53,8 @@ client.on('message', message => {
       commandObject.execute(message, args, client);
     }
     catch (error) {
-      message.channel.send("Error" + error);
+      message.channel.send("Error: " + error);
+      client.playing = false;
     }
   }
   else {

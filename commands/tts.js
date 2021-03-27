@@ -38,7 +38,7 @@ module.exports = {
         }).join(" ");
         const gtts = new gTTS(speech, "en");
 
-        gtts.save("voice.mp3", function (err, result) { if (err) { console.log(err) } });
+        gtts.save("voice.mp3", function (err, result) { if (err) { console.log(err); } });
 
         voiceChannel.join().then(connection => {
           const dispatcher = connection.play('./voice.mp3');
