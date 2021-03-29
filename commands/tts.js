@@ -1,12 +1,26 @@
 const gTTS = require("gtts");
-const say = require("say");
 const fs = require("fs");
+const { Command } = require('discord-akairo');
 
-module.exports = {
-  name: "tts",
-  description: "Converts text message to speech and sends in voice channel",
-  aliases: ["t"],
-  execute(message, args, client) {
+class TtsCommand extends Command {
+  constructor() {
+    super('tts', {
+      aliases: ['tts', 't'],
+      description: "Converts text message to speech and sends in voice channel",
+      args: [
+        {
+          id: "message",
+          match: "content"
+        }
+      ]
+    });
+  }
+
+  exec(message, args) {
+    args = args.message.split(" ");
+    if (args[0].includes("tts")) {
+      args.splice(0, 1);
+    }
     if (args.length < 0) {
       message.channel.send("No message to say.");
       return;
@@ -16,16 +30,15 @@ module.exports = {
       return;
     }
     else {
-      if (!client.playing) {
-        client.playing = true;
-        const guild = client.guilds.cache.find(guild => guild.id === '633161578363224066');
+      if (!message.client.playing) {
+        message.client.playing = true;
         let voiceChannel;
-        
+
         if (message.member.voice.channel) {
           voiceChannel = message.member.voice.channel;
         }
         else {
-          voiceChannel = guild.channels.cache.find(channel => channel.id == "633161578363224070");
+          voiceChannel = message.guild.channels.cache.find(channel => channel.id == "633161578363224070");
         }
 
         const nicks = JSON.parse(fs.readFileSync("nicks.json"));
@@ -45,7 +58,7 @@ module.exports = {
 
           dispatcher.on('finish', () => {
             connection.disconnect();
-            client.playing = false;
+            message.client.playing = false;
           });
         });
       }
@@ -55,3 +68,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = TtsCommand;

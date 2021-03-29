@@ -2,18 +2,29 @@ const fs = require("fs");
 const { sweatranks, casranks } = require("../ranks.json");
 const { strikesChannelId } = require("../config.json");
 const strikes = JSON.parse(fs.readFileSync("./strikes.json"));
+const { Command } = require('discord-akairo');
 
-module.exports = {
-  name: "promote",
-  description: "Promotes a member",
-  aliases: ["p"],
-  messagesToSend: {},
-  execute(message, args, client) {
-    let repeatTimes = 1;
+class PromoteCommand extends Command {
+  constructor() {
+    super('promote', {
+      aliases: ['promote', 'p'],
+      description: "Promotes a member",
+      channel: "guild"
+    });
+  }
 
-    if (!["greektoxic", "newracket", "Fury"].includes(message.author.username)) {
-      return message.channel.send("You do not have permissions to promote someone.");
+  userPermissions(message) {
+    if (!message.member.roles.cache.some(role => ["King of Sweats", "Advisor"].includes(role.name)) && message.member.id != message.client.ownerID) {
+      message.channel.send("You do not have permissions to promote someone.")
+      return "King of Sweats";
     }
+
+    return null;
+  }
+
+  exec(message) {
+    const args = message.content.split(" ").slice(1);
+    let repeatTimes = 1;
 
     if (!isNaN(parseInt(args[0]))) {
       repeatTimes = parseInt(args[0]);
@@ -22,6 +33,7 @@ module.exports = {
       repeatTimes = parseInt(args.slice(-1));
     }
 
+    this.messagesToSend = {};
     message.guild.members.fetch()
       .then(guildMembers => {
         const membersToModify = args.map(arg => guildMembers.find(member => member.nickname == arg)).filter(e => e != undefined);
@@ -30,7 +42,8 @@ module.exports = {
           this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
         });
       });
-  },
+  }
+
   promoteMember(message, member, roles, repeatTimes) {
     if (repeatTimes == 0) {
       const rolesDir = message.guild.roles.cache.map(role => { return { name: role.name, id: role.id } });
@@ -94,8 +107,10 @@ module.exports = {
       }
       else {
         this.promoteMember(message, member, roles, 0);
-        return message.channel.send("Error. This person is already maximum sweat.");
+        return this.messagesToSend[member.nickname].push("Error. This person is already maximum sweat.");
       }
     }
   }
 }
+
+module.exports = PromoteCommand;

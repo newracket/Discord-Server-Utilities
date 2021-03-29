@@ -1,16 +1,24 @@
-module.exports = {
-  name: "help",
-  description: "Help command",
-  aliases: ["h"],
-  execute(message, args, client) {
-    let outputText = "```\nList of commands:\n\n";
+// const { Command } = require('discord-akairo');
 
-    client.commands.forEach(command => {
-      outputText += command.name + ": ";
-      outputText += command.description + "\n";
-    });
+// class HelpCommand extends Command {
+//   constructor() {
+//     super('help', {
+//       aliases: ['help', 'h'],
+//       description: "Help command",
+//     });
+//   }
 
-    outputText += "```";
-    message.channel.send(outputText);
-  }
-}
+//   exec(message) {
+//     let outputText = "```\nList of commands:\n\n";
+
+//     message.client.commands.forEach(command => {
+//       outputText += command.name + ": ";
+//       outputText += command.description + "\n";
+//     });
+
+//     outputText += "```";
+//     message.channel.send(outputText);
+//   }
+// }
+
+// module.exports = HelpCommand;

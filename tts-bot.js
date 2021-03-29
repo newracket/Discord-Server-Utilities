@@ -1,65 +1,36 @@
-const fs = require("fs");
-const Discord = require("discord.js");
-const client = new Discord.Client({ ws: { intents: ["GUILDS", "GUILD_PRESENCES", "GUILD_MESSAGES", "GUILD_VOICE_STATES", "DIRECT_MESSAGES"] } });
-const { token, prefix } = require("./config.json");
+const { AkairoClient, CommandHandler, ListenerHandler, InhibitorHandler } = require("discord-akairo");
+const { prefix, token } = require("./config.json");
 
-process.env.TZ = "America/Los_Angeles";
+class ServerHelperClient extends AkairoClient {
+  constructor() {
+    super({
+      ownerID: "301200493307494400"
+    }, {
+      ws: {
+        intents: ["GUILDS", "GUILD_PRESENCES", "GUILD_MESSAGES", "GUILD_VOICE_STATES", "DIRECT_MESSAGES"]
+      }
+    });
 
-client.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
-for (const file of commandFiles) {
-  const command = require(`./commands/${file}`);
-  client.commands.set(command.name, command);
+    this.commandHandler = new CommandHandler(this, {
+      directory: "./commands",
+      prefix: prefix,
+      allowMentions: true
+    });
+
+    this.listenerHandler = new ListenerHandler(this, {
+      directory: "./listeners"
+    });
+
+    this.listenerHandler.setEmitters({
+      commandHandler: this.commandHandler,
+      listenerHandler: this.listenerHandler
+    });
+
+    this.commandHandler.loadAll();
+    this.commandHandler.useListenerHandler(this.listenerHandler);
+    this.listenerHandler.loadAll();
+  }
 }
 
-client.once("ready", () => {
-  console.log("Ready!");
-  client.playing = false;
-
-  const checkReminders = require("./modules/checkReminders");
-  checkReminders.execute(client);
-  setInterval(function () { checkReminders.execute(client) }, 60000);
-});
-
-client.on("message", message => {
-  if (message.author == client.user) {
-    return;
-  }
-  const args = message.content.slice(prefix.length).split(" ");
-  const command = args.shift().toLowerCase();
-
-  if (message.channel.id == "819649988757291015") {
-    try {
-      return client.commands.get("tts").execute(message, message.content.split(" "), client);
-    }
-    catch (error) {
-      return message.channel.send("Error: " + error);
-    }
-  }
-
-  if (message.content.startsWith(".")) {
-    return message.channel.send("Command prefix has been changed to !");
-  }
-
-  if (!message.content.startsWith(prefix)) return;
-
-  let commandObject = client.commands.get(command) || client.commands.find(c => c.aliases && c.aliases.includes(command));
-  if (commandObject) {
-    if (client.commandsDisabled) {
-      return message.channel.send("You may not use commands right now.");
-    }
-
-    try {
-      commandObject.execute(message, args, client);
-    }
-    catch (error) {
-      message.channel.send("Error: " + error);
-      client.playing = false;
-    }
-  }
-  else {
-    message.channel.send("The command was not recognized.");
-  }
-});
-
+const client = new ServerHelperClient();
 client.login(token);

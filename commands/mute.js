@@ -1,13 +1,21 @@
 const fs = require("fs");
+const { Command } = require('discord-akairo');
 
-module.exports = {
-  name: "mute",
-  description: "Mutes users",
-  aliases: ["m"],
-  execute(message, args, client) {
+class MuteCommand extends Command {
+  constructor() {
+    super('mute', {
+      aliases: ['mute', 'm'],
+      description: "Mutes users",
+      channel: "guild",
+      userPermissions: ['ADMINISTRATOR']
+    });
+  }
+
+  exec(message) {
     message.mentions.members.forEach(this.muteMember);
     message.channel.send(message.mentions.members.map(member => `<@${member.id}> has been muted.`).join("\n"));
-  },
+  }
+  
   async muteMember(member) {
     const roles = await member.guild.roles.fetch();
     await member.roles.add(roles.cache.find(role => role.name == "Muted"));
@@ -21,3 +29,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = MuteCommand;

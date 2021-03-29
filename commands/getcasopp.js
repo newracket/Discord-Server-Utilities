@@ -1,11 +1,16 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
+const { Command } = require('discord-akairo');
 
-module.exports = {
-  name: "getcasopp",
-  description: "Gets random cas role opportunity from list",
-  aliases: ["gco"],
-  execute(message, args, client) {
+class GetCasOppCommand extends Command {
+  constructor() {
+    super('getcasopp', {
+      aliases: ['getcasopp', 'gco'],
+      description: "Gets random cas role opportunity from list",
+    });
+  }
+
+  exec(message) {
     db.all(`SELECT * FROM casroleopps`, [], (err, rows) => {
       if (err) {
         message.channel.send(`Error when selecting reminders from database. ${err}`);
@@ -17,3 +22,5 @@ module.exports = {
     });
   }
 }
+
+module.exports = GetCasOppCommand;

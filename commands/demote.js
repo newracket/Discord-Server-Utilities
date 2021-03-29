@@ -1,13 +1,26 @@
-const fs = require("fs");
 const { sweatranks, casranks } = require("../ranks.json");
-const strikes = JSON.parse(fs.readFileSync("./strikes.json"));
+const { Command } = require('discord-akairo');
 
-module.exports = {
-  name: "demote",
-  description: "Demotes a member",
-  aliases: ["d"],
-  messagesToSend: {},
-  execute(message, args, client) {
+class DemoteCommand extends Command {
+  constructor() {
+    super('demote', {
+      aliases: ['demote', 'd'],
+      description: "Demotes a member",
+      channel: "guild"
+    });
+  }
+
+  userPermissions(message) {
+    if (!message.member.roles.cache.some(role => ["King of Sweats", "Advisor"].includes(role.name)) && message.member.id != message.client.ownerID) {
+      message.channel.send("You do not have permissions to promote someone.")
+      return "King of Sweats";
+    }
+
+    return null;
+  }
+
+  exec(message) {
+    const args = message.content.split(" ").slice(1);
     let repeatTimes = 1;
 
     if (!["greektoxic", "newracket", "Fury"].includes(message.author.username)) {
@@ -21,6 +34,7 @@ module.exports = {
       repeatTimes = parseInt(args.slice(-1));
     }
 
+    this.messagesToSend = {};
     message.guild.members.fetch()
       .then(guildMembers => {
         const membersToModify = args.map(arg => guildMembers.find(member => member.nickname == arg)).filter(e => e != undefined);
@@ -29,7 +43,8 @@ module.exports = {
           this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
         });
       });
-  },
+  }
+
   promoteMember(message, member, roles, repeatTimes) {
     if (repeatTimes == 0) {
       const rolesDir = message.guild.roles.cache.map(role => { return { name: role.name, id: role.id } });
@@ -66,3 +81,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = DemoteCommand;

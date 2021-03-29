@@ -1,11 +1,16 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
+const { Command } = require('discord-akairo');
 
-module.exports = {
-  name: "listcasopp",
-  description: "Lists all cas role opportunity available",
-  aliases: ["lco"],
-  execute(message, args, client) {
+class ListCasOppCommand extends Command {
+  constructor() {
+    super('listcasopp', {
+      aliases: ['listcasopp', 'lco'],
+      description: "Lists all cas role opportunities available",
+    });
+  }
+
+  exec(message) {
     let outputTexts = [];
 
     db.all(`SELECT * FROM casroleopps`, [], (err, rows) => {
@@ -34,3 +39,5 @@ module.exports = {
     });
   }
 }
+
+module.exports = ListCasOppCommand;

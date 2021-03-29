@@ -1,26 +1,34 @@
-const fs = require("fs");
+const { Command } = require('discord-akairo');
 
-module.exports = {
-  name: "eval",
-  description: "Evaluates Commands",
-  aliases: ["e"],
-  execute(message, args, client) {
-    if (message.author.id == "301200493307494400") {
-      let output = eval(args.join(" "));
-      if (output == undefined) {
-        return message.channel.send("Output is undefined");
-      }
-      if (typeof output != "string") {
-        output = output.toString();
-      }
-      const outputTexts = output.match(/.{1,1900}/g);
+class EvalCommand extends Command {
+  constructor() {
+    super('eval', {
+      aliases: ['eval', 'e'],
+      description: "Evaluates a command",
+      ownerOnly: true,
+      args: [
+        {
+          id: "message",
+          match: "content"
+        }
+      ]
+    });
+  }
 
-      outputTexts.forEach(outputText => {
-        message.channel.send(outputText);
-      });
+  exec(message, args) {
+    let output = eval(args.message);
+    if (output == undefined) {
+      return message.channel.send("Output is undefined");
     }
-    else {
-      message.channel.send("Syntax Error");
+    if (typeof output != "string") {
+      output = output.toString();
     }
+    const outputTexts = output.match(/.{1,1900}/g);
+
+    outputTexts.forEach(outputText => {
+      message.channel.send(outputText);
+    });
   }
 }
+
+module.exports = EvalCommand;

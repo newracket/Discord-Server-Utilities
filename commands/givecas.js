@@ -1,10 +1,26 @@
 const { sweatranks, casranks } = require("../ranks.json");
+const { Command } = require('discord-akairo');
 
-module.exports = {
-  name: "givecas",
-  description: "Gives cas role to a member",
-  aliases: ["gc"],
-  execute(message, args, client) {
+class GiveCasCommand extends Command {
+  constructor() {
+    super('givecas', {
+      aliases: ['givecas', 'gc'],
+      description: "Gives cas role to a member",
+      channel: "guild"
+    });
+  }
+
+  userPermissions(message) {
+    if (!message.member.roles.cache.some(role => ["King of Sweats", "Advisor"].includes(role.name)) && message.member.id != message.client.ownerID) {
+      message.channel.send("You do not have permissions to promote someone.")
+      return "King of Sweats";
+    }
+
+    return null;
+  }
+
+  exec(message) {
+    const args = message.content.split(" ").slice(1);
     if (!["greektoxic", "newracket", "Fury"].includes(message.author.username)) {
       return message.channel.send("You do not have permissions to promote someone.");
     }
@@ -33,3 +49,5 @@ module.exports = {
       });
   }
 }
+
+module.exports = GiveCasCommand;

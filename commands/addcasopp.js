@@ -1,11 +1,17 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
+const { Command } = require('discord-akairo');
 
-module.exports = {
-  name: "addcasopp",
-  description: "Adds cas role opportunity to list",
-  aliases: ["aco"],
-  execute(message, args, client) {
+class AddCasOppCommand extends Command {
+  constructor() {
+    super('addcasopp', {
+      aliases: ['addcasopp', 'aco'],
+      description: "Adds cas role opportunity to list",
+    });
+  }
+
+  exec(message) {
+    const args = message.content.split(" ").slice(1);
     db.serialize(() => {
       let casroleopp = args.join(" ");
       let daysLimit = 0;
@@ -50,3 +56,5 @@ module.exports = {
     });
   }
 }
+
+module.exports = AddCasOppCommand;

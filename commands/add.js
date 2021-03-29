@@ -1,12 +1,18 @@
 const parseReminder = require('parse-reminder');
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
+const { Command } = require('discord-akairo');
 
-module.exports = {
-  name: "add",
-  description: "Adds reminder. Format: .add [role name (only if one word), role id (if multiple words), everyone (pings everyone), dm (dms you), or ignore (will just normally send message)] [message/date any format].",
-  aliases: ["a"],
-  execute(message, args, client) {
+class AddCommand extends Command {
+  constructor() {
+    super('add', {
+      aliases: ['add', 'a'],
+      description: "Adds reminder. Format: add [role name (only if one word), role id (if multiple words), everyone (pings everyone), dm (dms you), or ignore (will just normally send message)] [message/date any format].",
+    });
+  }
+
+  exec(message) {
+    let args = message.content.split(" ").slice(1);
     let remindObject;
     let messageType = "none";
 
@@ -23,8 +29,8 @@ module.exports = {
         }
       });
 
-      const matchingRole = client.guilds.cache.find(guild => guild.id == '633161578363224066').roles.cache.find(role => role.name.toLowerCase() == args[0].toLowerCase() || role.id == args[0]);
-      
+      const matchingRole = message.guild.roles.cache.find(role => role.name.toLowerCase() == args[0].toLowerCase() || role.id == args[0]);
+
       if (args[0] == "dm") {
         messageType = "dm";
         args.splice(0, 1);
@@ -74,3 +80,5 @@ module.exports = {
     });
   }
 }
+
+module.exports = AddCommand;

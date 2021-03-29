@@ -1,17 +1,26 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
+const { Command } = require('discord-akairo');
 
-module.exports = {
-  name: "remove",
-  description: "Removes reminder",
-  aliases: ["r"],
-  execute(message, args, client) {
+class RemoveCommand extends Command {
+  constructor() {
+    super('remove', {
+      aliases: ['remove', 'r'],
+      description: "Removes a reminder",
+    });
+  }
+
+  exec(message) {
+    const args = message.content.split(" ").slice(1);
     db.run(`DELETE FROM reminders WHERE id=${parseInt(args[0])}`, err => {
       if (err) {
-        message.channel.send(`Error when deleting from database. ${err}`);
+        return message.channel.send(`Error when deleting from database. ${err}`);
       }
+
+      message.channel.send("Successfully removed reminder!");
     });
 
-    message.channel.send("Successfully removed reminder!");
   }
 }
+
+module.exports = RemoveCommand;
