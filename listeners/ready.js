@@ -14,7 +14,8 @@ class ReadyListener extends Listener {
     process.env.TZ = "America/Los_Angeles";
     const checkReminders = require("../modules/checkReminders");
     checkReminders.execute(this.client);
-    setInterval(function () { checkReminders.execute(this.client) }, 60000);
+    const _this = this;
+    setInterval(function () { checkReminders.execute(_this.client) }, 60000);
   }
 }
 
