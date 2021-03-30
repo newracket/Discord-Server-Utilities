@@ -1,12 +1,15 @@
-const { sweatranks, casranks } = require("../ranks.json");
-const { Command } = require('discord-akairo');
+const { sweatranks, casranks } = require("../../ranks.json")
+const { CustomCommand } = require("../../modules/custommodules");
 
-class DemoteCommand extends Command {
+class DemoteCommand extends CustomCommand {
   constructor() {
     super('demote', {
       aliases: ['demote', 'd'],
       description: "Demotes a member",
-      channel: "guild"
+      usage: "demote <mention users> <amount> OR demote <user nicknames> <amount>",
+      category: "Sweatranks",
+      channel: "guild",
+      permittedRoles: ["King of Sweats", "Advisor"]
     });
   }
 

@@ -1,13 +1,15 @@
 const parseReminder = require('parse-reminder');
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
-const { Command } = require('discord-akairo');
+const { CustomCommand } = require("../../modules/custommodules");
 
-class AddCommand extends Command {
+class AddCommand extends CustomCommand {
   constructor() {
     super('add', {
       aliases: ['add', 'a'],
-      description: "Adds reminder. Format: add [role name (only if one word), role id (if multiple words), everyone (pings everyone), dm (dms you), or ignore (will just normally send message)] [message/date any format].",
+      description: "Adds reminder",
+      usage: "add <reminder type (dm, everyone, role name, none)> <reminder date> <reminder content>",
+      category: "Remind"
     });
   }
 

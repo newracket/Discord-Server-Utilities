@@ -1,12 +1,14 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
-const { Command } = require('discord-akairo');
+const { CustomCommand } = require("../../modules/custommodules");
 
-class ListCasOppCommand extends Command {
+class ListCasOppCommand extends CustomCommand {
   constructor() {
     super('listcasopp', {
       aliases: ['listcasopp', 'lco'],
       description: "Lists all cas role opportunities available",
+      usage: "listcasopp",
+      category: "Sweatranks",
     });
   }
 

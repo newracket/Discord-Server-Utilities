@@ -1,10 +1,12 @@
-const { Command } = require('discord-akairo');
+const { CustomCommand } = require("../../modules/custommodules");
 
-class EightBallCommand extends Command {
+class EightBallCommand extends CustomCommand {
   constructor() {
     super('8ball', {
       aliases: ['8ball'],
       description: "8ball (totally not rigged)",
+      usage: "8ball <question>",
+      category: "Misc",
     });
   }
 

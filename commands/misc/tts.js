@@ -1,12 +1,14 @@
 const gTTS = require("gtts");
 const fs = require("fs");
-const { Command } = require('discord-akairo');
+const { CustomCommand } = require("../../modules/custommodules");
 
-class TtsCommand extends Command {
+class TtsCommand extends CustomCommand {
   constructor() {
     super('tts', {
       aliases: ['tts', 't'],
       description: "Converts text message to speech and sends in voice channel",
+      usage: "tts <message>",
+      category: "Misc",
       args: [
         {
           id: "message",

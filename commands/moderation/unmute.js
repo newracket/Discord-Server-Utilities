@@ -1,11 +1,13 @@
 const fs = require("fs");
-const { Command } = require('discord-akairo');
+const { CustomCommand } = require("../../modules/custommodules");
 
-class UnmuteCommand extends Command {
+class UnmuteCommand extends CustomCommand {
   constructor() {
     super('unmute', {
       aliases: ['unmute', 'u'],
       description: "Unmutes users",
+      usage: "unmute <mention users> OR unmute <user ids>",
+      category: "Moderation",
       channel: "guild",
       userPermissions: ['ADMINISTRATOR']
     });

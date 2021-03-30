@@ -1,4 +1,5 @@
-const { AkairoClient, CommandHandler, ListenerHandler, InhibitorHandler } = require("discord-akairo");
+const { AkairoClient, ListenerHandler } = require("discord-akairo");
+const { CustomCommandHandler } = require("./modules/custommodules");
 const { prefix, token } = require("./config.json");
 
 class ServerHelperClient extends AkairoClient {
@@ -11,10 +12,11 @@ class ServerHelperClient extends AkairoClient {
       }
     });
 
-    this.commandHandler = new CommandHandler(this, {
+    this.commandHandler = new CustomCommandHandler(this, {
       directory: "./commands",
       prefix: prefix,
-      allowMentions: true
+      allowMentions: true,
+      ignorePermissions: this.ownerID
     });
 
     this.listenerHandler = new ListenerHandler(this, {

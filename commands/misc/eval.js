@@ -1,10 +1,12 @@
-const { Command } = require('discord-akairo');
+const { CustomCommand } = require("../../modules/custommodules");
 
-class EvalCommand extends Command {
+class EvalCommand extends CustomCommand {
   constructor() {
     super('eval', {
       aliases: ['eval', 'e'],
       description: "Evaluates a command",
+      usage: "eval <nodejs code>",
+      category: "Misc",
       ownerOnly: true,
       args: [
         {

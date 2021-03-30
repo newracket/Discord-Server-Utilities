@@ -1,12 +1,14 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
-const { Command } = require('discord-akairo');
+const { CustomCommand } = require("../../modules/custommodules");
 
-class ListCommand extends Command {
+class ListCommand extends CustomCommand {
   constructor() {
     super('list', {
       aliases: ['list', 'l'],
-      description: "Lists reminders"
+      description: "Lists reminders",
+      usage: "list",
+      category: "Remind"
     });
   }
 

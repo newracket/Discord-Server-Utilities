@@ -1,12 +1,14 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
-const { Command } = require('discord-akairo');
+const { CustomCommand } = require("../../modules/custommodules");
 
-class GetCasOppCommand extends Command {
+class GetCasOppCommand extends CustomCommand {
   constructor() {
     super('getcasopp', {
       aliases: ['getcasopp', 'gco'],
       description: "Gets random cas role opportunity from list",
+      usage: "getcasopp",
+      category: "Sweatranks",
     });
   }
 

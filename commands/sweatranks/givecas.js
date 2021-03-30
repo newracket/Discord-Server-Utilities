@@ -1,12 +1,15 @@
-const { sweatranks, casranks } = require("../ranks.json");
-const { Command } = require('discord-akairo');
+const { sweatranks, casranks } = require("../../ranks.json");
+const { CustomCommand } = require("../../modules/custommodules");
 
-class GiveCasCommand extends Command {
+class GiveCasCommand extends CustomCommand {
   constructor() {
     super('givecas', {
       aliases: ['givecas', 'gc'],
       description: "Gives cas role to a member",
-      channel: "guild"
+      usage: "givecas <mention members> OR givecas <member nicknames>",
+      category: "Sweatranks",
+      channel: "guild",
+      permittedRoles: ["King of Sweats", "Advisor"]
     });
   }
 

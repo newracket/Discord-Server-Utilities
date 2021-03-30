@@ -1,11 +1,13 @@
 const fs = require("fs");
-const { Command } = require('discord-akairo');
+const { CustomCommand } = require("../../modules/custommodules");
 
-class MuteCommand extends Command {
+class MuteCommand extends CustomCommand {
   constructor() {
     super('mute', {
       aliases: ['mute', 'm'],
       description: "Mutes users",
+      usage: "mute <mention users> OR mute <user ids>",
+      category: "Moderation",
       channel: "guild",
       userPermissions: ['ADMINISTRATOR']
     });

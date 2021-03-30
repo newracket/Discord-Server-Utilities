@@ -1,25 +1,19 @@
 const fs = require("fs");
-const { sweatranks, casranks } = require("../ranks.json");
-const { strikesChannelId } = require("../config.json");
+const { sweatranks, casranks } = require("../../ranks.json");
+const { strikesChannelId } = require("../../config.json");
 const strikes = JSON.parse(fs.readFileSync("./strikes.json"));
-const { Command } = require('discord-akairo');
+const { CustomCommand } = require("../../modules/custommodules");
 
-class PromoteCommand extends Command {
+class PromoteCommand extends CustomCommand {
   constructor() {
     super('promote', {
       aliases: ['promote', 'p'],
       description: "Promotes a member",
-      channel: "guild"
+      usage: "promote <mention members> <amount> OR promote <member nicknames> <amount>",
+      category: "Sweatranks",
+      channel: "guild",
+      permittedRoles: ["King of Sweats", "Advisor"]
     });
-  }
-
-  userPermissions(message) {
-    if (!message.member.roles.cache.some(role => ["King of Sweats", "Advisor"].includes(role.name)) && message.member.id != message.client.ownerID) {
-      message.channel.send("You do not have permissions to promote someone.")
-      return "King of Sweats";
-    }
-
-    return null;
   }
 
   exec(message) {

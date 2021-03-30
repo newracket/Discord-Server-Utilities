@@ -1,12 +1,14 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
-const { Command } = require('discord-akairo');
+const { CustomCommand } = require("../../modules/custommodules");
 
-class RemoveCasOpp extends Command {
+class RemoveCasOpp extends CustomCommand {
   constructor() {
     super('removecasopp', {
       aliases: ['removecasopp', 'rco'],
       description: "Removes cas role opportunity from list",
+      usage: "removecasopp <id>",
+      category: "Sweatranks",
     });
   }
 

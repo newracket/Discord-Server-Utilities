@@ -1,12 +1,14 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
-const { Command } = require('discord-akairo');
+const { CustomCommand } = require("../../modules/custommodules");
 
-class RemoveCommand extends Command {
+class RemoveCommand extends CustomCommand {
   constructor() {
     super('remove', {
       aliases: ['remove', 'r'],
       description: "Removes a reminder",
+      usage: "remove <reminder id>",
+      category: "Remind"
     });
   }
 
