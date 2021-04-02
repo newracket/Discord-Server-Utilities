@@ -5,22 +5,33 @@ class HelpCommand extends CustomCommand {
     super('help', {
       aliases: ['help', 'h'],
       description: "Help command",
-      usage: "help",
-      category: "Misc"
+      usage: "help OR help <category name>",
+      category: "Misc",
+      args: [{
+        id: "category",
+        type: "string"
+      }]
     });
   }
 
-  exec(message) {
-    // let outputText = "```\nList of commands:\n\n";
+  exec(message, args) {
+    let commands;
+
+    if (args.category) {
+      commands = this.handler.categories.find(category => category.id.toLowerCase() == args.category.toLowerCase());
+      if (!commands) {
+        commands = this.handler.modules;
+      }
+    }
+    else {
+      commands = this.handler.modules;
+    }
+
     const embedOutput = this.client.util.embed({ color: '#0099ff', title: "Server Helper Bot Commands" });
-    this.handler.modules.forEach(command => {
-      // outputText += command.id + ": ";
-      // outputText += command.description + "\n";
-      embedOutput.addField(command.id, `${command.description}\n${command.handler.prefix}${command.usage}`);
+    commands.forEach(command => {
+      embedOutput.addField(`${command.categoryID} - ${command.id}`, `${command.description}\n${command.handler.prefix}${command.usage}`);
     });
 
-    // outputText += "```";
-    // message.channel.send(outputText);
     message.channel.send(embedOutput);
   }
 }

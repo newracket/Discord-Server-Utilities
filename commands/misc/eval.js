@@ -3,7 +3,7 @@ const { CustomCommand } = require("../../modules/custommodules");
 class EvalCommand extends CustomCommand {
   constructor() {
     super('eval', {
-      aliases: ['eval', 'e'],
+      aliases: ['eval'],
       description: "Evaluates a command",
       usage: "eval <nodejs code>",
       category: "Misc",
