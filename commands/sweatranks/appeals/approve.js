@@ -11,6 +11,7 @@ class ApproveCommand extends CustomCommand {
       usage: "approve <appeal number> <reason>",
       category: "Sweatranks",
       channel: "guild",
+      permittedRoles: ["King of Sweats", "Advisor"],
       args: [{
         id: "appealNum"
       },
@@ -29,7 +30,7 @@ class ApproveCommand extends CustomCommand {
         .setColor("#42f563")
         .setTitle(`Appeal #${args.appealNum} - Approved`)
         .spliceFields(0, 25)
-        .addField(`Reasoning from ${message.member.nickname}`, args.reason);
+        .addField(`Reasoning from ${message.member.nickname}`, args.reason ? args.reason : "None");
       appealMessage.edit(newEmbed);
     });
   }
