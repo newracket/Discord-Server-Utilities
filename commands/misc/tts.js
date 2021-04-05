@@ -1,6 +1,8 @@
 const gTTS = require("gtts");
-const fs = require("fs");
+const JSONFileManager = require("../../modules/jsonfilemanager");
 const { CustomCommand } = require("../../modules/custommodules");
+
+const nicksJSON = new JSONFileManager("nicks");
 
 class TtsCommand extends CustomCommand {
   constructor() {
@@ -19,6 +21,8 @@ class TtsCommand extends CustomCommand {
   }
 
   exec(message, args) {
+    const nicks = nicksJSON.get();
+
     args = args.message.split(" ");
     if (args[0].includes("tts")) {
       args.splice(0, 1);
@@ -43,7 +47,6 @@ class TtsCommand extends CustomCommand {
           voiceChannel = message.guild.channels.cache.find(channel => channel.id == "633161578363224070");
         }
 
-        const nicks = JSON.parse(fs.readFileSync("nicks.json"));
         const nickname = nicks[message.author.id] != undefined ? nicks[message.author.id] : guild.member(message.author).nickname;
         const speech = nickname + " says " + args.map(e => {
           if (e[0] == "<" && e[1] == ":" && e[e.length - 1] == ">") {

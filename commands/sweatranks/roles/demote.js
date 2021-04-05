@@ -1,5 +1,5 @@
-const { sweatranks, casranks } = require("../../ranks.json")
-const { CustomCommand } = require("../../modules/custommodules");
+const { sweatranks, casranks } = require("../../../jsons/ranks.json")
+const { CustomCommand } = require("../../../modules/custommodules");
 
 class DemoteCommand extends CustomCommand {
   constructor() {
@@ -11,15 +11,6 @@ class DemoteCommand extends CustomCommand {
       channel: "guild",
       permittedRoles: ["King of Sweats", "Advisor"]
     });
-  }
-
-  userPermissions(message) {
-    if (!message.member.roles.cache.some(role => ["King of Sweats", "Advisor"].includes(role.name)) && message.member.id != message.client.ownerID) {
-      message.channel.send("You do not have permissions to promote someone.")
-      return "King of Sweats";
-    }
-
-    return null;
   }
 
   exec(message) {

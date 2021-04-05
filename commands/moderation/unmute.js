@@ -1,5 +1,7 @@
-const fs = require("fs");
+const JSONFileManager = require("../../modules/jsonfilemanager");
 const { CustomCommand } = require("../../modules/custommodules");
+
+const muteAdminJSON = new JSONFileManager("muteadmin");
 
 class UnmuteCommand extends CustomCommand {
   constructor() {
@@ -21,10 +23,10 @@ class UnmuteCommand extends CustomCommand {
   async muteMember(member) {
     const roles = await member.guild.roles.fetch();
     await member.roles.remove(roles.cache.find(role => role.name == "Muted"));
-    const mutedAdmins = JSON.parse(fs.readFileSync("muteadmin.json"));
+    const mutedAdmins = muteAdminJSON.get();
 
     if (mutedAdmins.includes(member.id)) {
-      fs.writeFileSync("muteadmin.json", JSON.stringify(mutedAdmins.filter(id => id != member.id)));
+      muteAdminJSON.set(mutedAdmins.filter(id => id != member.id));
       await member.roles.add(roles.cache.find(role => role.name == "Admin"));
     }
   }

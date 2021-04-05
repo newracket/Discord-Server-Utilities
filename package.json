@@ -14,7 +14,8 @@
     "sqlite3": "^5.0.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon . --ignore jsons"
   },
   "author": "",
   "license": "ISC"

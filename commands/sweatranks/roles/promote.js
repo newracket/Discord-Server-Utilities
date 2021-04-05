@@ -1,8 +1,9 @@
-const fs = require("fs");
-const { sweatranks, casranks } = require("../../ranks.json");
-const { strikesChannelId } = require("../../config.json");
-const strikes = JSON.parse(fs.readFileSync("./strikes.json"));
-const { CustomCommand } = require("../../modules/custommodules");
+const { sweatranks, casranks } = require("../../../jsons/ranks.json");
+const { strikesChannelId } = require("../../../config.json");
+const JSONFileManager = require("../../../modules/jsonfilemanager");
+const { CustomCommand } = require("../../../modules/custommodules");
+
+const strikesJSON = new JSONFileManager("strikes");
 
 class PromoteCommand extends CustomCommand {
   constructor() {
@@ -39,11 +40,15 @@ class PromoteCommand extends CustomCommand {
   }
 
   promoteMember(message, member, roles, repeatTimes) {
+    const strikes = strikesJSON.get();
+
     if (repeatTimes == 0) {
       const rolesDir = message.guild.roles.cache.map(role => { return { name: role.name, id: role.id } });
       roles = roles.map(role => rolesDir.find(r => r.name == role).id);
 
-      return member.roles.set(roles).then(newMember => message.channel.send(this.messagesToSend[newMember.nickname].join("\n")));
+      // message.channel.send(this.messagesToSend[member.nickname].join("\n"))
+      return member.roles.set(roles).then(newMember => message.channel.send(this.messagesToSend[newMember.nickname].join("\n")))
+        .catch(err => message.channel.send(`Error: ${err}`));
     }
 
     if (casranks.filter(rank => roles.includes(rank)).length > 0) {
@@ -55,7 +60,7 @@ class PromoteCommand extends CustomCommand {
             strikes[member.id] = { "messageId": newMessage.id, "value": 1 };
             this.messagesToSend[member.nickname].push(`<@${member.id}> was given his first strike.`);
 
-            fs.writeFileSync("strikes.json", JSON.stringify(strikes));
+            strikesJSON.set(strikes);
 
             return this.promoteMember(message, member, roles, repeatTimes - 1);
           });
@@ -71,14 +76,14 @@ class PromoteCommand extends CustomCommand {
 
               roles.splice(roles.indexOf(lastRank), 1);
               delete strikes[member.id];
-              fs.writeFileSync("strikes.json", JSON.stringify(strikes));
+              strikesJSON.set(strikes);
 
               return this.promoteMember(message, member, roles, repeatTimes - 1);
             }
             else {
               newMessage.edit(`${member.nickname} - ${strikes[member.id].value}`);
               this.messagesToSend[member.nickname].push(`<@${member.id}> was given his second strike.`);
-              fs.writeFileSync("strikes.json", JSON.stringify(strikes));
+              strikesJSON.set(strikes);
 
               return this.promoteMember(message, member, roles, repeatTimes - 1);
             }

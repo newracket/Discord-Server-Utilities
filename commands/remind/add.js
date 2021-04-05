@@ -6,7 +6,7 @@ const { CustomCommand } = require("../../modules/custommodules");
 class AddCommand extends CustomCommand {
   constructor() {
     super('add', {
-      aliases: ['add', 'a'],
+      aliases: ['add', 'remind'],
       description: "Adds reminder",
       usage: "add <reminder type (dm, everyone, role name, none)> <reminder date> <reminder content>",
       category: "Remind"
