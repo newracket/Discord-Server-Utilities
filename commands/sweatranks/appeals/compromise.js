@@ -11,7 +11,7 @@ class CompromiseCommand extends CustomCommand {
       usage: "compromise <appeal number> <compromise text>",
       category: "Sweatranks",
       channel: "guild",
-      permittedRoles: ["King of Sweats", "Advisor"],
+      permittedRoles: ["King of Sweats", "Royal Advisor"],
       args: [{
         id: "appealNum"
       },

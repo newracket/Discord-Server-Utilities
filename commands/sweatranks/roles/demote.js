@@ -9,7 +9,7 @@ class DemoteCommand extends CustomCommand {
       usage: "demote <mention users> <amount> OR demote <user nicknames> <amount>",
       category: "Sweatranks",
       channel: "guild",
-      permittedRoles: ["King of Sweats", "Advisor"]
+      permittedRoles: ["King of Sweats", "Royal Advisor"]
     });
   }
 

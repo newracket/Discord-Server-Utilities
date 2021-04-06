@@ -9,6 +9,7 @@ class RemoveCasOpp extends CustomCommand {
       description: "Removes cas role opportunity from list",
       usage: "removecasopp <id>",
       category: "Sweatranks",
+      permittedRoles: ["King of Sweats", "Royal Advisor"]
     });
   }
 

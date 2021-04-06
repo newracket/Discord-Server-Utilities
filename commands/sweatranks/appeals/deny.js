@@ -11,7 +11,7 @@ class DenyCommand extends CustomCommand {
       usage: "deny <appeal number> <reason>",
       category: "Sweatranks",
       channel: "guild",
-      permittedRoles: ["King of Sweats", "Advisor"],
+      permittedRoles: ["King of Sweats", "Royal Advisor"],
       args: [{
         id: "appealNum"
       },

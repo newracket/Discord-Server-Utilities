@@ -9,7 +9,7 @@ class AddCasOppCommand extends CustomCommand {
       description: "Adds cas role opportunity to list",
       usage: "addcasopp <cas role opportunity> <days limit>",
       category: "Sweatranks",
-      permittedRoles: ["King of Sweats", "Advisor"]
+      permittedRoles: ["King of Sweats", "Royal Advisor"]
     });
   }
 
