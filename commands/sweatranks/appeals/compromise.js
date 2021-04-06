@@ -31,7 +31,7 @@ class CompromiseCommand extends CustomCommand {
         .setTitle(`Appeal #${args.appealNum} - Compromised`)
         .spliceFields(0, 25)
         .addField(`Reasoning from ${message.member.nickname}`, args.reason ? args.reason : "None");
-      appealMessage.edit(newEmbed);
+      appealMessage.edit(newEmbed).then(() => message.delete());
     });
   }
 }
