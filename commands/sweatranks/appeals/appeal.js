@@ -30,7 +30,8 @@ class AppealCommand extends CustomCommand {
       description: args.appealText
     });
 
-    message.channel.send(embedOutput).then(newMessage => appealsJSON.setValue(appealsJSON.numKeys() + 1, { channel: newMessage.channel.id, id: newMessage.id }));
+    message.channel.send(embedOutput).then(newMessage => appealsJSON.setValue(appealsJSON.numKeys() + 1, { channel: newMessage.channel.id, id: newMessage.id }))
+      .then(() => message.delete());
   }
 }
 

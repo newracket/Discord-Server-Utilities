@@ -5,3 +5,5 @@ package-lock.json
 config.json
 reminders.db
 strikes.json
+appeals.json
+muteadmin.json
