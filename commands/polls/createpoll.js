@@ -121,7 +121,7 @@ class CreatePollCommand extends CustomCommand {
       const newEmbed = reaction.message.embeds[0]
         .spliceFields(3, 25)
         .addField("Select one option:", storedpolls[storedReactionObjIndex].votes.map((storedReactionObj, i) =>
-          `:${numDictionary[i]}: ${storedReactionObj.name} - ${storedReactionObj.membersVoted.length} votes`).join("\n"));
+          `${emoteDictionary[i]} ${storedReactionObj.name} - ${storedReactionObj.membersVoted.length} votes`).join("\n"));
 
       reaction.message.edit(newEmbed);
     }
