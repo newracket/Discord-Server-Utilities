@@ -10,17 +10,11 @@ class CreatePollCommand extends CustomCommand {
       aliases: ['createpoll', 'cp'],
       description: "Creates a poll for people to react on",
       usage: "createpoll <question>, <date to end>, <options separated by spaces or commas>",
-      category: "Polls",
-      args: [
-        {
-          id: "text",
-          match: "content"
-        }
-      ]
+      category: "Polls"
     });
   }
 
-  async exec(message, args) {
+  async exec(message) {
     const numDictionary = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
     const emoteDictionary = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
 
@@ -113,8 +107,7 @@ class CreatePollCommand extends CustomCommand {
     const alreadyVotedMembers = storedPoll.votes.map(option => option.membersVoted).flat();
 
     await reaction.fetch();
-
-    if (alreadyVotedMembers.filter(e => user.id).length >= storedpolls[storedReactionObjIndex].choicesPerPerson && reactionType == "add") {
+    if (alreadyVotedMembers.filter(e => e == user.id).length >= storedpolls[storedReactionObjIndex].choicesPerPerson && reactionType == "add") {
       return reaction.users.remove(user).then(() => user.send("You have already voted in this poll."));
     }
 
