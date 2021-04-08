@@ -1,4 +1,7 @@
 const { Listener } = require('discord-akairo');
+const JSONFileManager = require("../modules/jsonfilemanager");
+
+const storedpollsJSON = new JSONFileManager("storedpolls");
 
 class ReadyListener extends Listener {
   constructor() {
@@ -16,6 +19,10 @@ class ReadyListener extends Listener {
     checkReminders.execute(this.client);
     const _this = this;
     setInterval(function () { checkReminders.execute(_this.client) }, 60000);
+
+    storedpollsJSON.get().filter(e => !e.ended).forEach(poll => {
+      this.client.channels.cache.get(poll.channel).messages.fetch(poll.id).then(() => console.log("Message fetched"));
+    });
   }
 }
 

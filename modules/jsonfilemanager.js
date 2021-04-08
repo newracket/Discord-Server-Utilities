@@ -30,6 +30,12 @@ class JSONFileManager {
   numKeys() {
     return Object.keys(this.get()).length;
   }
+
+  append(value) {
+    const currentVal = this.get();
+    currentVal.push(value);
+    this.set(currentVal);
+  }
 }
 
 module.exports = JSONFileManager;

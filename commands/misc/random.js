@@ -4,8 +4,8 @@ class RandomCommand extends CustomCommand {
   constructor() {
     super('random', {
       aliases: ['random', 'rand'],
-      description: "Randomly ",
-      usage: "random <options to randomly choose from, separated by a comma>",
+      description: "Randomly chooses selection from given choices",
+      usage: "random <options to randomly choose from, separated by spaces or commas>",
       category: "Misc",
       args: [
         {

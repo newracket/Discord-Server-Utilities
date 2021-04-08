@@ -8,7 +8,7 @@ class ServerHelperClient extends AkairoClient {
       ownerID: "301200493307494400"
     }, {
       ws: {
-        intents: ["GUILDS", "GUILD_PRESENCES", "GUILD_MESSAGES", "GUILD_VOICE_STATES", "DIRECT_MESSAGES"]
+        intents: ["GUILDS", "GUILD_PRESENCES", "GUILD_MESSAGES", "GUILD_VOICE_STATES", "DIRECT_MESSAGES", "GUILD_MESSAGE_REACTIONS"]
       }
     });
 
