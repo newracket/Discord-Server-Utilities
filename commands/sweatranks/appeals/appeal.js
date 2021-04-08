@@ -30,6 +30,10 @@ class AppealCommand extends CustomCommand {
       description: args.appealText
     });
 
+    if (message.attachments.size > 0) {
+      embedOutput.setImage(message.attachments.first().proxyURL);
+    }
+
     message.channel.send(embedOutput).then(newMessage => appealsJSON.setValue(appealsJSON.numKeys() + 1, { channel: newMessage.channel.id, id: newMessage.id }))
       .then(() => message.delete());
   }
