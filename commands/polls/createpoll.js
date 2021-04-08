@@ -16,7 +16,7 @@ class CreatePollCommand extends CustomCommand {
 
   async exec(message) {
     const numDictionary = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-    const emoteDictionary = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
+    const emoteDictionary = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🇦", "🇧", "🇨", "🇩", "🇪", "🇫", "🇬", "🇭", "🇮", "🇯", "🇰", "🇱", "🇲", "🇳", "🇴", "🇵", "🇶", "🇷", "🇸", "🇹", "🇺", "🇻", "🇼", "🇽", "🇾", "🇿"];
 
     const options = {};
     const questionsToAsk = [{
@@ -78,7 +78,7 @@ class CreatePollCommand extends CustomCommand {
         inline: true
       }, {
         name: "Select your choices:",
-        value: pollChoices.slice(0, 9).map((pollOption, i) => `:${numDictionary[i]}: ${pollOption} - 0 votes`).join("\n")
+        value: pollChoices.map((pollOption, i) => `${emoteDictionary[i]} ${pollOption} - 0 votes`).join("\n")
       }],
       thumbnail: {
         url: message.guild.iconURL()
@@ -98,7 +98,7 @@ class CreatePollCommand extends CustomCommand {
     if (user == this.client.user) return;
 
     const numDictionary = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-    const emoteDictionary = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
+    const emoteDictionary = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🇦", "🇧", "🇨", "🇩", "🇪", "🇫", "🇬", "🇭", "🇮", "🇯", "🇰", "🇱", "🇲", "🇳", "🇴", "🇵", "🇶", "🇷", "🇸", "🇹", "🇺", "🇻", "🇼", "🇽", "🇾", "🇿"];
     const storedpolls = storedpollsJSON.get();
     const storedReactionObjIndex = storedpolls.findIndex(e => e.id == reaction.message.id);
     const storedPoll = storedpolls[storedReactionObjIndex];
