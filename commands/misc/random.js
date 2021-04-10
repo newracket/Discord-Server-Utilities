@@ -17,6 +17,8 @@ class RandomCommand extends CustomCommand {
   }
 
   exec(message, args) {
+    if (!args.options) args.options = "all";
+
     let randomOptions = args.options.split(",");
     if (args.options == "all") {
       randomOptions = ["aniket", "aaron", "achintya", "alan", "david", "eric", "gio", "john", "justin", "mena", "oscar", "skyler"];
