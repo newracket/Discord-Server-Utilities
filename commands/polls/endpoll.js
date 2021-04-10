@@ -6,7 +6,7 @@ const storedpollsJSON = new JSONFileManager("storedpolls");
 class CreatePollCommand extends CustomCommand {
   constructor() {
     super('endpoll', {
-      aliases: ['endpoll', 'ep'],
+      aliases: ['endpoll'],
       description: "Ends a poll",
       usage: "endpoll <poll number>",
       category: "Polls",
