@@ -8,7 +8,7 @@ class CreateRoleCommand extends CustomCommand {
       usage: "createrole <role name> <role color>",
       category: "Moderation",
       channel: "guild",
-      userPermissions: ['ADMINISTRATOR']
+      userPermissions: ['MANAGE_ROLES']
     });
   }
 

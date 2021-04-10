@@ -8,7 +8,7 @@ class RemoveRoleCommand extends CustomCommand {
       usage: "removerole <role name>",
       category: "Moderation",
       channel: "guild",
-      userPermissions: ['ADMINISTRATOR']
+      userPermissions: ['MANAGE_ROLES']
     });
   }
 
@@ -20,6 +20,9 @@ class RemoveRoleCommand extends CustomCommand {
       return message.channel.send("This role does not exist.");
     }
     else if (role.length > 1) {
+      const highestRole = message.member.roles.highest;
+      if (highestRole.comparePositionTo(role) <= 0) return message.channel.send("The role you are trying to assign is higher than your highest role.");
+
       return message.channel.send("Multiple roles with this name exist.")
     }
 

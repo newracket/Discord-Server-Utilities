@@ -27,7 +27,7 @@ class GrantRoleCommand extends CustomCommand {
       const role = roles.cache.find(role => role.name.toLowerCase() == currentRoleName.trim().toLowerCase());
       if (role) {
         const highestRole = message.member.roles.highest;
-        if (highestRole.comparePositionTo(role) < 0) return message.channel.send("The role you are trying to assign is higher than your highest role.");
+        if (highestRole.comparePositionTo(role) <= 0) return message.channel.send("The role you are trying to assign is higher than your highest role.");
 
         const users = words.splice(i + 1);
         const membersToModify = [...message.mentions.members.array(), ...users.map(user => members.find(m => [m.id, m.nickname, m.user.username].includes(user))).filter(e => e)];
