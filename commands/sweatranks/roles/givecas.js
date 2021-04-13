@@ -9,7 +9,7 @@ class GiveCasCommand extends CustomCommand {
       usage: "givecas <mention members> OR givecas <member nicknames>",
       category: "Sweatranks",
       channel: "guild",
-      permittedRoles: ["King of Sweats", "Royal Advisor"]
+      permittedRoles: ["726565862558924811", "820159352215961620"],
     });
   }
 

@@ -13,7 +13,7 @@ class PromoteCommand extends CustomCommand {
       usage: "promote <mention members> <amount> OR promote <member nicknames> <amount>",
       category: "Sweatranks",
       channel: "guild",
-      permittedRoles: ["King of Sweats", "Royal Advisor"]
+      permittedRoles: ["726565862558924811", "820159352215961620"],
     });
   }
 

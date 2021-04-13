@@ -11,7 +11,7 @@ class ApproveCommand extends CustomCommand {
       usage: "approve <appeal number> <reason>",
       category: "Sweatranks",
       channel: "guild",
-      permittedRoles: ["King of Sweats", "Royal Advisor"],
+      permittedRoles: ["726565862558924811", "820159352215961620"],
       args: [{
         id: "appealNum"
       },
