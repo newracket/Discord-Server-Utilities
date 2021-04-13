@@ -82,10 +82,11 @@ class CustomCommandHandler extends CommandHandler {
         : typeof ignorer === 'function'
           ? ignorer(message, command)
           : message.author.id === ignorer;
+      const roles = await message.guild.roles.fetch();
 
       if (!isIgnored) {
         if (command.permittedRoles.filter(permittedRole => message.member.roles.cache.some(role => role.id == permittedRole || role.name == permittedRole)).length == 0) {
-          this.emit("missingPermissions", message, command, 'role', command.permittedRoles);
+          this.emit("missingPermissions", message, command, 'role', command.permittedRoles.map(r => roles.cache.find(role => role.name == r || role.id == r).name));
           return true;
         }
       }
