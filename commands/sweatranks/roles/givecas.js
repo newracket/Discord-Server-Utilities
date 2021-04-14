@@ -15,9 +15,6 @@ class GiveCasCommand extends CustomCommand {
 
   exec(message) {
     const args = message.content.split(" ").slice(1);
-    if (!["greektoxic", "newracket", "Fury"].includes(message.author.username)) {
-      return message.channel.send("You do not have permissions to promote someone.");
-    }
 
     message.guild.members.fetch()
       .then(guildMembers => {
