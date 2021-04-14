@@ -36,7 +36,7 @@ class GrantRoleCommand extends CustomCommand {
         });
 
         if (membersToModify.length == 0) return message.channel.send("No users found.");
-        return message.channel.send(`${role.name} has been given to: ${membersToModify.map(e => e.displayName).join(", ")}.`);
+        return message.channel.send(`${role.name} has been given to: ${membersToModify.join(", ")}.`);
       }
     };
 
