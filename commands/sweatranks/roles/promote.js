@@ -46,8 +46,7 @@ class PromoteCommand extends CustomCommand {
       const rolesDir = message.guild.roles.cache.map(role => { return { name: role.name, id: role.id } });
       roles = roles.map(role => rolesDir.find(r => r.name == role).id);
 
-      // message.channel.send(this.messagesToSend[member.nickname].join("\n"))
-      return member.roles.set(roles).then(newMember => message.channel.send(this.messagesToSend[newMember.nickname].join("\n")))
+      return member.roles.set(roles).then(newMember => message.channel.send(this.messagesToSend[newMember.nickname].slice(-1)[0]))
         .catch(err => message.channel.send(`Error: ${err}`));
     }
 
@@ -105,8 +104,7 @@ class PromoteCommand extends CustomCommand {
         return this.promoteMember(message, member, roles, repeatTimes - 1);
       }
       else {
-        this.promoteMember(message, member, roles, 0);
-        return this.messagesToSend[member.nickname].push("Error. This person is already maximum sweat.");
+        return this.promoteMember(message, member, roles, 0);
       }
     }
   }
