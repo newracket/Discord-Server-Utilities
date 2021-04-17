@@ -29,8 +29,7 @@ class ApproveCommand extends CustomCommand {
       const newEmbed = appealMessage.embeds[0]
         .setColor("#42f563")
         .setTitle(`Appeal #${args.appealNum} - Approved`)
-        .spliceFields(0, 25)
-        .addField(`Reasoning from ${message.member.nickname}`, args.reason ? args.reason : "None");
+        .addField(`Reasoning for approval from ${message.member.nickname}`, args.reason ? args.reason : "None");
       appealMessage.edit(newEmbed).then(() => message.delete());
     });
   }

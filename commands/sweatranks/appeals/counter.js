@@ -3,20 +3,19 @@ const JSONFileManager = require("../../../modules/jsonfilemanager");
 
 const appealsJSON = new JSONFileManager("appeals");
 
-class DenyCommand extends CustomCommand {
+class CounterCommand extends CustomCommand {
   constructor() {
-    super('deny', {
-      aliases: ['deny', 'reject'],
-      description: "Denies an appeal",
-      usage: "deny <appeal number> <reason>",
+    super('counter', {
+      aliases: ['counter'],
+      description: "Counters an appeal",
+      usage: "counter <appeal number> <counter>",
       category: "Sweatranks",
       channel: "guild",
-      permittedRoles: ["726565862558924811", "820159352215961620"],
       args: [{
         id: "appealNum"
       },
       {
-        id: "reason",
+        id: "counter",
         match: "restContent"
       }]
     });
@@ -27,13 +26,13 @@ class DenyCommand extends CustomCommand {
 
     message.guild.channels.cache.get(appealObj.channel).messages.fetch(appealObj.id).then(appealMessage => {
       const newEmbed = appealMessage.embeds[0]
-        .setColor("#ff1212")
-        .setTitle(`Appeal #${args.appealNum} - Denied`)
-        .addField(`Reasoning for denial from ${message.member.nickname}`, args.reason ? args.reason : "None");
+        .setColor("#abd5ff")
+        .setTitle(`Appeal #${args.appealNum} - Awaiting Approval`)
+        .addField(`Counter from ${message.member.nickname}`, args.counter ? args.counter : "None");
 
       appealMessage.edit(newEmbed).then(() => message.delete());
     });
   }
 }
 
-module.exports = DenyCommand;
+module.exports = CounterCommand;

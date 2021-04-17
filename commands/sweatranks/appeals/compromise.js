@@ -29,8 +29,7 @@ class CompromiseCommand extends CustomCommand {
       const newEmbed = appealMessage.embeds[0]
         .setColor("#ffe436")
         .setTitle(`Appeal #${args.appealNum} - Compromised`)
-        .spliceFields(0, 25)
-        .addField(`Reasoning from ${message.member.nickname}`, args.reason ? args.reason : "None");
+        .addField(`Reasoning for compromise from ${message.member.nickname}`, args.reason ? args.reason : "None");
       appealMessage.edit(newEmbed).then(() => message.delete());
     });
   }
