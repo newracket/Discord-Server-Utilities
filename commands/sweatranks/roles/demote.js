@@ -13,7 +13,7 @@ class DemoteCommand extends CustomCommand {
     });
   }
 
-  exec(message) {
+  async exec(message) {
     const args = message.content.split(" ").slice(1);
     let repeatTimes = 1;
 
@@ -25,22 +25,22 @@ class DemoteCommand extends CustomCommand {
     }
 
     this.messagesToSend = {};
-    message.guild.members.fetch()
-      .then(guildMembers => {
-        const membersToModify = args.map(arg => guildMembers.find(member => member.nickname == arg)).filter(e => e != undefined);
-        [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(member => {
-          this.messagesToSend[member.nickname] = [];
-          this.demoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
-        });
-      });
+    const guildMembers = await message.guild.members.fetch();
+
+    const membersToModify = args.map(arg => guildMembers.find(member => member.nickname == arg)).filter(e => e != undefined);
+    [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(async member => {
+      this.messagesToSend[member.nickname] = [];
+      await this.demoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
+    });
   }
 
-  demoteMember(message, member, roles, repeatTimes) {
+  async demoteMember(message, member, roles, repeatTimes) {
     if (repeatTimes == 0) {
       const rolesDir = message.guild.roles.cache.map(role => { return { name: role.name, id: role.id } });
       roles = roles.map(role => rolesDir.find(r => r.name == role).id);
 
-      return member.roles.set(roles).then(newMember => message.channel.send(this.messagesToSend[newMember.nickname].join("\n")));
+      await member.roles.set(roles);
+      return await message.channel.send(this.messagesToSend[member.nickname].join("\n"), { split: true });
     }
 
     const lastRank = sweatranks.filter(rank => roles.includes(rank)).pop();
