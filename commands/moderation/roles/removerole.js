@@ -4,7 +4,7 @@ class GrantRoleCommand extends CustomCommand {
   constructor() {
     super('removerole', {
       aliases: ['removerole', 'rr'],
-      description: "Grants a role to a user",
+      description: "Removes a role from a user",
       usage: "removerole <role name, role id, or role ping> <user nicknames, usernames, or pings>",
       category: "Moderation",
       channel: "guild",
