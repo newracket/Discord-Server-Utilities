@@ -18,7 +18,7 @@ class GiveCasCommand extends CustomCommand {
 
     message.guild.members.fetch()
       .then(guildMembers => {
-        const membersToModify = args.map(arg => guildMembers.find(member => member.nickname == arg)).filter(e => e != undefined);
+        const membersToModify = args.map(arg => guildMembers.find(member => member.displayName.toLowerCase() == arg.toLowerCase())).filter(e => e != undefined);
         [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(member => {
           const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
 
