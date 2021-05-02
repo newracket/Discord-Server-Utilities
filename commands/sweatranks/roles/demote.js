@@ -30,6 +30,7 @@ class DemoteCommand extends CustomCommand {
     const membersToModify = args.map(arg => guildMembers.find(member => member.displayName.toLowerCase() == arg.toLowerCase())).filter(e => e != undefined);
     [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(async member => {
       this.messagesToSend[member.nickname] = [];
+      await member.fetch(true);
       await this.demoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
     });
   }
