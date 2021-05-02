@@ -14,7 +14,7 @@ class RemoveRoleCommand extends CustomCommand {
 
   async exec(message) {
     const roleName = message.content.split(" ").slice(1).join(" ");
-    const role = message.guild.roles.cache.filter(role => role.name == roleName).array();
+    const role = message.guild.roles.cache.filter(role => role.name.toLowerCase() == roleName.toLowerCase()).array();
 
     if (!role) {
       return message.channel.send("This role does not exist.");

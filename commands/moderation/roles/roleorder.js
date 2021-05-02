@@ -14,25 +14,9 @@ class RoleOrderCommand extends CustomCommand {
   async exec(message) {
     const roles = (await message.guild.roles.fetch()).cache.filter(role => role.position != 0);
     roles.sort((a, b) => b.comparePositionTo(a));
-    const messageToSend = roles.map(role => `${role.position}: ${role.name}`);
+    const messageToSend = roles.map(role => `${role.position}: ${role.name} - ${role.hexColor}`);
 
-    const messages = [];
-    let currentMessage = "";
-
-    messageToSend.forEach(m => {
-      if (currentMessage.length < 1950 - m.length) {
-        currentMessage += m + "\n";
-      }
-      else {
-        messages.push(currentMessage);
-        currentMessage = "";
-      }
-    });
-    messages.push(currentMessage);
-
-    messages.forEach(m => {
-      message.channel.send(m);
-    });
+    message.channel.send(messageToSend.join("\n"), { split: true });
   }
 }
 

@@ -11,13 +11,14 @@ class RolePositionCommand extends CustomCommand {
       args: [{
         id: "message",
         match: "content"
-      }]
+      }],
+      userPermissions: ['MANAGE_ROLES']
     });
   }
 
   async exec(message, args) {
     const roles = (await message.guild.roles.fetch()).cache;
-    const role = roles.find(r => [r.id, r.name].includes(args.message.split(" ").slice(0, -1).join(" ").trim()));
+    const role = roles.find(r => [r.id, r.name.toLowerCase()].includes(args.message.split(" ").slice(0, -1).join(" ").trim().toLowerCase()));
 
     role.setPosition(parseInt(args.message.split(" ").slice(-1)[0]))
       .then(newRole => message.channel.send("The new position of your role is: " + newRole.position))
