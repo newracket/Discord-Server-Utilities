@@ -1,6 +1,6 @@
 const { CustomCommand } = require("../../../modules/custommodules");
 
-class RolePositionCommand extends CustomCommand {
+class HoistCommand extends CustomCommand {
   constructor() {
     super('hoist', {
       aliases: ['hoist'],
@@ -26,4 +26,4 @@ class RolePositionCommand extends CustomCommand {
   }
 }
 
-module.exports = RolePositionCommand;
+module.exports = HoistCommand;
