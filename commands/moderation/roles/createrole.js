@@ -19,7 +19,7 @@ class CreateRoleCommand extends CustomCommand {
 
     if (!new RegExp(/^#[0-9A-F]{6}$/i).test(roleColor) && !colorsList.includes(roleColor.toLowerCase())) {
       message.channel.send("No color specified, will use default color");
-      message.content.split(" ").slice(1).join(" ");
+      roleName = message.content.split(" ").slice(1).join(" ");
     }
 
     message.guild.roles.create({ data: { name: roleName, color: roleColor } })
