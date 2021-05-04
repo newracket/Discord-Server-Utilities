@@ -21,7 +21,7 @@ class RandomCommand extends CustomCommand {
 
     let randomOptions = args.options.split(",");
     if (args.options == "all") {
-      randomOptions = ["aniket", "aaron", "achintya", "alan", "david", "eric", "gio", "john", "justin", "mena", "oscar", "skyler"];
+      randomOptions = ["aniket", "aaron", "achintya", "alan", "david", "eric", "gio", "john", "justin", "mena", "oscar"];
     }
     else if (!args.options.includes(",")) {
       randomOptions = args.options.split(" ");
