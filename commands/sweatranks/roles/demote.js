@@ -27,12 +27,21 @@ class DemoteCommand extends CustomCommand {
     this.messagesToSend = {};
     const guildMembers = await message.guild.members.fetch();
 
-    const membersToModify = args.map(arg => guildMembers.find(member => member.displayName.toLowerCase() == arg.toLowerCase())).filter(e => e != undefined);
-    [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(async member => {
-      this.messagesToSend[member.nickname] = [];
-      await member.fetch(true);
-      await this.demoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
-    });
+    if (message.mentions.everyone || args.includes("everyone")) {
+      guildMembers.filter(member => !member.user.bot && member.roles.cache.has("775799853077758053")).forEach(async member => {
+        this.messagesToSend[member.nickname] = [];
+        await member.fetch(true);
+        this.demoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
+      });
+    }
+    else {
+      const membersToModify = args.map(arg => guildMembers.find(member => member.displayName.toLowerCase() == arg.toLowerCase())).filter(e => e != undefined);
+      [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(async member => {
+        this.messagesToSend[member.nickname] = [];
+        await member.fetch(true);
+        await this.demoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
+      });
+    }
   }
 
   async demoteMember(message, member, roles, repeatTimes) {

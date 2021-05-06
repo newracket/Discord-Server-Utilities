@@ -23,7 +23,7 @@ class HelpCommand extends CustomCommand {
       if (!commandsObject) {
         commandsObject = this.handler.modules.filter(command => command.id.toLowerCase() == args.category.toLowerCase() || command.aliases.map(e => e.toLowerCase()).includes(args.category.toLowerCase()));
 
-        if (commandsObject.size == 0) return message.channel.send("There is no command or channel with that name");
+        if (commandsObject.size == 0) return message.channel.send("There is no command or category with that name");
       }
 
       embedOutput = this.client.util.embed({ color: '#0099ff', title: `Server Helper Bot ${commandsObject.first().categoryID} Commands`, footer: { text: `Do ${this.handler.prefix}help <category name> or ${this.handler.prefix}help <command name> to get more details` } });
