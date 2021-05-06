@@ -39,7 +39,7 @@ class ReadyListener extends Listener {
       const member = guildMembers.find(member => member.displayName == activeMembers[randomMemberIndex]);
 
       if (member) {
-        if (randomNum <= 12) {
+        if (randomNum <= 15) {
           new PromoteCommand().promoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
           me.send(`${member.displayName} has been promoted`);
         }
