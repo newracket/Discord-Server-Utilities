@@ -20,7 +20,7 @@ class UpdateBotCommand extends CustomCommand {
   }
 
   exec(message, args) {
-    exec(`sudo git pull https://${username}:${password}@github.com/newracket/TTS-Bot.git`, (error, data) => {
+    exec(`sudo git pull https://${username}:${password}@github.com/newracket/TTS-Bot.git; sudo pm2 restart 0`, (error, data) => {
       if (error) {
         return message.channel.send(error.message);
       }
