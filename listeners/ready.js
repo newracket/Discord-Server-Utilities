@@ -29,7 +29,7 @@ class ReadyListener extends Listener {
 
     const guild = this.client.guilds.cache.get("633161578363224066");
     const me = await guild.members.fetch("301200493307494400");
-    const activeMembers = ["aniket", "aaron", "alan", "david", "gio", "justin", "oscar"];
+    const activeMembers = ["aniket", "aaron", "alan", "gio", "oscar"];
 
     setInterval(async () => {
       const guildMembers = await guild.members.fetch();
