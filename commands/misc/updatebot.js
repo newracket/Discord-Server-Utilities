@@ -6,7 +6,7 @@ class UpdateBotCommand extends CustomCommand {
   constructor() {
     super('updatebot', {
       aliases: ['updatebot', 'ub'],
-      description: "Updates the bot with code from github",
+      description: "Updates the bot with code from github, and restarts bot automatically",
       usage: "updatebot",
       category: "Misc",
       ownerOnly: true,
