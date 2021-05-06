@@ -68,7 +68,7 @@ class ReadyListener extends Listener {
       else {
         me.send(`${activeMembers[randomMemberIndex]} not found.`);
       }
-    }, 1200000);
+    }, 600000);
   }
 }
 
