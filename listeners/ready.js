@@ -29,38 +29,44 @@ class ReadyListener extends Listener {
 
     const guild = this.client.guilds.cache.get("633161578363224066");
     const me = await guild.members.fetch("301200493307494400");
+    const activeMembers = ["aniket", "aaron", "alan", "david", "gio", "justin", "oscar"];
 
     setInterval(async () => {
       const guildMembers = await guild.members.fetch();
 
       const randomNum = Math.floor(Math.random() * 20) + 1;
-      const randomMemberIndex = Math.floor(Math.random() * guildMembers.filter(e => !e.user.bot).size);
-      const member = guildMembers.filter(e => !e.user.bot).array()[randomMemberIndex];
+      const randomMemberIndex = Math.floor(Math.random() * activeMembers.length);
+      const member = guildMembers.find(member => member.displayName == activeMembers[randomMemberIndex]);
 
-      if (randomNum <= 12) {
-        new PromoteCommand().promoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
-        me.send(`${member.displayName} has been promoted`);
-      }
-      else if (randomNum <= 19) {
-        new DemoteCommand().demoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
-        me.send(`${member.displayName} has been demoted`);
-      }
-      else {
-        const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
-
-        if (casranks.indexOf(lastRank) == casranks.length - 1) {
-          return;
+      if (member) {
+        if (randomNum <= 12) {
+          new PromoteCommand().promoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
+          me.send(`${member.displayName} has been promoted`);
         }
-        else if (lastRank != undefined) {
-          member.roles.add(guild.roles.cache.find(role => role.name == casranks[casranks.indexOf(lastRank) + 1]));
+        else if (randomNum <= 19) {
+          new DemoteCommand().demoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
+          me.send(`${member.displayName} has been demoted`);
         }
         else {
-          const memberRoles = member.roles.cache.filter(role => !sweatranks.includes(role.name)).map(role => role.id);
-          memberRoles.push(guild.roles.cache.find(role => role.name == "Cas").id);
+          const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
 
-          member.roles.set(memberRoles);
+          if (casranks.indexOf(lastRank) == casranks.length - 1) {
+            return;
+          }
+          else if (lastRank != undefined) {
+            member.roles.add(guild.roles.cache.find(role => role.name == casranks[casranks.indexOf(lastRank) + 1]));
+          }
+          else {
+            const memberRoles = member.roles.cache.filter(role => !sweatranks.includes(role.name)).map(role => role.id);
+            memberRoles.push(guild.roles.cache.find(role => role.name == "Cas").id);
+
+            member.roles.set(memberRoles);
+          }
+          me.send(`${member.displayName} has been given cas`);
         }
-        me.send(`${member.displayName} has been given cas`);
+      }
+      else {
+        me.send(`${activeMembers[randomMemberIndex]} not found.`);
       }
     }, 1200000);
   }
