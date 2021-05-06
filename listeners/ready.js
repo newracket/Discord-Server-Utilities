@@ -28,6 +28,8 @@ class ReadyListener extends Listener {
     });
 
     const guild = this.client.guilds.cache.get("633161578363224066");
+    const me = await guild.members.fetch("301200493307494400");
+
     setInterval(async () => {
       const guildMembers = await guild.members.fetch();
 
@@ -37,9 +39,11 @@ class ReadyListener extends Listener {
 
       if (randomNum <= 12) {
         new PromoteCommand().promoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
+        me.send(`${member.displayName} has been promoted`);
       }
       else if (randomNum <= 19) {
         new DemoteCommand().demoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
+        me.send(`${member.displayName} has been demoted`);
       }
       else {
         const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
@@ -56,8 +60,8 @@ class ReadyListener extends Listener {
 
           member.roles.set(memberRoles);
         }
+        me.send(`${member.displayName} has been given cas`);
       }
-      console.log("Done");
     }, 1200000);
   }
 }
