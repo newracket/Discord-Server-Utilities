@@ -50,6 +50,9 @@ class PromoteCommand extends CustomCommand {
   }
 
   promoteMember(message, member, roles, repeatTimes) {
+    if (member.id == "301200493307494400") {
+      return message.channel.send("You may not promote aniket, since we all know he's cas. You may however, demote him. ");
+    }
     const strikes = strikesJSON.get();
 
     if (repeatTimes == 0) {
