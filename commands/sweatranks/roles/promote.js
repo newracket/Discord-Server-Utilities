@@ -15,6 +15,8 @@ class PromoteCommand extends CustomCommand {
       channel: "guild",
       permittedRoles: ["726565862558924811", "820159352215961620"],
     });
+
+    this.messagesToSend = {};
   }
 
   exec(message) {
@@ -41,26 +43,27 @@ class PromoteCommand extends CustomCommand {
         else {
           const membersToModify = args.map(arg => guildMembers.find(member => member.displayName.toLowerCase() == arg.toLowerCase())).filter(e => e != undefined);
           [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(async member => {
-            this.messagesToSend[member.nickname] = [];
             await member.fetch(true);
-            this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
+            await this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
           });
         }
       });
   }
 
-  promoteMember(message, member, roles, repeatTimes) {
-    if (member.id == "301200493307494400") {
-      return message.channel.send("You may not promote aniket, since we all know he's cas. You may however, demote him. ");
-    }
+  async promoteMember(message, member, roles, repeatTimes) {
     const strikes = strikesJSON.get();
 
     if (repeatTimes == 0) {
       const rolesDir = message.guild.roles.cache.map(role => { return { name: role.name, id: role.id } });
       roles = roles.map(role => rolesDir.find(r => r.name == role).id);
 
-      return member.roles.set(roles).then(newMember => message.channel.send(this.messagesToSend[newMember.nickname], { split: true }))
-        .catch(err => message.channel.send(`Error: ${err}`));
+      await member.roles.set(roles);
+      if (message.channel) await message.channel.send(this.messagesToSend[member.nickname].join("\n"), { split: true });
+      return;
+    }
+
+    if (!this.messagesToSend[member.nickname]) {
+      this.messagesToSend[member.nickname] = [];
     }
 
     if (casranks.filter(rank => roles.includes(rank)).length > 0) {

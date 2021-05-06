@@ -11,6 +11,8 @@ class DemoteCommand extends CustomCommand {
       channel: "guild",
       permittedRoles: ["726565862558924811", "820159352215961620"],
     });
+
+    this.messagesToSend = {};
   }
 
   async exec(message) {
@@ -37,7 +39,6 @@ class DemoteCommand extends CustomCommand {
     else {
       const membersToModify = args.map(arg => guildMembers.find(member => member.displayName.toLowerCase() == arg.toLowerCase())).filter(e => e != undefined);
       [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(async member => {
-        this.messagesToSend[member.nickname] = [];
         await member.fetch(true);
         await this.demoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
       });
@@ -50,7 +51,12 @@ class DemoteCommand extends CustomCommand {
       roles = roles.map(role => rolesDir.find(r => r.name == role).id);
 
       await member.roles.set(roles);
-      return await message.channel.send(this.messagesToSend[member.nickname].join("\n"), { split: true });
+      if (message.channel) await message.channel.send(this.messagesToSend[member.nickname].join("\n"), { split: true });
+      return;
+    }
+
+    if (!this.messagesToSend[member.nickname]) {
+      this.messagesToSend[member.nickname] = [];
     }
 
     const lastRank = sweatranks.filter(rank => roles.includes(rank)).pop();
