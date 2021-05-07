@@ -38,31 +38,16 @@ class ReadyListener extends Listener {
       const randomMemberIndex = Math.floor(Math.random() * activeMembers.length);
       const member = guildMembers.find(member => member.displayName == activeMembers[randomMemberIndex]);
 
+      await member.fetch();
+
       if (member) {
-        if (randomNum <= 15) {
+        if (randomNum <= 16) {
           new PromoteCommand().promoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
           me.send(`${member.displayName} has been promoted`);
         }
-        else if (randomNum <= 19) {
+        else {
           new DemoteCommand().demoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
           me.send(`${member.displayName} has been demoted`);
-        }
-        else {
-          const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
-
-          if (casranks.indexOf(lastRank) == casranks.length - 1) {
-            return;
-          }
-          else if (lastRank != undefined) {
-            member.roles.add(guild.roles.cache.find(role => role.name == casranks[casranks.indexOf(lastRank) + 1]));
-          }
-          else {
-            const memberRoles = member.roles.cache.filter(role => !sweatranks.includes(role.name)).map(role => role.id);
-            memberRoles.push(guild.roles.cache.find(role => role.name == "Cas").id);
-
-            member.roles.set(memberRoles);
-          }
-          me.send(`${member.displayName} has been given cas`);
         }
       }
       else {
