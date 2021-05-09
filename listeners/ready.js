@@ -27,33 +27,33 @@ class ReadyListener extends Listener {
       this.client.channels.cache.get(poll.channel).messages.fetch(poll.id).then(() => console.log("Message fetched"));
     });
 
-    const guild = this.client.guilds.cache.get("633161578363224066");
-    const me = await guild.members.fetch("301200493307494400");
-    const activeMembers = ["aniket", "aaron", "alan", "gio", "oscar", "justin"];
+    // const guild = this.client.guilds.cache.get("633161578363224066");
+    // const me = await guild.members.fetch("301200493307494400");
+    // const activeMembers = ["aniket", "aaron", "alan", "gio", "oscar", "justin"];
 
-    setInterval(async () => {
-      const guildMembers = await guild.members.fetch();
+    // setInterval(async () => {
+    //   const guildMembers = await guild.members.fetch();
 
-      const randomNum = Math.floor(Math.random() * 20) + 1;
-      const randomMemberIndex = Math.floor(Math.random() * activeMembers.length);
-      const member = guildMembers.find(member => member.displayName == activeMembers[randomMemberIndex]);
+    //   const randomNum = Math.floor(Math.random() * 20) + 1;
+    //   const randomMemberIndex = Math.floor(Math.random() * activeMembers.length);
+    //   const member = guildMembers.find(member => member.displayName == activeMembers[randomMemberIndex]);
 
-      await member.fetch();
+    //   await member.fetch();
 
-      if (member) {
-        if (randomNum <= 16) {
-          new PromoteCommand().promoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
-          me.send(`${member.displayName} has been promoted`);
-        }
-        else {
-          new DemoteCommand().demoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
-          me.send(`${member.displayName} has been demoted`);
-        }
-      }
-      else {
-        me.send(`${activeMembers[randomMemberIndex]} not found.`);
-      }
-    }, 600000);
+    //   if (member) {
+    //     if (randomNum <= 16) {
+    //       new PromoteCommand().promoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
+    //       me.send(`${member.displayName} has been promoted`);
+    //     }
+    //     else {
+    //       new DemoteCommand().demoteMember({ guild: guild }, member, member.roles.cache.map(role => role.name), 1);
+    //       me.send(`${member.displayName} has been demoted`);
+    //     }
+    //   }
+    //   else {
+    //     me.send(`${activeMembers[randomMemberIndex]} not found.`);
+    //   }
+    // }, 600000);
   }
 }
 
