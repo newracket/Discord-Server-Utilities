@@ -1,5 +1,9 @@
-const { sweatranks, casranks } = require("../../../jsons/ranks.json")
+const { sweatranks, casranks } = require("../../../jsons/ranks.json");
+const { strikesChannelId } = require("../../../config.json");
 const { CustomCommand } = require("../../../modules/custommodules");
+const JSONFileManager = require("../../../modules/jsonfilemanager");
+
+const strikesJSON = new JSONFileManager("strikes");
 
 class DemoteCommand extends CustomCommand {
   constructor() {
@@ -31,7 +35,7 @@ class DemoteCommand extends CustomCommand {
 
     if (message.mentions.everyone || args.includes("everyone")) {
       guildMembers.filter(member => !member.user.bot && member.roles.cache.has("775799853077758053")).forEach(async member => {
-        this.messagesToSend[member.nickname] = [];
+        this.messagesToSend[member.displayName] = [];
         await member.fetch(true);
         this.demoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
       });
@@ -51,39 +55,66 @@ class DemoteCommand extends CustomCommand {
       roles = roles.map(role => rolesDir.find(r => r.name == role).id);
 
       await member.roles.set(roles);
-      if (message.channel) await message.channel.send(this.messagesToSend[member.nickname].join("\n"), { split: true });
+      if (message.channel) await message.channel.send(this.messagesToSend[member.displayName].join("\n"), { split: true });
       return;
     }
 
-    if (!this.messagesToSend[member.nickname]) {
-      this.messagesToSend[member.nickname] = [];
+    if (!this.messagesToSend[member.displayName]) {
+      this.messagesToSend[member.displayName] = [];
     }
 
     const lastRank = sweatranks.filter(rank => roles.includes(rank)).pop();
     if (lastRank != undefined) {
       if (lastRank == "Sweat") {
-        this.messagesToSend[member.nickname].push(`<@${member.id}> was demoted to Member.`);
+        this.messagesToSend[member.displayName].push(`<@${member.id}> was demoted to Member.`);
       }
       else {
-        this.messagesToSend[member.nickname].push(`<@${member.id}> was demoted to ${sweatranks[sweatranks.indexOf(lastRank) - 1]}.`);
+        this.messagesToSend[member.displayName].push(`<@${member.id}> was demoted to ${sweatranks[sweatranks.indexOf(lastRank) - 1]}.`);
       }
 
       roles.splice(roles.indexOf(lastRank), 1)
       return this.demoteMember(message, member, roles, repeatTimes - 1);
     }
     else {
-      const lastRank = casranks.filter(rank => roles.includes(rank)).pop();
+      if (strikesJSON.hasKey(member.id)) {
+        if (strikesJSON.getValue(member.id).value == 1) {
+          const messageId = strikesJSON.getValue(member.id).messageId;
+          strikesJSON.deleteKey(member.id);
+          const strikesMessage = await message.guild.channels.cache.find(channel => channel.id == strikesChannelId).messages.fetch(messageId);
 
-      if (casranks.indexOf(lastRank) == casranks.length - 1) {
-        this.messagesToSend[member.nickname].push("Error. This person is cannot be demoted any further.");
-        return this.demoteMember(message, member, roles, 0);
+          await strikesMessage.delete();
+          this.messagesToSend[member.displayName].push(`One strike was removed. ${member} now has 0 strikes.`);
+        }
+        else {
+          const currentValue = strikesJSON.getValue(member.id);
+          currentValue.value--;
+
+          const messageId = strikesJSON.setValue(member.id, currentValue)[member.id].messageId;
+          const strikesMessage = await message.guild.channels.cache.find(channel => channel.id == strikesChannelId).messages.fetch(messageId);
+
+          strikesMessage.edit(`${member.displayName} - ${currentValue.value}`);
+
+          this.messagesToSend[member.displayName].push(`One strike was removed. ${member} now has 1 strike.`);
+        }
       }
       else {
-        this.messagesToSend[member.nickname].push(`<@${member.id}> was demoted to ${casranks[casranks.indexOf(lastRank) + 1]}.`);
+        const lastRank = casranks.filter(rank => roles.includes(rank)).pop();
 
-        roles.push(casranks[casranks.indexOf(lastRank) + 1])
-        return this.demoteMember(message, member, roles, repeatTimes - 1);
+        if (casranks.indexOf(lastRank) == casranks.length - 1) {
+          this.messagesToSend[member.displayName].push("Error. This person is cannot be demoted any further.");
+          return this.demoteMember(message, member, roles, 0);
+        }
+        else {
+          this.messagesToSend[member.displayName].push(`<@${member.id}> was demoted to ${casranks[casranks.indexOf(lastRank) + 1]} with 2 strikes.`);
+          roles.push(casranks[casranks.indexOf(lastRank) + 1]);
+
+          const strikesChannel = message.guild.channels.cache.find(channel => channel.id == strikesChannelId);
+          const sentMessage = await strikesChannel.send(`${member.displayName} - 2`);
+          strikesJSON.setValue(member.id, { messageId: sentMessage.id, value: 2 });
+        }
       }
+
+      return this.demoteMember(message, member, roles, repeatTimes - 1);
     }
   }
 }

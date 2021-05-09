@@ -15,12 +15,16 @@ class JSONFileManager {
 
   set(value) {
     fs.writeFileSync(`./jsons/${this.fileName}`, JSON.stringify(value));
+
+    return value;
   }
 
   setValue(key, value) {
-    const currentVal = this.get();
-    currentVal[key] = value;
-    this.set(currentVal);
+    const currentJSON = this.get();
+    currentJSON[key] = value;
+    this.set(currentJSON);
+
+    return currentJSON;
   }
 
   getValue(key) {
@@ -32,9 +36,25 @@ class JSONFileManager {
   }
 
   append(value) {
-    const currentVal = this.get();
-    currentVal.push(value);
-    this.set(currentVal);
+    const currentJSON = this.get();
+    currentJSON.push(value);
+    this.set(currentJSON);
+
+    return currentJSON;
+  }
+
+  hasKey(key) {
+    return Object.keys(this.get()).includes(key);
+  }
+
+  deleteKey(key) {
+    if (!this.hasKey(key)) return;
+
+    const currentJSON = this.get();
+    delete currentJSON[key];
+    this.set(currentJSON);
+
+    return currentJSON;
   }
 }
 
