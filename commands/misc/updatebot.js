@@ -19,7 +19,7 @@ class UpdateBotCommand extends CustomCommand {
         return message.channel.send(error.message);
       }
 
-      message.channel.send(data.length > 0 ? data : "Empty");
+      message.channel.send(data.length > 0 ? data : "Empty", { split: true });
 
       exec(`sudo pm2 restart 0`);
     });
