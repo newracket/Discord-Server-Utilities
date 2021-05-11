@@ -54,7 +54,7 @@ class PromoteCommand extends CustomCommand {
     const strikes = strikesJSON.get();
 
     if (repeatTimes == 0) {
-      roles = roles.map(async role => await resolveRole(role, message.guild.roles.cache));
+      roles = await Promise.all(roles.map(async role => await resolveRole(role, message.guild.roles.cache)));
 
       await member.roles.set(roles);
       if (message.channel) await message.channel.send(this.messagesToSend[member.displayName].join("\n"), { split: true });
