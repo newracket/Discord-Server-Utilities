@@ -1,5 +1,5 @@
 const JSONFileManager = require("../../modules/jsonfilemanager");
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand, resolveMembers, resolveRole } = require("../../modules/utils");
 
 const muteAdminJSON = new JSONFileManager("muteadmin");
 
@@ -11,24 +11,27 @@ class UnmuteCommand extends CustomCommand {
       usage: "unmute <mention users> OR unmute <user ids>",
       category: "Moderation",
       channel: "guild",
-      userPermissions: ['ADMINISTRATOR']
+      userPermissions: ['ADMINISTRATOR'],
+      args: [{
+        id: "members",
+        match: "content"
+      }]
     });
   }
 
-  exec(message) {
-    message.mentions.members.forEach(this.muteMember);
-    message.channel.send(message.mentions.members.map(member => `<@${member.id}> has been unmuted.`).join("\n"));
-  }
+  async exec(message, args) {
+    const membersToModify = await resolveMembers(args.members, message);
+    membersToModify.forEach(async member => {
+      await member.roles.remove(await resolveRole("Muted", message));
+      const mutedAdmins = muteAdminJSON.get();
 
-  async muteMember(member) {
-    const roles = await member.guild.roles.fetch();
-    await member.roles.remove(roles.cache.find(role => role.name == "Muted"));
-    const mutedAdmins = muteAdminJSON.get();
+      if (mutedAdmins.includes(member.id)) {
+        muteAdminJSON.set(mutedAdmins.filter(id => id != member.id));
+        await member.roles.add(await resolveRole("Admin", message));
+      }
+    });
 
-    if (mutedAdmins.includes(member.id)) {
-      muteAdminJSON.set(mutedAdmins.filter(id => id != member.id));
-      await member.roles.add(roles.cache.find(role => role.name == "Admin"));
-    }
+    message.channel.send(membersToModify.map(member => `<@${member.id}> has been unmuted.`).join("\n"));
   }
 }
 

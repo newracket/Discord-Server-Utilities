@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand } = require("../../modules/utils");
 const { exec } = require("child_process");
 
 class ExecCommand extends CustomCommand {
@@ -11,18 +11,19 @@ class ExecCommand extends CustomCommand {
       ownerOnly: true,
       args: [
         {
-          id: "message",
+          id: "content",
           match: "content"
         }
       ]
     });
   }
 
-  exec(message, args) {
-    exec(args.message, (error, data) => {
+  async exec(message, args) {
+    exec(args.content, (error, data) => {
       if (error) {
         return message.channel.send(error.message);
       }
+      
       message.channel.send(data.length > 0 ? data : "Empty");
     });
   }

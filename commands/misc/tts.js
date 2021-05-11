@@ -1,6 +1,6 @@
 const gTTS = require("gtts");
 const JSONFileManager = require("../../modules/jsonfilemanager");
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand, resolveChannel } = require("../../modules/utils");
 
 const nicksJSON = new JSONFileManager("nicks");
 
@@ -13,20 +13,18 @@ class TtsCommand extends CustomCommand {
       category: "Misc",
       args: [
         {
-          id: "message",
+          id: "content",
           match: "content"
         }
       ]
     });
   }
 
-  exec(message, args) {
+  async exec(message, args) {
     const nicks = nicksJSON.get();
 
-    args = args.message.split(" ");
-    if (args[0].includes("tts")) {
-      args.splice(0, 1);
-    }
+    args = args.content.split(" ");
+
     if (args.length < 0) {
       message.channel.send("No message to say.");
       return;
@@ -44,10 +42,10 @@ class TtsCommand extends CustomCommand {
           voiceChannel = message.member.voice.channel;
         }
         else {
-          voiceChannel = message.guild.channels.cache.find(channel => channel.id == "633161578363224070");
+          voiceChannel = await resolveChannel("633161578363224070", message);
         }
 
-        const nickname = nicks[message.author.id] != undefined ? nicks[message.author.id] : guild.member(message.author).nickname;
+        const nickname = nicks[message.author.id] != undefined ? nicks[message.author.id] : message.member.displayName;
         const speech = nickname + " says " + args.map(e => {
           if (e[0] == "<" && e[1] == ":" && e[e.length - 1] == ">") {
             return e.split(":")[1];
@@ -56,7 +54,7 @@ class TtsCommand extends CustomCommand {
         }).join(" ");
         const gtts = new gTTS(speech, "en");
 
-        gtts.save("voice.mp3", function (err, result) { if (err) { console.log(err); } });
+        gtts.save("voice.mp3", err => { if (err) message.channel.send(err); });
 
         voiceChannel.join().then(connection => {
           const dispatcher = connection.play('./voice.mp3');

@@ -1,5 +1,5 @@
 const { sweatranks, casranks } = require("../../../jsons/ranks.json");
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand, resolveMembers } = require("../../../modules/utils");
 
 class GiveCasCommand extends CustomCommand {
   constructor() {
@@ -10,48 +10,48 @@ class GiveCasCommand extends CustomCommand {
       category: "Sweatranks",
       channel: "guild",
       permittedRoles: ["726565862558924811", "820159352215961620"],
+      args: [{
+        id: "members",
+        match: "content"
+      }]
     });
   }
 
-  exec(message) {
-    const args = message.content.split(" ").slice(1);
+  async exec(message, args) {
+    const guildMembers = await message.guild.members.fetch();
 
-    message.guild.members.fetch()
-      .then(guildMembers => {
-
-        if (message.mentions.everyone || args.includes("everyone")) {
-          guildMembers.filter(member => !member.user.bot && member.roles.cache.has("775799853077758053")).forEach(async member => {
-            this.messagesToSend[member.nickname] = [];
-            await member.fetch(true);
-            this.giveCas(message, member);
-          });
-        }
-        else {
-          const membersToModify = args.map(arg => guildMembers.find(member => member.displayName.toLowerCase() == arg.toLowerCase())).filter(e => e != undefined);
-          [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(async member => {
-            await member.fetch(true);
-            this.giveCas(message, member);
-          });
-        }
+    if (message.mentions.everyone || args.members.includes("everyone")) {
+      guildMembers.filter(member => !member.user.bot && member.roles.cache.has("775799853077758053")).forEach(async member => {
+        this.messagesToSend[member.nickname] = [];
+        await member.fetch(true);
+        this.giveCas(message, member);
       });
+    }
+    else {
+      const membersToModify = await resolveMembers(args.members, guildMembers);
+      membersToModify.forEach(async member => {
+        await member.fetch(true);
+        this.giveCas(message, member);
+      });
+    }
   }
 
-  giveCas(message, member) {
+  async giveCas(message, member) {
     const lastRank = casranks.filter(rank => member.roles.cache.map(role => role.name).includes(rank)).pop();
 
     if (casranks.indexOf(lastRank) == casranks.length - 1) {
       return message.channel.send(`This person is already ${lastRank} and cannot get any more cas roles.`);
     }
     else if (lastRank != undefined) {
-      member.roles.add(message.guild.roles.cache.find(role => role.name == casranks[casranks.indexOf(lastRank) + 1]))
-        .then(newMember => message.channel.send(`Successfully gave ${casranks[casranks.indexOf(lastRank) + 1]} to <@${newMember.id}>`));
+      await member.roles.add(message.guild.roles.cache.find(role => role.name == casranks[casranks.indexOf(lastRank) + 1]))
+      message.channel.send(`Successfully gave ${casranks[casranks.indexOf(lastRank) + 1]} to <@${member.id}>`);
     }
     else {
       const memberRoles = member.roles.cache.filter(role => !sweatranks.includes(role.name)).map(role => role.id);
       memberRoles.push(message.guild.roles.cache.find(role => role.name == "Cas").id);
 
-      member.roles.set(memberRoles)
-        .then(newMember => message.channel.send(`Successfully gave Cas to <@${newMember.id}>`));
+      await member.roles.set(memberRoles)
+      message.channel.send(`Successfully gave Cas to <@${member.id}>`);
     }
   }
 }

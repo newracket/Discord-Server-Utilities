@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand } = require("../../modules/utils");
 const { exec } = require("child_process");
 const { username, password } = require("../../config.json");
 
@@ -9,17 +9,11 @@ class UpdateBotCommand extends CustomCommand {
       description: "Updates the bot with code from github, and restarts bot automatically",
       usage: "updatebot",
       category: "Misc",
-      ownerOnly: true,
-      args: [
-        {
-          id: "message",
-          match: "content"
-        }
-      ]
+      ownerOnly: true
     });
   }
 
-  exec(message, args) {
+  async exec(message) {
     exec(`sudo git pull https://${username}:${password}@github.com/newracket/TTS-Bot.git`, (error, data) => {
       if (error) {
         return message.channel.send(error.message);

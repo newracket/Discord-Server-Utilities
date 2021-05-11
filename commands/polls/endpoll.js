@@ -1,12 +1,12 @@
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand, resolveMessage } = require("../../modules/utils");
 const JSONFileManager = require("../../modules/jsonfilemanager");
 
 const storedpollsJSON = new JSONFileManager("storedpolls");
 
-class CreatePollCommand extends CustomCommand {
+class EndPollCommand extends CustomCommand {
   constructor() {
     super('endpoll', {
-      aliases: ['endpoll'],
+      aliases: ['endpoll', 'ep'],
       description: "Ends a poll",
       usage: "endpoll <poll number>",
       category: "Polls",
@@ -24,11 +24,11 @@ class CreatePollCommand extends CustomCommand {
     storedpolls[args.pollNum - 1].ended = true;
     storedpollsJSON.set(storedpolls);
 
-    const endedPollMessage = await message.guild.channels.cache.get(storedpolls[args.pollNum - 1].channel).messages.fetch(storedpolls[args.pollNum - 1].id);
+    const endedPollMessage = await resolveMessage(storedpolls[args.pollNum - 1].channel, storedpolls[args.pollNum - 1].id, message);
     await endedPollMessage.reactions.removeAll();
 
     message.channel.send("The poll has been ended.");
   }
 }
 
-module.exports = CreatePollCommand;
+module.exports = EndPollCommand;

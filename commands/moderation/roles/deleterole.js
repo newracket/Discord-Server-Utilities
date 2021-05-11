@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand, resolveRole } = require("../../../modules/utils");
 
 class RemoveRoleCommand extends CustomCommand {
   constructor() {
@@ -8,13 +8,16 @@ class RemoveRoleCommand extends CustomCommand {
       usage: "deleterole <role name>",
       category: "Moderation",
       channel: "guild",
-      userPermissions: ['MANAGE_ROLES']
+      userPermissions: ['MANAGE_ROLES'],
+      args: [{
+        id: "roleName",
+        match: "content"
+      }]
     });
   }
 
-  async exec(message) {
-    const roleName = message.content.split(" ").slice(1).join(" ");
-    const role = message.guild.roles.cache.filter(role => role.name.toLowerCase() == roleName.toLowerCase()).array();
+  async exec(message, args) {
+    const role = await resolveRole(args.roleName, message);
 
     if (!role) {
       return message.channel.send("This role does not exist.");
@@ -26,8 +29,8 @@ class RemoveRoleCommand extends CustomCommand {
       return message.channel.send("Multiple roles with this name exist.")
     }
 
-    role[0].delete()
-      .then(role => message.channel.send(`${role.name} has been deleted.`));
+    await role.delete();
+    message.channel.send(`${role.name} has been deleted.`);
   }
 }
 

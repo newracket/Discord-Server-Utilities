@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand, resolveRole } = require("../../modules/utils");
 
 class RoleMembersCommand extends CustomCommand {
   constructor() {
@@ -16,18 +16,23 @@ class RoleMembersCommand extends CustomCommand {
     });
   }
 
-  exec(message, args) {
-    if (!args.role) return message.channel.send("Role not specified");
+  async exec(message, args) {
+    if (!args.role) return message.channel.send("Role not specified.");
 
-    message.guild.roles.fetch().then(roles => {
-      const role = roles.cache.find(role => role.name.toLowerCase() == args.role.toLowerCase() || role.id == args.role);
-      if (!role) return message.channel.send("That role does not exist");
+    const role = await resolveRole(args.role, message)
 
-      const roleMembers = role.members.map(member => `${member.displayName} - ${member.user.username}#${member.user.discriminator}`);
-      if (roleMembers.length == 0) return message.channel.send("No one has that role");
+    if (!role) return message.channel.send("Role not found.");
 
-      message.channel.send(roleMembers.join("\n"), { split: true });
+    const roleMembers = role.members.array().join(" ");
+    if (roleMembers.length == 0) return message.channel.send("No one has that role");
+
+    const embed = this.client.util.embed({
+      color: role.hexColor,
+      title: `Members with ${role.name} role`,
+      description: roleMembers
     });
+
+    message.channel.send(embed);
   }
 }
 

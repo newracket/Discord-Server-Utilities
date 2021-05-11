@@ -1,6 +1,6 @@
 const { sweatranks, casranks } = require("../../../jsons/ranks.json");
 const { strikesChannelId } = require("../../../config.json");
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand, resolveMembers, resolveRole, resolveMessage, resolveChannel } = require("../../../modules/utils");
 const JSONFileManager = require("../../../modules/jsonfilemanager");
 
 const strikesJSON = new JSONFileManager("strikes");
@@ -14,13 +14,17 @@ class DemoteCommand extends CustomCommand {
       category: "Sweatranks",
       channel: "guild",
       permittedRoles: ["726565862558924811", "820159352215961620"],
+      args: [{
+        id: "content",
+        match: "content"
+      }]
     });
 
     this.messagesToSend = {};
   }
 
-  async exec(message) {
-    const args = message.content.split(" ").slice(1);
+  async exec(message, args) {
+    args = args.content.split(" ");
     let repeatTimes = 1;
 
     if (!isNaN(parseInt(args[0]))) {
@@ -41,8 +45,9 @@ class DemoteCommand extends CustomCommand {
       });
     }
     else {
-      const membersToModify = args.map(arg => guildMembers.find(member => member.displayName.toLowerCase() == arg.toLowerCase())).filter(e => e != undefined);
-      [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(async member => {
+      const membersToModify = await resolveMembers(args.join(" "), message);
+
+      membersToModify.forEach(async member => {
         await member.fetch(true);
         await this.demoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
       });
@@ -51,8 +56,7 @@ class DemoteCommand extends CustomCommand {
 
   async demoteMember(message, member, roles, repeatTimes) {
     if (repeatTimes == 0) {
-      const rolesDir = message.guild.roles.cache.map(role => { return { name: role.name, id: role.id } });
-      roles = roles.map(role => rolesDir.find(r => r.name == role).id);
+      roles = await Promise.all(roles.map(async role => await resolveRole(role, message.guild.roles.cache)));
 
       await member.roles.set(roles);
       if (message.channel) await message.channel.send(this.messagesToSend[member.displayName].join("\n"), { split: true });
@@ -76,11 +80,10 @@ class DemoteCommand extends CustomCommand {
       return this.demoteMember(message, member, roles, repeatTimes - 1);
     }
     else {
+      const strikesMessage = await resolveMessage(strikesChannelId, strikesJSON.getValue(member.id).messageId, message);
       if (strikesJSON.hasKey(member.id)) {
         if (strikesJSON.getValue(member.id).value == 1) {
-          const messageId = strikesJSON.getValue(member.id).messageId;
           strikesJSON.deleteKey(member.id);
-          const strikesMessage = await message.guild.channels.cache.find(channel => channel.id == strikesChannelId).messages.fetch(messageId);
 
           await strikesMessage.delete();
           this.messagesToSend[member.displayName].push(`One strike was removed. ${member} now has 0 strikes.`);
@@ -89,11 +92,7 @@ class DemoteCommand extends CustomCommand {
           const currentValue = strikesJSON.getValue(member.id);
           currentValue.value--;
 
-          const messageId = strikesJSON.setValue(member.id, currentValue)[member.id].messageId;
-          const strikesMessage = await message.guild.channels.cache.find(channel => channel.id == strikesChannelId).messages.fetch(messageId);
-
           strikesMessage.edit(`${member.displayName} - ${currentValue.value}`);
-
           this.messagesToSend[member.displayName].push(`One strike was removed. ${member} now has 1 strike.`);
         }
       }
@@ -108,7 +107,7 @@ class DemoteCommand extends CustomCommand {
           this.messagesToSend[member.displayName].push(`<@${member.id}> was demoted to ${casranks[casranks.indexOf(lastRank) + 1]} with 2 strikes.`);
           roles.push(casranks[casranks.indexOf(lastRank) + 1]);
 
-          const strikesChannel = message.guild.channels.cache.find(channel => channel.id == strikesChannelId);
+          const strikesChannel = await resolveChannel(strikesChannelId, message);
           const sentMessage = await strikesChannel.send(`${member.displayName} - 2`);
           strikesJSON.setValue(member.id, { messageId: sentMessage.id, value: 2 });
         }

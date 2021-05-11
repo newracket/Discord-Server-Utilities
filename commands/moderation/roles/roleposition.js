@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand, resolveRole } = require("../../../modules/utils");
 
 class RolePositionCommand extends CustomCommand {
   constructor() {
@@ -9,20 +9,22 @@ class RolePositionCommand extends CustomCommand {
       category: "Moderation",
       channel: "guild",
       args: [{
-        id: "message",
-        match: "content"
+        id: "content",
+        match: "restContent"
+      },
+      {
+        id: "position",
+        type: "integer"
       }],
       userPermissions: ['MANAGE_ROLES']
     });
   }
 
   async exec(message, args) {
-    const roles = (await message.guild.roles.fetch()).cache;
-    const role = roles.find(r => [r.id, r.name.toLowerCase()].includes(args.message.split(" ").slice(0, -1).join(" ").trim().toLowerCase()));
+    const role = await resolveRole(args.content.split(" ").slice(0, -1).join(" "), message);
 
-    role.setPosition(parseInt(args.message.split(" ").slice(-1)[0]))
-      .then(newRole => message.channel.send("The new position of your role is: " + newRole.position))
-      .catch(err => message.channel.send("Error: " + err));
+    const newRole = await role.setPosition(args.position);
+    message.channel.send("The new position of your role is: " + newRole.position);
   }
 }
 

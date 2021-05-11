@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand } = require("../../modules/utils");
 const JSONFileManager = require("../../modules/jsonfilemanager");
 const chrono = require("chrono-node");
 
@@ -9,7 +9,7 @@ class CreatePollCommand extends CustomCommand {
     super('createpoll', {
       aliases: ['createpoll'],
       description: "Creates a poll for people to react on",
-      usage: "createpoll <question>, <date to end>, <options separated by spaces or commas>",
+      usage: "createpoll",
       category: "Polls"
     });
   }
@@ -85,19 +85,17 @@ class CreatePollCommand extends CustomCommand {
       }
     });
 
-    message.channel.send(embedOutput).then(newMessage => {
-      pollChoices.forEach((e, i) => {
-        newMessage.react(emoteDictionary[i]);
-      });
-
-      storedpollsJSON.append({ channel: newMessage.channel.id, id: newMessage.id, votes: pollChoices.map(e => { return { name: e, membersVoted: [] } }), endDate: options.endDate, choicesPerPerson: options.choicesPerPerson });
+    const newMessage = await message.channel.send(embedOutput);
+    pollChoices.forEach((e, i) => {
+      newMessage.react(emoteDictionary[i]);
     });
+
+    storedpollsJSON.append({ channel: newMessage.channel.id, id: newMessage.id, votes: pollChoices.map(e => { return { name: e, membersVoted: [] } }), endDate: options.endDate, choicesPerPerson: options.choicesPerPerson });
   }
 
   async handleReaction(reaction, user, reactionType) {
     if (user == this.client.user) return;
 
-    const numDictionary = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
     const emoteDictionary = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🇦", "🇧", "🇨", "🇩", "🇪", "🇫", "🇬", "🇭", "🇮", "🇯", "🇰", "🇱", "🇲", "🇳", "🇴", "🇵", "🇶", "🇷", "🇸", "🇹", "🇺", "🇻", "🇼", "🇽", "🇾", "🇿"];
     const storedpolls = storedpollsJSON.get();
     const storedReactionObjIndex = storedpolls.findIndex(e => e.id == reaction.message.id);
@@ -108,7 +106,8 @@ class CreatePollCommand extends CustomCommand {
 
     await reaction.fetch();
     if (alreadyVotedMembers.filter(e => e == user.id).length >= storedpolls[storedReactionObjIndex].choicesPerPerson && reactionType == "add") {
-      return reaction.users.remove(user).then(() => user.send("You have already voted in this poll."));
+      await reaction.users.remove(user)
+      user.send("You have already voted in this poll.");
     }
 
     if (storedReactionObjIndex >= -1) {

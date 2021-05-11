@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand } = require("../../modules/utils");
 
 class RandomCommand extends CustomCommand {
   constructor() {
@@ -16,7 +16,7 @@ class RandomCommand extends CustomCommand {
     });
   }
 
-  exec(message, args) {
+  async exec(message, args) {
     if (!args.options) args.options = "all";
 
     let randomOptions = args.options.split(",");

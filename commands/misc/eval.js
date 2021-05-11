@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand } = require("../../modules/utils");
 
 class EvalCommand extends CustomCommand {
   constructor() {
@@ -10,26 +10,24 @@ class EvalCommand extends CustomCommand {
       ownerOnly: true,
       args: [
         {
-          id: "message",
+          id: "content",
           match: "content"
         }
       ]
     });
   }
 
-  exec(message, args) {
-    let output = eval(args.message);
+  async exec(message, args) {
+    let output = eval(args.content);
+
     if (output == undefined) {
       return message.channel.send("Output is undefined");
     }
     if (typeof output != "string") {
       output = output.toString();
     }
-    const outputTexts = output.match(/.{1,1900}/g);
 
-    outputTexts.forEach(outputText => {
-      message.channel.send(outputText);
-    });
+    message.channel.send(output, { split: true });
   }
 }
 

@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand } = require("../../modules/utils");
 
 class EightBallCommand extends CustomCommand {
   constructor() {
@@ -7,10 +7,14 @@ class EightBallCommand extends CustomCommand {
       description: "8ball (totally not rigged)",
       usage: "8ball <question>",
       category: "Misc",
+      args: [{
+        id: "content",
+        match: "content"
+      }]
     });
   }
 
-  exec(message) {
+  async exec(message, args) {
     const casWords = ["cas", "bad", "garbage", "trash", "garbonzo", "dogshit"];
     const names = ["justin", "john", "alan", "achintya", "oscar", "aaron", "david", "gio", "eric"];
     const reverseWords = ["no", "not"];
@@ -18,25 +22,25 @@ class EightBallCommand extends CustomCommand {
 
     if (message.author.username == "newracket") {
       messageToSend = true;
-      if (this.includesWords(message.content, names)) {
+      if (this.includesWords(args.content, names)) {
         messageToSend = !messageToSend;
       }
-      if (!this.includesWords(message.content, casWords)) {
+      if (!this.includesWords(args.content, casWords)) {
         messageToSend = !messageToSend;
       }
-      if (this.includesWords(message.content, reverseWords)) {
+      if (this.includesWords(args.content, reverseWords)) {
         messageToSend = !messageToSend;
       }
     }
     else {
       messageToSend = false;
-      if (message.content.includes("aniket")) {
+      if (args.content.includes("aniket")) {
         messageToSend = !messageToSend;
       }
-      if (!this.includesWords(message.content, casWords)) {
+      if (!this.includesWords(args.content, casWords)) {
         messageToSend = !messageToSend;
       }
-      if (this.includesWords(message.content, reverseWords)) {
+      if (this.includesWords(args.content, reverseWords)) {
         messageToSend = !messageToSend;
       }
     }

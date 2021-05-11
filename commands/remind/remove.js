@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand } = require("../../modules/utils");
 
 class RemoveCommand extends CustomCommand {
   constructor() {
@@ -8,20 +8,22 @@ class RemoveCommand extends CustomCommand {
       aliases: ['remove', 'r'],
       description: "Removes a reminder",
       usage: "remove <reminder id>",
-      category: "Remind"
+      category: "Remind",
+      args: [{
+        id: "reminderId",
+        type: "integer"
+      }]
     });
   }
 
-  exec(message) {
-    const args = message.content.split(" ").slice(1);
-    db.run(`DELETE FROM reminders WHERE id=${parseInt(args[0])}`, err => {
+  async exec(message, args) {
+    db.run(`DELETE FROM reminders WHERE id=${args.reminderId}`, err => {
       if (err) {
         return message.channel.send(`Error when deleting from database. ${err}`);
       }
 
       message.channel.send("Successfully removed reminder!");
     });
-
   }
 }
 

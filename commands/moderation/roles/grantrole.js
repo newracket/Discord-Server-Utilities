@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand, resolveRole, resolveMembers } = require("../../../modules/utils");
 
 class GrantRoleCommand extends CustomCommand {
   constructor() {
@@ -10,27 +10,27 @@ class GrantRoleCommand extends CustomCommand {
       channel: "guild",
       userPermissions: ['MANAGE_ROLES'],
       args: [{
-        id: "args",
+        id: "content",
         match: "content"
       }]
     });
   }
 
   async exec(message, args) {
-    const words = args.args.split(" ");
+    const words = args.content.split(" ");
     let currentRoleName = "";
-    const roles = await message.guild.roles.fetch();
-    const members = await message.guild.members.fetch();
 
     for (const [i, word] of words.entries()) {
       currentRoleName += `${word} `;
-      const role = roles.cache.find(role => role.name.toLowerCase() == currentRoleName.trim().toLowerCase());
+      const role = await resolveRole(currentRoleName.trim(), message);
+
       if (role) {
         const highestRole = message.member.roles.highest;
         if (highestRole.comparePositionTo(role) <= 0) return message.channel.send("The role you are trying to assign is higher than your highest role.");
 
         const users = words.splice(i + 1);
-        const membersToModify = [...message.mentions.members.array(), ...users.map(user => members.find(m => [m.id, m.nickname, m.user.username].includes(user))).filter(e => e)];
+        const membersToModify = await resolveMembers(users.join(" "), message);
+
         membersToModify.forEach(async member => {
           await member.roles.add(role);
         });

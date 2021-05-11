@@ -1,6 +1,6 @@
 const { sweatranks, casranks } = require("../../../jsons/ranks.json")
 const JSONFileManager = require("../../../modules/jsonfilemanager");
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand, resolveMembers } = require("../../../modules/utils");
 
 const strikesJSON = new JSONFileManager("strikes");
 
@@ -13,18 +13,20 @@ class ResetToMemberCommand extends CustomCommand {
       category: "Sweatranks",
       channel: "guild",
       permittedRoles: ["726565862558924811", "820159352215961620"],
+      args: [{
+        id: "members",
+        match: "content"
+      }]
     });
 
     this.messagesToSend = {};
   }
 
-  async exec(message) {
-    const args = message.content.split(" ").slice(1);
-
+  async exec(message, args) {
     this.messagesToSend = {};
     const guildMembers = await message.guild.members.fetch();
 
-    if (message.mentions.everyone || args.includes("everyone")) {
+    if (message.mentions.everyone || args.members.includes("everyone")) {
       guildMembers.filter(member => !member.user.bot && member.roles.cache.has("775799853077758053")).forEach(async member => {
         this.messagesToSend[member.nickname] = [];
         await member.fetch(true);
@@ -32,10 +34,10 @@ class ResetToMemberCommand extends CustomCommand {
       });
     }
     else {
-      const membersToModify = args.map(arg => guildMembers.find(member => member.displayName.toLowerCase() == arg.toLowerCase())).filter(e => e != undefined);
-      [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(async member => {
+      const membersToModify = await resolveMembers(args.members, guildMembers);
+      membersToModify.forEach(async member => {
         await member.fetch(true);
-        await this.resetToMember(message, member);
+        this.resetToMember(message, member);
       });
     }
   }

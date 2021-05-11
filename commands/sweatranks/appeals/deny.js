@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand, resolveMessage } = require("../../../modules/utils");
 const JSONFileManager = require("../../../modules/jsonfilemanager");
 
 const appealsJSON = new JSONFileManager("appeals");
@@ -22,17 +22,17 @@ class DenyCommand extends CustomCommand {
     });
   }
 
-  exec(message, args) {
+  async exec(message, args) {
     const appealObj = appealsJSON.getValue(args.appealNum);
 
-    message.guild.channels.cache.get(appealObj.channel).messages.fetch(appealObj.id).then(appealMessage => {
-      const newEmbed = appealMessage.embeds[0]
-        .setColor("#ff1212")
-        .setTitle(`Appeal #${args.appealNum} - Denied`)
-        .addField(`Reasoning for denial from ${message.member.nickname}`, args.reason ? args.reason : "None");
+    const appealMessage = await resolveMessage(appealObj.channel, appealObj.id, message);
+    const newEmbed = appealMessage.embeds[0]
+      .setColor("#ff1212")
+      .setTitle(`Appeal #${args.appealNum} - Denied`)
+      .addField(`Reasoning for denial from ${message.member.nickname}`, args.reason ? args.reason : "None");
 
-      appealMessage.edit(newEmbed).then(() => message.delete());
-    });
+    await appealMessage.edit(newEmbed)
+    message.delete();
   }
 }
 

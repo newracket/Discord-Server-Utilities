@@ -1,7 +1,7 @@
 const { sweatranks, casranks } = require("../../../jsons/ranks.json");
 const { strikesChannelId } = require("../../../config.json");
 const JSONFileManager = require("../../../modules/jsonfilemanager");
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand, resolveMembers, resolveRole, resolveChannel, resolveMessage } = require("../../../modules/utils");
 
 const strikesJSON = new JSONFileManager("strikes");
 
@@ -19,7 +19,7 @@ class PromoteCommand extends CustomCommand {
     this.messagesToSend = {};
   }
 
-  exec(message) {
+  async exec(message) {
     const args = message.content.split(" ").slice(1);
     let repeatTimes = 1;
 
@@ -31,31 +31,30 @@ class PromoteCommand extends CustomCommand {
     }
 
     this.messagesToSend = {};
-    message.guild.members.fetch()
-      .then(guildMembers => {
-        if (message.mentions.everyone || args.includes("everyone")) {
-          guildMembers.filter(member => !member.user.bot && member.roles.cache.has("775799853077758053")).forEach(async member => {
-            this.messagesToSend[member.displayName] = [];
-            await member.fetch(true);
-            this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
-          });
-        }
-        else {
-          const membersToModify = args.map(arg => guildMembers.find(member => member.displayName.toLowerCase() == arg.toLowerCase())).filter(e => e != undefined);
-          [...Array.from(message.mentions.members, ([name, value]) => (value)), ...membersToModify].forEach(async member => {
-            await member.fetch(true);
-            await this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
-          });
-        }
+    const guildMembers = await message.guild.members.fetch();
+
+    if (message.mentions.everyone || args.includes("everyone")) {
+      guildMembers.filter(member => !member.user.bot && member.roles.cache.has("775799853077758053")).forEach(async member => {
+        this.messagesToSend[member.displayName] = [];
+        await member.fetch(true);
+        this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
       });
+    }
+    else {
+      const membersToModify = await resolveMembers(args.join(" "), guildMembers);
+
+      membersToModify.forEach(async member => {
+        await member.fetch(true);
+        this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
+      });
+    }
   }
 
   async promoteMember(message, member, roles, repeatTimes) {
     const strikes = strikesJSON.get();
 
     if (repeatTimes == 0) {
-      const rolesDir = message.guild.roles.cache.map(role => { return { name: role.name, id: role.id } });
-      roles = roles.map(role => rolesDir.find(r => r.name == role).id);
+      roles = roles.map(async role => await resolveRole(role, message.guild.roles.cache));
 
       await member.roles.set(roles);
       if (message.channel) await message.channel.send(this.messagesToSend[member.displayName].join("\n"), { split: true });
@@ -68,41 +67,37 @@ class PromoteCommand extends CustomCommand {
 
     if (casranks.filter(rank => roles.includes(rank)).length > 0) {
       const lastRank = casranks.filter(rank => roles.includes(rank)).pop();
+      const strikesChannel = await resolveChannel(strikesChannelId);
 
       if (strikes[member.id] == undefined) {
-        return message.guild.channels.cache.find(channel => channel.id == strikesChannelId).send(`${member.displayName} - 1`)
-          .then(newMessage => {
-            strikes[member.id] = { "messageId": newMessage.id, "value": 1 };
-            this.messagesToSend[member.displayName].push(`<@${member.id}> was given his first strike.`);
+        const newMessage = await strikesChannel.send(`${member.displayName} - 1`)
+        strikes[member.id] = { "messageId": newMessage.id, "value": 1 };
+        this.messagesToSend[member.displayName].push(`<@${member.id}> was given his first strike.`);
 
-            strikesJSON.set(strikes);
-
-            return this.promoteMember(message, member, roles, repeatTimes - 1);
-          });
+        strikesJSON.set(strikes);
+        return this.promoteMember(message, member, roles, repeatTimes - 1);
       }
       else if (strikes[member.id].value < 3) {
-        message.guild.channels.cache.find(channel => channel.id == strikesChannelId).messages.fetch(strikes[member.id].messageId)
-          .then(newMessage => {
-            strikes[member.id].value += 1;
+        const strikesMessage = await resolveMessage(strikesChannel, strikes[member.id].messageId);
+        strikes[member.id].value += 1;
 
-            if (strikes[member.id].value == 3) {
-              newMessage.edit(`${member.displayName} - ${strikes[member.id].value} (Removed ${lastRank} Role)`);
-              this.messagesToSend[member.displayName].push(`<@${member.id}> was given his last strike. He has now been promoted.`);
+        if (strikes[member.id].value == 3) {
+          await strikesMessage.edit(`${member.displayName} - ${strikes[member.id].value} (Removed ${lastRank} Role)`);
+          this.messagesToSend[member.displayName].push(`<@${member.id}> was given his last strike. He has now been promoted.`);
 
-              roles.splice(roles.indexOf(lastRank), 1);
-              delete strikes[member.id];
-              strikesJSON.set(strikes);
+          roles.splice(roles.indexOf(lastRank), 1);
+          delete strikes[member.id];
+          strikesJSON.set(strikes);
 
-              return this.promoteMember(message, member, roles, repeatTimes - 1);
-            }
-            else {
-              newMessage.edit(`${member.displayName} - ${strikes[member.id].value}`);
-              this.messagesToSend[member.displayName].push(`<@${member.id}> was given his second strike.`);
-              strikesJSON.set(strikes);
+          return this.promoteMember(message, member, roles, repeatTimes - 1);
+        }
+        else {
+          await strikesMessage.edit(`${member.displayName} - ${strikes[member.id].value}`);
+          this.messagesToSend[member.displayName].push(`<@${member.id}> was given his second strike.`);
+          strikesJSON.set(strikes);
 
-              return this.promoteMember(message, member, roles, repeatTimes - 1);
-            }
-          });
+          return this.promoteMember(message, member, roles, repeatTimes - 1);
+        }
       }
     }
     else {

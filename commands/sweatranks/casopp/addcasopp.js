@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand } = require("../../../modules/utils");
 
 class AddCasOppCommand extends CustomCommand {
   constructor() {

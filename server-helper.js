@@ -1,5 +1,5 @@
 const { AkairoClient, ListenerHandler } = require("discord-akairo");
-const { CustomCommandHandler } = require("./modules/custommodules");
+const { CustomCommandHandler } = require("./modules/utils");
 const { prefix, token } = require("./config.json");
 
 class ServerHelperClient extends AkairoClient {

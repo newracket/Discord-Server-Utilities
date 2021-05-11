@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand } = require("../../modules/utils");
 
 class HelpCommand extends CustomCommand {
   constructor() {
@@ -14,7 +14,7 @@ class HelpCommand extends CustomCommand {
     });
   }
 
-  exec(message, args) {
+  async exec(message, args) {
     let embedOutput;
 
     if (args.category) {

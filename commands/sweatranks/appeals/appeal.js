@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand } = require("../../../modules/utils");
 const JSONFileManager = require("../../../modules/jsonfilemanager");
 
 const appealsJSON = new JSONFileManager("appeals");
@@ -13,13 +13,12 @@ class AppealCommand extends CustomCommand {
       channel: "guild",
       args: [{
         id: "appealText",
-        type: "string",
         match: "content"
       }]
     });
   }
 
-  exec(message, args) {
+  async exec(message, args) {
     const embedOutput = this.client.util.embed({
       color: '#abd5ff',
       title: `Appeal #${appealsJSON.numKeys() + 1} - Awaiting Approval`,
@@ -34,8 +33,9 @@ class AppealCommand extends CustomCommand {
       embedOutput.setImage(message.attachments.first().proxyURL);
     }
 
-    message.channel.send(embedOutput).then(newMessage => appealsJSON.setValue(appealsJSON.numKeys() + 1, { channel: newMessage.channel.id, id: newMessage.id }))
-      .then(() => message.delete());
+    const newMessage = await message.channel.send(embedOutput)
+    appealsJSON.setValue(appealsJSON.numKeys() + 1, { channel: newMessage.channel.id, id: newMessage.id });
+    message.delete();
   }
 }
 

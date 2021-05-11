@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand, resolveMessage } = require("../../../modules/utils");
 const JSONFileManager = require("../../../modules/jsonfilemanager");
 
 const appealsJSON = new JSONFileManager("appeals");
@@ -22,16 +22,16 @@ class ApproveCommand extends CustomCommand {
     });
   }
 
-  exec(message, args) {
+  async exec(message, args) {
     const appealObj = appealsJSON.getValue(args.appealNum);
 
-    message.guild.channels.cache.get(appealObj.channel).messages.fetch(appealObj.id).then(appealMessage => {
-      const newEmbed = appealMessage.embeds[0]
-        .setColor("#42f563")
-        .setTitle(`Appeal #${args.appealNum} - Approved`)
-        .addField(`Reasoning for approval from ${message.member.nickname}`, args.reason ? args.reason : "None");
-      appealMessage.edit(newEmbed).then(() => message.delete());
-    });
+    const appealMessage = await resolveMessage(appealObj.channel, appealObj.id, message);
+    const newEmbed = appealMessage.embeds[0]
+      .setColor("#42f563")
+      .setTitle(`Appeal #${args.appealNum} - Approved`)
+      .addField(`Reasoning for approval from ${message.member.nickname}`, args.reason ? args.reason : "None");
+    await appealMessage.edit(newEmbed)
+    message.delete();
   }
 }
 

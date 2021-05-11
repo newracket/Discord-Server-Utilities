@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand, resolveMessage } = require("../../../modules/utils");
 const JSONFileManager = require("../../../modules/jsonfilemanager");
 
 const appealsJSON = new JSONFileManager("appeals");
@@ -21,17 +21,17 @@ class CounterCommand extends CustomCommand {
     });
   }
 
-  exec(message, args) {
+  async exec(message, args) {
     const appealObj = appealsJSON.getValue(args.appealNum);
 
-    message.guild.channels.cache.get(appealObj.channel).messages.fetch(appealObj.id).then(appealMessage => {
-      const newEmbed = appealMessage.embeds[0]
-        .setColor("#abd5ff")
-        .setTitle(`Appeal #${args.appealNum} - Awaiting Approval`)
-        .addField(`Counter from ${message.member.nickname}`, args.counter ? args.counter : "None");
+    const appealMessage = await resolveMessage(appealObj.channel, appealObj.id, message);
+    const newEmbed = appealMessage.embeds[0]
+      .setColor("#abd5ff")
+      .setTitle(`Appeal #${args.appealNum} - Awaiting Approval`)
+      .addField(`Counter from ${message.member.nickname}`, args.counter ? args.counter : "None");
 
-      appealMessage.edit(newEmbed).then(() => message.delete());
-    });
+    await appealMessage.edit(newEmbed)
+    message.delete();
   }
 }
 

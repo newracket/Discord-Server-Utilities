@@ -1,7 +1,7 @@
 const parseReminder = require('parse-reminder');
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('reminders.db');
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand } = require("../../modules/utils");
 
 class AddCommand extends CustomCommand {
   constructor() {
@@ -9,12 +9,16 @@ class AddCommand extends CustomCommand {
       aliases: ['add', 'remind'],
       description: "Adds reminder",
       usage: "add <reminder type (dm, everyone, role name, none)> <reminder date> <reminder content>",
-      category: "Remind"
+      category: "Remind",
+      args: [{
+        id: "content",
+        match: "content"
+      }]
     });
   }
 
-  exec(message) {
-    let args = message.content.split(" ").slice(1);
+  async exec(message, args) {
+    args = args.content.split(" ");
     let remindObject;
     let messageType = "none";
 
@@ -25,11 +29,7 @@ class AddCommand extends CustomCommand {
         date TEXT,
         content TEXT,
         messageType TEXT
-      );`, err => {
-        if (err) {
-          message.channel.send(`Error when creating databse. ${err}`);
-        }
-      });
+      );`, err => { if (err) return message.channel.send(`Error when creating databse. ${err}`); });
 
       const matchingRole = message.guild.roles.cache.find(role => role.name.toLowerCase() == args[0].toLowerCase() || role.id == args[0]);
 

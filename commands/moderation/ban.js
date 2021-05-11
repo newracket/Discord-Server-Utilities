@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../modules/custommodules");
+const { CustomCommand } = require("../../modules/utils");
 
 class BanCommand extends CustomCommand {
   constructor() {
@@ -8,13 +8,19 @@ class BanCommand extends CustomCommand {
       usage: "ban <mention users> OR ban <user ids>",
       category: "Moderation",
       channel: "guild",
-      userPermissions: ['ADMINISTRATOR']
+      userPermissions: ['BAN_MEMBERS'],
+      args: [{
+        id: "members",
+        match: "content"
+      }]
     });
   }
 
-  async exec(message) {
-    await message.mentions.members.forEach(member => member.ban());
-    message.channel.send(message.mentions.members.map(member => `<@${member.id}> has been banned.`).join("\n"));
+  async exec(message, args) {
+    const membersToModify = await resolveMembers(args.members, message);
+    membersToModify.forEach(member => member.ban());
+
+    message.channel.send(membersToModify.map(member => `<@${member.id}> has been banned.`).join("\n"));
   }
 }
 

@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand } = require("../../../modules/utils");
 
 class RoleOrderCommand extends CustomCommand {
   constructor() {

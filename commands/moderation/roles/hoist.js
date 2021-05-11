@@ -1,4 +1,4 @@
-const { CustomCommand } = require("../../../modules/custommodules");
+const { CustomCommand, resolveRole } = require("../../../modules/utils");
 
 class HoistCommand extends CustomCommand {
   constructor() {
@@ -17,12 +17,11 @@ class HoistCommand extends CustomCommand {
   }
 
   async exec(message, args) {
-    const roles = (await message.guild.roles.fetch()).cache;
-    const role = roles.find(r => [r.id, r.name.toLowerCase()].includes(args.role.trim().toLowerCase()));
+    const role = await resolveRole(args.role, message);
 
-    role.setHoist(!role.hoist)
-      .then(newRole => message.channel.send("Success"))
-      .catch(err => message.channel.send("Error: " + err));
+    if (!role) return message.channel.send("Role not found.");
+    await role.setHoist(!role.hoist);
+    message.channel.send("Success");
   }
 }
 
