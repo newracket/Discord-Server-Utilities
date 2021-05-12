@@ -56,8 +56,8 @@ class PromoteCommand extends CustomCommand {
     if (repeatTimes == 0) {
       roles = await Promise.all(roles.map(async role => await resolveRole(role, message.guild.roles.cache)));
 
-      await member.roles.set(roles);
-      if (message.channel) await message.channel.send(this.messagesToSend[member.displayName].join("\n"), { split: true });
+      member.roles.set(roles);
+      if (message.channel) message.channel.send(this.messagesToSend[member.displayName].join("\n"), { split: true });
       return;
     }
 
@@ -67,7 +67,7 @@ class PromoteCommand extends CustomCommand {
 
     if (casranks.filter(rank => roles.includes(rank)).length > 0) {
       const lastRank = casranks.filter(rank => roles.includes(rank)).pop();
-      const strikesChannel = await resolveChannel(strikesChannelId);
+      const strikesChannel = await resolveChannel(strikesChannelId, message);
 
       if (strikes[member.id] == undefined) {
         const newMessage = await strikesChannel.send(`${member.displayName} - 1`)

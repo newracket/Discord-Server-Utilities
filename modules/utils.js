@@ -162,7 +162,7 @@ async function resolveChannel(text, messageOrChannels, caseSensitive = false) {
   }
 
   if (classType == "Message") {
-    messageOrChannels = await messageOrChannels.guild.channels.cache;
+    messageOrChannels = messageOrChannels.guild.channels.cache;
   }
 
   if (caseSensitive) {

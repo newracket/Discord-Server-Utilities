@@ -80,6 +80,13 @@ class DemoteCommand extends CustomCommand {
       return this.demoteMember(message, member, roles, repeatTimes - 1);
     }
     else {
+      const lastRank = casranks.filter(rank => roles.includes(rank)).pop();
+
+      if (casranks.indexOf(lastRank) == casranks.length - 1) {
+        this.messagesToSend[member.displayName].push("Error. This person is cannot be demoted any further.");
+        return this.demoteMember(message, member, roles, 0);
+      }
+
       const strikesMessage = await resolveMessage(strikesChannelId, strikesJSON.getValue(member.id).messageId, message);
       if (strikesJSON.hasKey(member.id)) {
         if (strikesJSON.getValue(member.id).value == 1) {
@@ -97,24 +104,16 @@ class DemoteCommand extends CustomCommand {
         }
       }
       else {
-        const lastRank = casranks.filter(rank => roles.includes(rank)).pop();
+        this.messagesToSend[member.displayName].push(`<@${member.id}> was demoted to ${casranks[casranks.indexOf(lastRank) + 1]} with 2 strikes.`);
+        roles.push(casranks[casranks.indexOf(lastRank) + 1]);
 
-        if (casranks.indexOf(lastRank) == casranks.length - 1) {
-          this.messagesToSend[member.displayName].push("Error. This person is cannot be demoted any further.");
-          return this.demoteMember(message, member, roles, 0);
-        }
-        else {
-          this.messagesToSend[member.displayName].push(`<@${member.id}> was demoted to ${casranks[casranks.indexOf(lastRank) + 1]} with 2 strikes.`);
-          roles.push(casranks[casranks.indexOf(lastRank) + 1]);
-
-          const strikesChannel = await resolveChannel(strikesChannelId, message);
-          const sentMessage = await strikesChannel.send(`${member.displayName} - 2`);
-          strikesJSON.setValue(member.id, { messageId: sentMessage.id, value: 2 });
-        }
+        const strikesChannel = await resolveChannel(strikesChannelId, message);
+        const sentMessage = await strikesChannel.send(`${member.displayName} - 2`);
+        strikesJSON.setValue(member.id, { messageId: sentMessage.id, value: 2 });
       }
-
-      return this.demoteMember(message, member, roles, repeatTimes - 1);
     }
+
+    return this.demoteMember(message, member, roles, repeatTimes - 1);
   }
 }
 
