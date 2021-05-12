@@ -1,8 +1,5 @@
 const { Listener } = require('discord-akairo');
 const JSONFileManager = require("../modules/jsonfilemanager");
-const PromoteCommand = require("../commands/sweatranks/roles/promote");
-const DemoteCommand = require("../commands/sweatranks/roles/demote");
-const { sweatranks, casranks } = require("../jsons/ranks.json");
 
 const storedpollsJSON = new JSONFileManager("storedpolls");
 
@@ -16,6 +13,8 @@ class ReadyListener extends Listener {
 
   async exec() {
     console.log('Ready!');
+
+    this.client.user.setActivity("aniket is cas");
 
     process.env.TZ = "America/Los_Angeles";
     const checkReminders = require("../modules/checkreminders");
