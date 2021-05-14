@@ -19,17 +19,17 @@ class RoleMembersCommand extends CustomCommand {
   async exec(message, args) {
     if (!args.role) return message.channel.send("Role not specified.");
 
-    const role = await resolveRole(args.role, message)
+    const role = await resolveRole(args.role, message);
 
     if (!role) return message.channel.send("Role not found.");
 
-    const roleMembers = role.members.array().join(" ");
+    const roleMembers = role.members.array();
     if (roleMembers.length == 0) return message.channel.send("No one has that role");
 
     const embed = this.client.util.embed({
       color: role.hexColor,
       title: `Members with ${role.name} role`,
-      description: roleMembers
+      description: roleMembers.join(" ")
     });
 
     message.channel.send(embed);

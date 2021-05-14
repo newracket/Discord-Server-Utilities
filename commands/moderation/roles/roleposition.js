@@ -23,7 +23,7 @@ class RolePositionCommand extends CustomCommand {
   async exec(message, args) {
     const role = await resolveRole(args.content.split(" ").slice(0, -1).join(" "), message);
 
-    const newRole = await role.setPosition(args.position);
+    const newRole = await role.setPosition(message.guild.roles.cache.size - args.position);
     message.channel.send("The new position of your role is: " + newRole.position);
   }
 }
