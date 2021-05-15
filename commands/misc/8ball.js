@@ -20,7 +20,7 @@ class EightBallCommand extends CustomCommand {
     const reverseWords = ["no", "not"];
     let messageToSend = true;
 
-    if (message.author.username == "newracket") {
+    if (message.author.username == "newracketa") {
       messageToSend = true;
       if (this.includesWords(args.content, names)) {
         messageToSend = !messageToSend;

@@ -14,39 +14,62 @@ class PromoteCommand extends CustomCommand {
       category: "Sweatranks",
       channel: "guild",
       permittedRoles: ["726565862558924811", "820159352215961620"],
+      slashCommand: true,
+      slashOptions: [{
+        name: "member",
+        description: "Member to promote",
+        type: "USER",
+        required: true
+      }, {
+        name: "times",
+        description: "Times to promote",
+        type: "INTEGER"
+      }],
+      args: [{
+        id: "content",
+        match: "content"
+      }]
     });
 
     this.messagesToSend = {};
   }
 
-  async exec(message) {
-    const args = message.content.split(" ").slice(1);
-    let repeatTimes = 1;
-
-    if (!isNaN(parseInt(args[0]))) {
-      repeatTimes = parseInt(args[0]);
-    }
-    else if (!isNaN(parseInt(args.slice(-1)))) {
-      repeatTimes = parseInt(args.slice(-1));
-    }
-
-    this.messagesToSend = {};
-    const guildMembers = await message.guild.members.fetch();
-
-    if (message.mentions.everyone || args.includes("everyone")) {
-      guildMembers.filter(member => !member.user.bot && member.roles.cache.has("775799853077758053")).forEach(async member => {
-        this.messagesToSend[member.displayName] = [];
-        await member.fetch(true);
-        this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
-      });
+  async exec(message, args) {
+    if (message?.constructor?.name == "CommandInteraction") {
+      const member = message.options[0].member;
+      const repeatTimes = message.options.length > 1 ? message.options[1].value : 1;
+      await member.fetch(true);
+      this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
     }
     else {
-      const membersToModify = await resolveMembers(args.join(" "), guildMembers);
+      args = args.content.split(" ");
+      let repeatTimes = 1;
 
-      membersToModify.forEach(async member => {
-        await member.fetch(true);
-        this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
-      });
+      if (!isNaN(parseInt(args[0]))) {
+        repeatTimes = parseInt(args[0]);
+      }
+      else if (!isNaN(parseInt(args.slice(-1)))) {
+        repeatTimes = parseInt(args.slice(-1));
+      }
+
+      this.messagesToSend = {};
+      const guildMembers = await message.guild.members.fetch();
+
+      if (message.mentions.everyone || args.includes("everyone")) {
+        guildMembers.filter(member => !member.user.bot && member.roles.cache.has("775799853077758053")).forEach(async member => {
+          this.messagesToSend[member.displayName] = [];
+          await member.fetch(true);
+          this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
+        });
+      }
+      else {
+        const membersToModify = await resolveMembers(args.join(" "), guildMembers);
+
+        membersToModify.forEach(async member => {
+          await member.fetch(true);
+          this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
+        });
+      }
     }
   }
 
@@ -57,8 +80,14 @@ class PromoteCommand extends CustomCommand {
       roles = await Promise.all(roles.map(async role => await resolveRole(role, message.guild.roles.cache)));
 
       member.roles.set(roles);
-      if (message.channel) message.channel.send(this.messagesToSend[member.displayName].join("\n"), { split: true });
-      return;
+
+      if (message?.constructor?.name == "CommandInteraction") {
+        return message.reply(this.messagesToSend[member.displayName].join("\n"));
+      }
+      else {
+        if (message.channel) message.channel.send(this.messagesToSend[member.displayName].join("\n"), { split: true });
+        return;
+      }
     }
 
     if (!this.messagesToSend[member.displayName]) {

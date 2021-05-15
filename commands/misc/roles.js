@@ -1,6 +1,6 @@
-const { CustomCommand } = require("../../../modules/utils");
+const { CustomCommand } = require("../../modules/utils");
 
-class RoleOrderCommand extends CustomCommand {
+class RolesCommand extends CustomCommand {
   constructor() {
     super('roles', {
       aliases: ['roles'],
@@ -23,7 +23,7 @@ class RoleOrderCommand extends CustomCommand {
 
     roles.forEach(role => {
       const roleItem = `${roles.size - role.position + 1}: ${role}\n`;
-      
+
       if ((currentDescription + roleItem).length < 2048) {
         currentDescription += roleItem;
       }
@@ -42,4 +42,4 @@ class RoleOrderCommand extends CustomCommand {
   }
 }
 
-module.exports = RoleOrderCommand;
+module.exports = RolesCommand;

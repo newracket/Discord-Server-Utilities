@@ -15,6 +15,17 @@ class CustomCommand extends Command {
      * @type {Snowflake|Snowflake[]|IgnoreCheckPredicate}
      */
     this.permittedRoles = options.permittedRoles;
+
+    /**
+     * Whether this command is a slash command or not
+     * @type {boolean}
+     */
+    this.slashCommand = options.slashCommand;
+
+    /**
+     * Options for slash command
+     */
+    this.slashOptions = options.slashOptions;
   }
 }
 
@@ -93,6 +104,32 @@ class CustomCommandHandler extends CommandHandler {
     }
 
     return false;
+  }
+
+  /**
+     * Registers a module.
+     * @param {Command} command - Module to use.
+     * @param {string} [filepath] - Filepath of module.
+     * @returns {void}
+     */
+  async register(command, filepath) {
+    super.register(command, filepath);
+
+    if (command.slashCommand) {
+      const commandOptions = {
+        name: command.id,
+        description: command.description,
+        options: command.slashOptions
+      };
+
+      const guild = await this.client.guilds.fetch("633161578363224066");
+      const interval = setInterval(() => {
+        if (this.client.uptime) {
+          clearInterval(interval);
+          guild.commands.create(commandOptions);
+        }
+      }, 500);
+    }
   }
 }
 
