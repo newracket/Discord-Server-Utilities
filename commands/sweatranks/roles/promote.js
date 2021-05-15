@@ -38,6 +38,7 @@ class PromoteCommand extends CustomCommand {
     if (message?.constructor?.name == "CommandInteraction") {
       const member = message.options[0].member;
       const repeatTimes = message.options.length > 1 ? message.options[1].value : 1;
+      this.messagesToSend = {};
       await member.fetch(true);
       this.promoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
     }
