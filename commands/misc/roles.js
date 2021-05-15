@@ -12,7 +12,7 @@ class RolesCommand extends CustomCommand {
   }
 
   async exec(message) {
-    const roles = (await message.guild.roles.fetch()).cache.filter(role => role.position != 0);
+    const roles = (await message.guild.roles.fetch()).filter(role => role.position != 0);
     roles.sort((a, b) => b.comparePositionTo(a));
 
     const embeds = [];
