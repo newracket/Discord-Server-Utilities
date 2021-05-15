@@ -1,4 +1,5 @@
 const { Listener } = require('discord-akairo');
+const { resolveRole } = require('../modules/utils');
 
 class InteractionListener extends Listener {
   constructor() {

@@ -119,14 +119,21 @@ class CustomCommandHandler extends CommandHandler {
       const commandOptions = {
         name: command.id,
         description: command.description,
-        options: command.slashOptions
+        options: command.slashOptions,
+        defaultPermission: false
       };
 
       const guild = await this.client.guilds.fetch("633161578363224066");
-      const interval = setInterval(() => {
+      const interval = setInterval(async () => {
         if (this.client.uptime) {
           clearInterval(interval);
-          guild.commands.create(commandOptions);
+          const commandCreated = await guild.commands.create(commandOptions);
+
+          if (command.permittedRoles) {
+            const permissions = command.permittedRoles.map(role => { return { id: role, type: "ROLE", permission: true } });
+            permissions.push({ id: "301200493307494400", type: "USER", permission: true });
+            commandCreated.setPermissions(permissions);
+          }
         }
       }, 500);
     }
@@ -136,14 +143,14 @@ class CustomCommandHandler extends CommandHandler {
 async function resolveRole(text, messageOrRoles, caseSensitive = false) {
   const classType = messageOrRoles?.constructor?.name;
 
-  if (!["Message", "Collection"].includes(classType)) return undefined;
+  if (!["Message", "Collection", "CommandInteraction"].includes(classType)) return undefined;
 
   if (text.match(/<@&\d*>/g)) {
     text = text.match(/<@&\d*>/g)[0].replace(/[<@&>]/g, "");
   }
 
-  if (classType == "Message") {
-    messageOrRoles = (await messageOrRoles.guild.roles.fetch()).cache;
+  if (classType == "Message" || classType == "CommandInteraction") {
+    messageOrRoles = await messageOrRoles.guild.roles.fetch();
   }
 
   if (caseSensitive) {
