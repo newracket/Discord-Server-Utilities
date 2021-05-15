@@ -97,7 +97,7 @@ class CustomCommandHandler extends CommandHandler {
 
       if (!isIgnored) {
         if (command.permittedRoles.filter(permittedRole => message.member.roles.cache.some(role => role.id == permittedRole || role.name == permittedRole)).length == 0) {
-          this.emit("missingPermissions", message, command, 'role', command.permittedRoles.map(r => roles.cache.find(role => role.name == r || role.id == r).name));
+          this.emit("missingPermissions", message, command, 'role', command.permittedRoles.map(r => roles.find(role => role.name == r || role.id == r).name));
           return true;
         }
       }
