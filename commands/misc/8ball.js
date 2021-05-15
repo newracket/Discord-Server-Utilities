@@ -28,7 +28,7 @@ class EightBallCommand extends CustomCommand {
       if (!this.includesWords(args.content, casWords)) {
         messageToSend = !messageToSend;
       }
-      if (this.includesWords(args.content, reverseWords)) {
+      if (this.negatingWord(args.content, reverseWords)) {
         messageToSend = !messageToSend;
       }
     }
@@ -40,7 +40,7 @@ class EightBallCommand extends CustomCommand {
       if (!this.includesWords(args.content, casWords)) {
         messageToSend = !messageToSend;
       }
-      if (this.includesWords(args.content, reverseWords)) {
+      if (this.negatingWord(args.content, reverseWords)) {
         messageToSend = !messageToSend;
       }
     }
@@ -56,6 +56,13 @@ class EightBallCommand extends CustomCommand {
   includesWords(input, words) {
     return words.filter(word => input.includes(word)).length > 0;
   };
+
+  negatingWord(input, words) {
+    if (input.split(" ").filter(word => words.includes(word)).length % 2 != 0) {
+      return true;
+    }
+    return false;
+  }
 }
 
 module.exports = EightBallCommand;
