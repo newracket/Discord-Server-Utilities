@@ -15,7 +15,7 @@ class EightBallCommand extends CustomCommand {
   }
 
   async exec(message, args) {
-    const casWords = ["cas", "bad", "garbage", "trash", "garbonzo", "dogshit"];
+    const casWords = ["cas", "bad", "garbage", "trash", "garbonzo", "dogshit", "unlucky"];
     const names = ["justin", "john", "alan", "achintya", "oscar", "aaron", "david", "gio", "eric"];
     const reverseWords = ["no", "not"];
     let messageToSend = true;
