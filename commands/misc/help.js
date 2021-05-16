@@ -19,11 +19,11 @@ class HelpCommand extends CustomCommand {
   async exec(message, args) {
     let embedOutput;
 
-    if (args.category) {
-      let commandsObject = this.handler.categories.find(category => category.id.toLowerCase() == args.category.toLowerCase());
+    if (args.command) {
+      let commandsObject = this.handler.categories.find(category => category.id.toLowerCase() == args.command.toLowerCase());
 
       if (!commandsObject) {
-        commandsObject = this.handler.modules.filter(command => command.id.toLowerCase() == args.category.toLowerCase() || command.aliases.map(e => e.toLowerCase()).includes(args.category.toLowerCase()));
+        commandsObject = this.handler.modules.filter(command => command.id.toLowerCase() == args.command.toLowerCase() || command.aliases.map(e => e.toLowerCase()).includes(args.command.toLowerCase()));
 
         if (commandsObject.size == 0) return message.reply("There is no command or category with that name");
       }
