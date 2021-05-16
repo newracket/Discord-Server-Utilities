@@ -23,7 +23,8 @@ class PromoteCommand extends CustomCommand {
       }, {
         id: "times",
         description: "Times to promote",
-        type: "integer"
+        type: "integer",
+        default: 1
       }]
     });
 
@@ -32,6 +33,7 @@ class PromoteCommand extends CustomCommand {
 
   async exec(message, args) {
     this.messagesToSend = {};
+    console.log(args);
     this.promoteMember(message, args.member, args.member.roles.cache.map(role => role.name), args.times);
   }
 
