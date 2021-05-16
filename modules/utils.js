@@ -26,6 +26,8 @@ class CustomCommand extends Command {
      * Options for slash command
      */
     this.slashOptions = options.slashOptions;
+
+    this.args = options.args;
   }
 }
 
@@ -119,7 +121,7 @@ class CustomCommandHandler extends CommandHandler {
       const commandOptions = {
         name: command.id,
         description: command.description,
-        options: command.slashOptions,
+        options: command.args.map(arg => { arg.name = arg.id; arg.type = arg.type.toUpperCase().replace("MEMBER", "USER"); return arg; }),
         defaultPermission: false
       };
 
@@ -128,12 +130,27 @@ class CustomCommandHandler extends CommandHandler {
         if (this.client.uptime) {
           clearInterval(interval);
           const commandCreated = await guild.commands.create(commandOptions);
+          const permissions = [];
 
           if (command.permittedRoles) {
-            const permissions = command.permittedRoles.map(role => { return { id: role, type: "ROLE", permission: true } });
-            permissions.push({ id: "301200493307494400", type: "USER", permission: true });
-            commandCreated.setPermissions(permissions);
+            command.permittedRoles.forEach(role => {
+              permissions.push({ id: role, type: "ROLE", permission: true });
+            });
           }
+          if (command.ownerOnly) {
+            permissions.splice(0, permissions.length);
+            permissions.push({ id: this.client.ownerID, type: "USER", permission: true });
+          }
+          if (permissions.length == 0) {
+            permissions.push({ id: "775799853077758053", type: "ROLE", permission: true });
+          }
+          if (this.client.commandHandler.ignorePermissions.length > 0) {
+            this.client.commandHandler.ignorePermissions.forEach(memberId => {
+              permissions.push({ id: memberId, type: "USER", permission: true });
+            });
+          }
+
+          commandCreated.setPermissions(permissions);
         }
       }, 500);
     }
@@ -240,6 +257,13 @@ async function resolveMessage(channel, messageId, messageOrChannels) {
   return message;
 }
 
+function resolveInteractionValue(interaction) {
+  switch (interaction.type) {
+    case "USER": return interaction.member;
+    default: return interaction.value;
+  }
+}
+
 module.exports = {
   CustomCommand: CustomCommand,
   CustomCommandHandler: CustomCommandHandler,
@@ -248,5 +272,6 @@ module.exports = {
   resolveMembers: resolveMembers,
   resolveChannel: resolveChannel,
   resolveChannels: resolveChannels,
-  resolveMessage: resolveMessage
+  resolveMessage: resolveMessage,
+  resolveInteractionValue: resolveInteractionValue,
 };

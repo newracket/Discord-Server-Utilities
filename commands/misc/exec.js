@@ -9,22 +9,24 @@ class ExecCommand extends CustomCommand {
       usage: "exec <linux code>",
       category: "Misc",
       ownerOnly: true,
-      args: [
-        {
-          id: "content",
-          match: "content"
-        }
-      ]
+      slashCommand: true,
+      args: [{
+          id: "code",
+          match: "content",
+          type: "string",
+          description: "Linux code to execute",
+          required: true
+        }]
     });
   }
 
   async exec(message, args) {
-    exec(args.content, (error, data) => {
+    exec(args.code, (error, data) => {
       if (error) {
-        return message.channel.send(error.message);
+        return message.reply(error.message);
       }
-      
-      message.channel.send(data.length > 0 ? data : "Empty");
+
+      message.reply(data.length > 0 ? data : "Empty");
     });
   }
 }

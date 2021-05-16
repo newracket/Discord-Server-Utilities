@@ -25,6 +25,15 @@ class ReadyListener extends Listener {
     storedpollsJSON.get().filter(e => !e.ended).forEach(poll => {
       this.client.channels.cache.get(poll.channel).messages.fetch(poll.id).then(() => console.log("Message fetched"));
     });
+
+    const existingCommands = await this.client.guilds.cache.get('633161578363224066').commands.fetch();
+    const currentCommands = this.client.commandHandler.modules.filter(command => command.slashCommand).map(command => command.id);
+
+    existingCommands.forEach(existingCommand => {
+      if (!currentCommands.includes(existingCommand.name)) {
+        existingCommand.delete();
+      }
+    });
   }
 }
 

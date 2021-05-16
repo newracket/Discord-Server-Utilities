@@ -7,9 +7,11 @@ class HelpCommand extends CustomCommand {
       description: "Help command",
       usage: "help OR help <category name> OR help <command name>",
       category: "Misc",
+      slashCommand: true,
       args: [{
         id: "category",
-        type: "string"
+        type: "string",
+        description: "Command name or category name to get help for"
       }]
     });
   }
@@ -23,7 +25,7 @@ class HelpCommand extends CustomCommand {
       if (!commandsObject) {
         commandsObject = this.handler.modules.filter(command => command.id.toLowerCase() == args.category.toLowerCase() || command.aliases.map(e => e.toLowerCase()).includes(args.category.toLowerCase()));
 
-        if (commandsObject.size == 0) return message.channel.send("There is no command or category with that name");
+        if (commandsObject.size == 0) return message.reply("There is no command or category with that name");
       }
 
       embedOutput = this.client.util.embed({ color: '#0099ff', title: `Server Helper Bot ${commandsObject.first().categoryID} Commands`, footer: { text: `Do ${this.handler.prefix}help <category name> or ${this.handler.prefix}help <command name> to get more details` } });
@@ -42,7 +44,7 @@ class HelpCommand extends CustomCommand {
       });
     }
 
-    message.channel.send(embedOutput);
+    message.reply(embedOutput);
   }
 }
 

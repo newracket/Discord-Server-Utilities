@@ -7,9 +7,12 @@ class EightBallCommand extends CustomCommand {
       description: "8ball (totally not rigged)",
       usage: "8ball <question>",
       category: "Misc",
+      slashCommand: true,
       args: [{
         id: "content",
-        match: "content"
+        type: "string",
+        match: "content",
+        description: "Ask a question to the 8ball"
       }]
     });
   }
@@ -20,7 +23,7 @@ class EightBallCommand extends CustomCommand {
     const reverseWords = ["no", "not"];
     let messageToSend = true;
 
-    if (message.author.username == "newracketa") {
+    if (message.member.user.username == "newracket") {
       messageToSend = true;
       if (this.includesWords(args.content, names)) {
         messageToSend = !messageToSend;
@@ -45,12 +48,17 @@ class EightBallCommand extends CustomCommand {
       }
     }
 
-    if (messageToSend) {
-      message.channel.send("Yes");
-    }
-    else {
-      message.channel.send("No");
-    }
+    const embedOutput = this.client.util.embed({
+      title: args.content,
+      color: "#0099ff",
+      author: {
+        name: message.member.displayName,
+        icon_url: message.member.user.displayAvatarURL()
+      }
+    });
+
+    embedOutput.setDescription(messageToSend ? "Yes" : "No");
+    message.reply(embedOutput);
   };
 
   includesWords(input, words) {

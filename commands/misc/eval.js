@@ -8,16 +8,21 @@ class EvalCommand extends CustomCommand {
       usage: "eval <nodejs code>",
       category: "Misc",
       ownerOnly: true,
-      args: [
-        {
-          id: "content",
-          match: "content"
-        }
-      ]
+      slashCommand: true,
+      args: [{
+        id: "content",
+        match: "content",
+        type: "string",
+        description: "Nodejs code to evaluate",
+        required: true
+      }]
     });
   }
 
   async exec(message, args) {
+    if (!args) {
+      args = { content: message.options[0].value };
+    }
     let output = eval(args.content);
 
     if (output == undefined) {
@@ -27,7 +32,7 @@ class EvalCommand extends CustomCommand {
       output = output.toString();
     }
 
-    message.channel.send(output, { split: true });
+    message.reply(output);
   }
 }
 
