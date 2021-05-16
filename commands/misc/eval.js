@@ -10,7 +10,7 @@ class EvalCommand extends CustomCommand {
       ownerOnly: true,
       slashCommand: true,
       args: [{
-        id: "content",
+        id: "code",
         match: "content",
         type: "string",
         description: "Nodejs code to evaluate",
@@ -21,9 +21,9 @@ class EvalCommand extends CustomCommand {
 
   async exec(message, args) {
     if (!args) {
-      args = { content: message.options[0].value };
+      args = { code: message.options[0].value };
     }
-    let output = eval(args.content);
+    let output = eval(args.code);
 
     if (output == undefined) {
       return message.channel.send("Output is undefined");

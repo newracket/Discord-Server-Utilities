@@ -9,7 +9,7 @@ class HelpCommand extends CustomCommand {
       category: "Misc",
       slashCommand: true,
       args: [{
-        id: "category",
+        id: "command",
         type: "string",
         description: "Command name or category name to get help for"
       }]
