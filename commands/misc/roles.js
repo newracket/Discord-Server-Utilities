@@ -7,7 +7,9 @@ class RolesCommand extends CustomCommand {
       description: "Displays the order of roles",
       usage: "roles",
       category: "Moderation",
-      channel: "guild"
+      channel: "guild",
+      slashCommand: true,
+      args: []
     });
   }
 
@@ -38,7 +40,19 @@ class RolesCommand extends CustomCommand {
 
     currentEmbed.setDescription(currentDescription);
     embeds.push(currentEmbed);
-    embeds.forEach(embed => message.channel.send(embed));
+    embeds.forEach((embed, i) => {
+      if (i == 0) {
+        message.reply(embed);
+      }
+      else {
+        if (message?.constructor?.name == "CommandInteraction") {
+          message.followUp(embed);
+        }
+        else {
+          message.channel.send(embed);
+        }
+      }
+    });
   }
 }
 

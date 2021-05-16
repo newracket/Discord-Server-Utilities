@@ -7,32 +7,29 @@ class RoleMembersCommand extends CustomCommand {
       description: "Lists all members with specific role",
       usage: "rolemembers <role name>",
       category: "Misc",
-      args: [
-        {
-          id: "role",
-          match: "content"
-        }
-      ]
+      slashCommand: true,
+      args: [{
+        id: "role",
+        type: "role",
+        description: "Role to list members for",
+        required: true
+      }]
     });
   }
 
   async exec(message, args) {
-    if (!args.role) return message.channel.send("Role not specified.");
+    if (!args.role) return message.reply("Role not found.");
 
-    const role = await resolveRole(args.role, message);
-
-    if (!role) return message.channel.send("Role not found.");
-
-    const roleMembers = role.members.array();
-    if (roleMembers.length == 0) return message.channel.send("No one has that role");
+    const roleMembers = args.role.members.array();
+    if (roleMembers.length == 0) return message.reply("No one has that role");
 
     const embed = this.client.util.embed({
-      color: role.hexColor,
-      title: `Members with ${role.name} role`,
+      color: args.role.hexColor,
+      title: `Members with ${args.role.name} role`,
       description: roleMembers.join(" ")
     });
 
-    message.channel.send(embed);
+    message.reply(embed);
   }
 }
 

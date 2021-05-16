@@ -11,25 +11,25 @@ class TtsCommand extends CustomCommand {
       description: "Converts text message to speech and sends in voice channel",
       usage: "tts <message>",
       category: "Misc",
-      args: [
-        {
-          id: "content",
-          match: "content"
-        }
-      ]
+      slashCommand: true,
+      args: [{
+        id: "content",
+        type: "string",
+        match: "content",
+        description: "Text to conver to speech",
+        required: true
+      }]
     });
   }
 
   async exec(message, args) {
     const nicks = nicksJSON.get();
 
-    args = args.content.split(" ");
-
-    if (args.length < 0) {
+    if (args.content.length < 0) {
       message.channel.send("No message to say.");
       return;
     }
-    else if (args.join(" ").length > 400) {
+    else if (args.content.length > 400) {
       message.channel.send("Message exceeds character limit of 400.");
       return;
     }
@@ -45,8 +45,8 @@ class TtsCommand extends CustomCommand {
           voiceChannel = await resolveChannel("633161578363224070", message);
         }
 
-        const nickname = nicks[message.author.id] != undefined ? nicks[message.author.id] : message.member.displayName;
-        const speech = nickname + " says " + args.map(e => {
+        const nickname = nicks[message.member.user.id] != undefined ? nicks[message.member.user.id] : message.member.displayName;
+        const speech = nickname + " says " + args.content.split(" ").map(e => {
           if (e[0] == "<" && e[1] == ":" && e[e.length - 1] == ">") {
             return e.split(":")[1];
           }
@@ -62,6 +62,10 @@ class TtsCommand extends CustomCommand {
           dispatcher.on('finish', () => {
             connection.disconnect();
             message.client.playing = false;
+
+            if (message?.constructor?.name == "CommandInteraction") {
+              message.defer();
+            }
           });
         });
       }

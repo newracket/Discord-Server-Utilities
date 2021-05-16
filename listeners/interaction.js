@@ -13,7 +13,7 @@ class InteractionListener extends Listener {
     const command = this.client.commandHandler.findCommand(interaction.commandName);
 
     if (command) {
-      if (command.args && command.args[0].match == "content") {
+      if (command.args && command?.args[0]?.match == "content") {
         return command.exec(interaction, {
           [command.args[0].id]: interaction.options.reduce((args, currentOption) => args + currentOption.value + " ", "")
         });

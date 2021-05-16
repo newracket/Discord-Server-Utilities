@@ -268,6 +268,7 @@ async function resolveMessage(channel, messageId, messageOrChannels) {
 function resolveInteractionValue(interaction) {
   switch (interaction.type) {
     case "USER": return interaction.member;
+    case "ROLE": return interaction.role;
     default: return interaction.value;
   }
 }
