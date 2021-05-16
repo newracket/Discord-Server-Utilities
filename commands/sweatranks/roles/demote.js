@@ -87,8 +87,8 @@ class DemoteCommand extends CustomCommand {
         return this.demoteMember(message, member, roles, 0);
       }
 
-      const strikesMessage = await resolveMessage(strikesChannelId, strikesJSON.getValue(member.id).messageId, message);
       if (strikesJSON.hasKey(member.id)) {
+        const strikesMessage = await resolveMessage(strikesChannelId, strikesJSON.getValue(member.id).messageId, message);
         if (strikesJSON.getValue(member.id).value == 1) {
           strikesJSON.deleteKey(member.id);
 
@@ -98,6 +98,7 @@ class DemoteCommand extends CustomCommand {
         else {
           const currentValue = strikesJSON.getValue(member.id);
           currentValue.value--;
+          strikesJSON.setValue(member.id, currentValue);
 
           strikesMessage.edit(`${member.displayName} - ${currentValue.value}`);
           this.messagesToSend[member.displayName].push(`One strike was removed. ${member} now has 1 strike.`);

@@ -33,7 +33,10 @@ class PromoteCommand extends CustomCommand {
 
   async exec(message, args) {
     this.messagesToSend = {};
-    console.log(args);
+
+    if (!args.times) {
+      args.times = 1;
+    }
     this.promoteMember(message, args.member, args.member.roles.cache.map(role => role.name), args.times);
   }
 

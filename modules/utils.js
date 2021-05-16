@@ -107,53 +107,61 @@ class CustomCommandHandler extends CommandHandler {
 
     return false;
   }
+}
 
-  /**
-     * Registers a module.
-     * @param {Command} command - Module to use.
-     * @param {string} [filepath] - Filepath of module.
-     * @returns {void}
-     */
-  async register(command, filepath) {
-    super.register(command, filepath);
+async function createSlashCommand(command, client) {
+  const commandOptions = {
+    name: command.id,
+    description: command.description,
+    options: command.args.map(arg => { arg.name = arg.id; arg.type = arg.type.toUpperCase().replace("MEMBER", "USER"); return arg; }),
+    defaultPermission: false
+  };
 
-    if (command.slashCommand) {
-      const commandOptions = {
-        name: command.id,
-        description: command.description,
-        options: command.args.map(arg => { arg.name = arg.id; arg.type = arg.type.toUpperCase().replace("MEMBER", "USER"); return arg; }),
-        defaultPermission: false
-      };
+  let guild = client.guilds.cache.get("633161578363224066");
+  if (!guild) {
+    guild = await client.guilds.fetch("633161578363224066");
+  }
 
-      const guild = await this.client.guilds.fetch("633161578363224066");
-      const interval = setInterval(async () => {
-        if (this.client.uptime) {
-          clearInterval(interval);
-          const commandCreated = await guild.commands.create(commandOptions);
-          const permissions = [];
+  let existingCommands = guild.commands.cache;
+  if (existingCommands.size == 0) {
+    existingCommands = await guild.commands.fetch();
+  }
 
-          if (command.permittedRoles) {
-            command.permittedRoles.forEach(role => {
-              permissions.push({ id: role, type: "ROLE", permission: true });
-            });
-          }
-          if (command.ownerOnly) {
-            permissions.splice(0, permissions.length);
-            permissions.push({ id: this.client.ownerID, type: "USER", permission: true });
-          }
-          if (permissions.length == 0) {
-            permissions.push({ id: "775799853077758053", type: "ROLE", permission: true });
-          }
-          if (this.client.commandHandler.ignorePermissions.length > 0) {
-            this.client.commandHandler.ignorePermissions.forEach(memberId => {
-              permissions.push({ id: memberId, type: "USER", permission: true });
-            });
-          }
+  const matchedCommand = existingCommands.find(existingCommand => ["name", "description"].filter(key => existingCommand[key] == commandOptions[key]).length == 2);
+  let matchedPerfectly = false;
 
-          commandCreated.setPermissions(permissions);
-        }
-      }, 500);
+  if (matchedCommand) {
+    matchedPerfectly = true;
+    matchedCommand.options.forEach((option, i) => {
+      if (["type", "name", "description", "required"].filter(key => option[key] == commandOptions.options[i][key]).length != 4) {
+        matchedPerfectly = false;
+      }
+    });
+  }
+
+  if (!matchedPerfectly) {
+    const commandCreated = await guild.commands.create(commandOptions);
+    const permissions = [];
+
+    if (command.permittedRoles) {
+      command.permittedRoles.forEach(role => {
+        permissions.push({ id: role, type: "ROLE", permission: true });
+      });
     }
+    if (command.ownerOnly) {
+      permissions.splice(0, permissions.length);
+      permissions.push({ id: client.ownerID, type: "USER", permission: true });
+    }
+    if (permissions.length == 0) {
+      permissions.push({ id: "775799853077758053", type: "ROLE", permission: true });
+    }
+    if (client.commandHandler.ignorePermissions.length > 0) {
+      client.commandHandler.ignorePermissions.forEach(memberId => {
+        permissions.push({ id: memberId, type: "USER", permission: true });
+      });
+    }
+
+    commandCreated.setPermissions(permissions);
   }
 }
 
@@ -181,13 +189,13 @@ async function resolveRole(text, messageOrRoles, caseSensitive = false) {
 async function resolveMember(text, messageOrMembers, caseSensitive = false) {
   const classType = messageOrMembers?.constructor?.name;
 
-  if (!["Message", "Collection"].includes(classType)) return undefined;
+  if (!["Message", "Collection", "CommandInteraction"].includes(classType)) return undefined;
 
   if (text.match(/<@!\d*>/g)) {
     text = text.match(/<@!\d*>/g)[0].replace(/[<@!>]/g, "");
   }
 
-  if (classType == "Message") {
+  if (classType == "Message" || classType == "CommandInteraction") {
     messageOrMembers = await messageOrMembers.guild.members.fetch();
   }
 
@@ -216,13 +224,13 @@ async function resolveMembers(text, messageOrMembers, caseSensitive = false) {
 async function resolveChannel(text, messageOrChannels, caseSensitive = false) {
   const classType = messageOrChannels?.constructor?.name;
 
-  if (!["Message", "Collection"].includes(classType)) return undefined;
+  if (!["Message", "Collection", "CommandInteraction"].includes(classType)) return undefined;
 
   if (text.match(/<#\d*>/g)) {
     text = text.match(/<#\d*>/g)[0].replace(/[<#>]/g, "");
   }
 
-  if (classType == "Message") {
+  if (classType == "Message" || classType == "CommandInteraction") {
     messageOrChannels = messageOrChannels.guild.channels.cache;
   }
 
@@ -274,4 +282,5 @@ module.exports = {
   resolveChannels: resolveChannels,
   resolveMessage: resolveMessage,
   resolveInteractionValue: resolveInteractionValue,
+  createSlashCommand: createSlashCommand
 };
