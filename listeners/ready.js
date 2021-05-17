@@ -32,13 +32,13 @@ class ReadyListener extends Listener {
       guild = await this.client.guilds.fetch('633161578363224066');
     }
     const existingCommands = await guild.commands.fetch();
-    const currentCommands = this.client.commandHandler.modules.filter(command => command.slashCommand).map(command => command.id);
+    const currentCommands = this.client.commandHandler.modules.filter(command => command.slashCommand).map(command => command.aliases).flat();
 
-    existingCommands.forEach(existingCommand => {
+    for (const existingCommand of existingCommands.array()) {
       if (!currentCommands.includes(existingCommand.name)) {
-        existingCommand.delete();
+        await existingCommand.delete();
       }
-    });
+    };
 
     this.client.commandHandler.modules.filter(command => command.slashCommand).forEach(currentCommand => {
       createSlashCommand(currentCommand, client);

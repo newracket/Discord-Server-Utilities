@@ -149,10 +149,6 @@ async function createSlashCommand(command, client) {
           permissions.push({ id: role, type: "ROLE", permission: true });
         });
       }
-      if (command.ownerOnly) {
-        permissions.splice(0, permissions.length);
-        permissions.push({ id: client.ownerID, type: "USER", permission: true });
-      }
       if (permissions.length == 0) {
         permissions.push({ id: "775799853077758053", type: "ROLE", permission: true });
       }
@@ -160,6 +156,10 @@ async function createSlashCommand(command, client) {
         client.commandHandler.ignorePermissions.forEach(memberId => {
           permissions.push({ id: memberId, type: "USER", permission: true });
         });
+      }
+      if (command.ownerOnly) {
+        permissions.splice(0, permissions.length);
+        permissions.push({ id: client.ownerID, type: "USER", permission: true });
       }
 
       commandCreated.setPermissions(permissions);

@@ -14,7 +14,8 @@ class RemoveRoleCommand extends CustomCommand {
         id: "role",
         type: "role",
         required: true,
-        description: "Role to delete"
+        description: "Role to delete",
+        match: "content"
       }]
     });
   }

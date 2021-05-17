@@ -8,30 +8,36 @@ class UnmuteCommand extends CustomCommand {
     super('unmute', {
       aliases: ['unmute', 'u'],
       description: "Unmutes users",
-      usage: "unmute <mention users> OR unmute <user ids>",
+      usage: "unmute <mention member/member id/member nickname>",
       category: "Moderation",
       channel: "guild",
       userPermissions: ['ADMINISTRATOR'],
+      slashCommand: true,
       args: [{
-        id: "members",
-        match: "content"
+        id: "member",
+        match: "content",
+        type: "member",
+        required: true,
+        description: "Member to mute"
       }]
     });
   }
 
   async exec(message, args) {
-    const membersToModify = await resolveMembers(args.members, message);
-    membersToModify.forEach(async member => {
-      await member.roles.remove(await resolveRole("Muted", message));
-      const mutedAdmins = muteAdminJSON.get();
+    if (!args.member) return message.reply("Member not found.");
 
-      if (mutedAdmins.includes(member.id)) {
-        muteAdminJSON.set(mutedAdmins.filter(id => id != member.id));
-        await member.roles.add(await resolveRole("Admin", message));
-      }
-    });
+    const mutedID = "806387819432902656";
+    const adminID = "633163401907929088";
+    await args.member.roles.remove(mutedID);
 
-    message.channel.send(membersToModify.map(member => `<@${member.id}> has been unmuted.`).join("\n"));
+    const mutedAdmins = muteAdminJSON.get();
+
+    if (mutedAdmins.includes(args.member.id)) {
+      muteAdminJSON.set(mutedAdmins.filter(id => id != args.member.id));
+      await args.member.roles.add(adminID);
+    }
+
+    message.reply(`${args.member} has been unmuted.`);
   }
 }
 

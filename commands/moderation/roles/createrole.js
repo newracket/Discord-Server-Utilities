@@ -15,23 +15,18 @@ class CreateRoleCommand extends CustomCommand {
         type: "string",
         description: "Name of role to create",
         required: true,
-        match: "content"
+        match: "notLast"
       }, {
         id: "color",
         type: "string",
         description: "Color of role to create",
         required: true,
-        match: "none"
+        match: "last"
       }]
     });
   }
 
   async exec(message, args) {
-    if (!args.color) {
-      args.color = args.name.split(" ").splice(-1).join(" ");
-      args.name = args.name.split(" ").slice(0, -1).join(" ");
-    }
-
     const colorsList = ["default", "white", "aqua", "green", "blue", "yellow", "purple", "luminous_vivid_pink", "gold", "orange", "red", "grey", "darker_grey", "navy", "dark_aqua", "dark_green", "dark_blue", "dark_purple", "dark_vivid_pink", "dark_gold", "dark_orange", "dark_red", "dark_grey", "light_grey", "dark_navy", "blurple", "greyple", "dark_but_not_black", "not_quite_black", "random"];
 
     if (!new RegExp(/^#[0-9A-F]{6}$/i).test(args.color) && !colorsList.includes(args.color.toLowerCase())) {

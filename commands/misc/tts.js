@@ -7,7 +7,7 @@ const nicksJSON = new JSONFileManager("nicks");
 class TtsCommand extends CustomCommand {
   constructor() {
     super('tts', {
-      aliases: ['tts', 't'],
+      aliases: ['tts'],
       description: "Converts text message to speech and sends in voice channel",
       usage: "tts <message>",
       category: "Misc",

@@ -5,42 +5,36 @@ class GrantRoleCommand extends CustomCommand {
     super('grantrole', {
       aliases: ['grantrole', 'gr'],
       description: "Grants a role to a user",
-      usage: "grantrole <role name, role id, or role ping> <user nicknames, usernames, or pings>",
+      usage: "grantrole <role name, role id, or role ping> <user nickname, username, or ping>",
       category: "Moderation",
       channel: "guild",
       userPermissions: ['MANAGE_ROLES'],
+      slashCommand: true,
       args: [{
-        id: "content",
-        match: "content"
+        id: "role",
+        type: "role",
+        required: true,
+        description: "Role to grant",
+        match: "notLast"
+      }, {
+        id: "member",
+        type: "member",
+        required: true,
+        description: "Member to grant role to",
+        match: "last"
       }]
     });
   }
 
   async exec(message, args) {
-    const words = args.content.split(" ");
-    let currentRoleName = "";
+    if (!args.role) return message.reply("Role not found.");
+    if (!args.member) return message.reply("Member not found.");
 
-    for (const [i, word] of words.entries()) {
-      currentRoleName += `${word} `;
-      const role = await resolveRole(currentRoleName.trim(), message);
+    const highestRole = message.member.roles.highest;
+    if (highestRole.comparePositionTo(args.role) <= 0) return message.reply("The role you are trying to assign is higher than your highest role.");
 
-      if (role) {
-        const highestRole = message.member.roles.highest;
-        if (highestRole.comparePositionTo(role) <= 0) return message.channel.send("The role you are trying to assign is higher than your highest role.");
-
-        const users = words.splice(i + 1);
-        const membersToModify = await resolveMembers(users.join(" "), message);
-
-        membersToModify.forEach(async member => {
-          await member.roles.add(role);
-        });
-
-        if (membersToModify.length == 0) return message.channel.send("No users found.");
-        return message.channel.send(`${role.name} has been given to: ${membersToModify.join(", ")}.`);
-      }
-    };
-
-    message.channel.send("No role found with that name");
+    args.member.roles.add(args.role);
+    message.reply(`${args.role.name} has been given to: ${args.member}.`);
   }
 }
 

@@ -8,23 +8,28 @@ class RolePositionCommand extends CustomCommand {
       usage: "roleposition <role name or id> <new position>",
       category: "Moderation",
       channel: "guild",
+      slashCommand: true,
       args: [{
-        id: "content",
-        match: "restContent"
+        id: "role",
+        type: "role",
+        description: "Role to set position of",
+        match: "notLast",
+        required: true
       },
       {
         id: "position",
-        type: "integer"
+        type: "integer",
+        description: "New position of role",
+        match: "last",
+        required: true
       }],
       userPermissions: ['MANAGE_ROLES']
     });
   }
 
   async exec(message, args) {
-    const role = await resolveRole(args.content.split(" ").slice(0, -1).join(" "), message);
-
-    const newRole = await role.setPosition(message.guild.roles.cache.size - args.position);
-    message.channel.send("The new position of your role is: " + newRole.position);
+    const newRole = await args.role.setPosition(message.guild.roles.cache.size - args.position);
+    message.reply("The new position of your role is: " + (message.guild.roles.cache.size - newRole.position));
   }
 }
 

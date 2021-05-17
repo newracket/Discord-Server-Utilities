@@ -8,20 +8,22 @@ class HoistCommand extends CustomCommand {
       usage: "hoist <role name or id>",
       category: "Moderation",
       channel: "guild",
+      slashCommand: true,
       args: [{
         id: "role",
-        match: "content"
+        match: "content",
+        type: "role",
+        description: "Role to hoist",
+        required: true
       }],
       userPermissions: ['MANAGE_ROLES']
     });
   }
 
   async exec(message, args) {
-    const role = await resolveRole(args.role, message);
-
-    if (!role) return message.channel.send("Role not found.");
-    await role.setHoist(!role.hoist);
-    message.channel.send("Success");
+    if (!args.role) return message.reply("Role not found.");
+    await args.role.setHoist(!args.role.hoist);
+    message.reply("Success");
   }
 }
 

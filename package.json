@@ -5,7 +5,7 @@
   "main": "server-helper.js",
   "dependencies": {
     "chrono-node": "^1.4.8",
-    "discord-akairo": "^8.1.0",
+    "discord-akairo": "github:newracket/discord-akairo",
     "discord.js": "github:discordjs/discord.js",
     "ffmpeg-static": "^4.3.0",
     "gtts": "^0.2.1",
