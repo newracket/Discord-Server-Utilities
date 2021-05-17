@@ -271,6 +271,7 @@ function resolveInteractionValue(interaction) {
   switch (interaction.type) {
     case "USER": return interaction.member;
     case "ROLE": return interaction.role;
+    case "CHANNEL": return interaction.channel;
     default: return interaction.value;
   }
 }

@@ -9,21 +9,19 @@ class ArchiveCommand extends CustomCommand {
       category: "Moderation",
       channel: "guild",
       userPermissions: ['MANAGE_CHANNELS'],
+      slashCommand: true,
       args: [{
-        id: "content",
-        match: "content"
+        id: "channel",
+        type: "channel",
+        required: true,
+        description: "Channel to archive."
       }]
     });
   }
 
   async exec(message, args) {
-    const channels = await resolveChannels(args.content, message);
-
-    channels.forEach(async channel => {
-      await channel.setParent("649775722306732040");
-
-      message.channel.send(`<#${channel.id}> has been archived.`);
-    });
+    await args.channel.setParent("649775722306732040");
+    message.reply(`<#${args.channel.id}> has been archived.`);
   }
 }
 
