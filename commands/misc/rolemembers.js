@@ -12,7 +12,8 @@ class RoleMembersCommand extends CustomCommand {
         id: "role",
         type: "role",
         description: "Role to list members for",
-        required: true
+        required: true,
+        match: "content"
       }]
     });
   }
