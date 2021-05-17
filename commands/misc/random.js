@@ -7,20 +7,23 @@ class RandomCommand extends CustomCommand {
       description: "Randomly chooses selection from given choices",
       usage: "random <options to randomly choose from, separated by spaces or commas>",
       category: "Misc",
-      args: [
-        {
-          id: "options",
-          match: "content"
-        }
-      ]
+      slashCommand: true,
+      args: [{
+        id: "options",
+        match: "content",
+        type: "string",
+        required: true,
+        description: "Options to randomly select from"
+      }]
     });
   }
 
   async exec(message, args) {
     if (!args.options) args.options = "all";
+    console.log(args);
 
     let randomOptions = args.options.split(",");
-    if (args.options == "all") {
+    if (args.options.trim() == "all") {
       randomOptions = ["aniket", "aaron", "achintya", "alan", "david", "eric", "gio", "john", "justin", "mena", "oscar"];
     }
     else if (!args.options.includes(",")) {
@@ -28,7 +31,7 @@ class RandomCommand extends CustomCommand {
     }
     const randomIndex = Math.floor(Math.random() * randomOptions.length);
 
-    message.channel.send(`Your random selection is: ${randomOptions[randomIndex].trim()}`);
+    message.reply(`Your random selection is: ${randomOptions[randomIndex].trim()}`);
   }
 }
 

@@ -110,59 +110,61 @@ class CustomCommandHandler extends CommandHandler {
 }
 
 async function createSlashCommand(command, client) {
-  const commandOptions = {
-    name: command.id,
-    description: command.description,
-    options: command.args.map(arg => { arg.name = arg.id; arg.type = arg.type.toUpperCase().replace("MEMBER", "USER"); return arg; }),
-    defaultPermission: false
-  };
+  command.aliases.forEach(async alias => {
+    const commandOptions = {
+      name: alias,
+      description: command.description,
+      options: command.args.map(arg => { arg.name = arg.id; arg.type = arg.type.toUpperCase().replace("MEMBER", "USER"); return arg; }),
+      defaultPermission: false
+    };
 
-  let guild = client.guilds.cache.get("633161578363224066");
-  if (!guild) {
-    guild = await client.guilds.fetch("633161578363224066");
-  }
+    let guild = client.guilds.cache.get("633161578363224066");
+    if (!guild) {
+      guild = await client.guilds.fetch("633161578363224066");
+    }
 
-  let existingCommands = guild.commands.cache;
-  if (existingCommands.size == 0) {
-    existingCommands = await guild.commands.fetch();
-  }
+    let existingCommands = guild.commands.cache;
+    if (existingCommands.size == 0) {
+      existingCommands = await guild.commands.fetch();
+    }
 
-  const matchedCommand = existingCommands.find(existingCommand => ["name", "description"].filter(key => existingCommand[key] == commandOptions[key]).length == 2);
-  let matchedPerfectly = false;
+    const matchedCommand = existingCommands.find(existingCommand => ["name", "description"].filter(key => existingCommand[key] == commandOptions[key]).length == 2);
+    let matchedPerfectly = false;
 
-  if (matchedCommand) {
-    matchedPerfectly = true;
-    matchedCommand.options.forEach((option, i) => {
-      if (["type", "name", "description", "required"].filter(key => option[key] == commandOptions.options[i][key]).length != 4) {
-        matchedPerfectly = false;
+    if (matchedCommand) {
+      matchedPerfectly = true;
+      matchedCommand.options.forEach((option, i) => {
+        if (["type", "name", "description", "required"].filter(key => option[key] == commandOptions.options[i][key]).length != 4) {
+          matchedPerfectly = false;
+        }
+      });
+    }
+
+    if (!matchedPerfectly) {
+      const commandCreated = await guild.commands.create(commandOptions);
+      const permissions = [];
+
+      if (command.permittedRoles) {
+        command.permittedRoles.forEach(role => {
+          permissions.push({ id: role, type: "ROLE", permission: true });
+        });
       }
-    });
-  }
+      if (command.ownerOnly) {
+        permissions.splice(0, permissions.length);
+        permissions.push({ id: client.ownerID, type: "USER", permission: true });
+      }
+      if (permissions.length == 0) {
+        permissions.push({ id: "775799853077758053", type: "ROLE", permission: true });
+      }
+      if (client.commandHandler.ignorePermissions.length > 0) {
+        client.commandHandler.ignorePermissions.forEach(memberId => {
+          permissions.push({ id: memberId, type: "USER", permission: true });
+        });
+      }
 
-  if (!matchedPerfectly) {
-    const commandCreated = await guild.commands.create(commandOptions);
-    const permissions = [];
-
-    if (command.permittedRoles) {
-      command.permittedRoles.forEach(role => {
-        permissions.push({ id: role, type: "ROLE", permission: true });
-      });
+      commandCreated.setPermissions(permissions);
     }
-    if (command.ownerOnly) {
-      permissions.splice(0, permissions.length);
-      permissions.push({ id: client.ownerID, type: "USER", permission: true });
-    }
-    if (permissions.length == 0) {
-      permissions.push({ id: "775799853077758053", type: "ROLE", permission: true });
-    }
-    if (client.commandHandler.ignorePermissions.length > 0) {
-      client.commandHandler.ignorePermissions.forEach(memberId => {
-        permissions.push({ id: memberId, type: "USER", permission: true });
-      });
-    }
-
-    commandCreated.setPermissions(permissions);
-  }
+  });
 }
 
 async function resolveRole(text, messageOrRoles, caseSensitive = false) {

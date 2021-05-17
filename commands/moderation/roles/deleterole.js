@@ -9,28 +9,29 @@ class RemoveRoleCommand extends CustomCommand {
       category: "Moderation",
       channel: "guild",
       userPermissions: ['MANAGE_ROLES'],
+      slashCommand: true,
       args: [{
-        id: "roleName",
-        match: "content"
+        id: "role",
+        type: "role",
+        required: true,
+        description: "Role to delete"
       }]
     });
   }
 
   async exec(message, args) {
-    const role = await resolveRole(args.roleName, message);
-
-    if (!role) {
-      return message.channel.send("This role does not exist.");
+    if (!args.role) {
+      return message.reply("This role does not exist.");
     }
-    else if (role.length > 1) {
+    else if (args.role.length > 1) {
       const highestRole = message.member.roles.highest;
-      if (highestRole.comparePositionTo(role) <= 0) return message.channel.send("The role you are trying to assign is higher than your highest role.");
+      if (highestRole.comparePositionTo(args.role) <= 0) return message.reply("The role you are trying to assign is higher than your highest role.");
 
-      return message.channel.send("Multiple roles with this name exist.")
+      return message.reply("Multiple roles with this name exist.")
     }
 
-    await role.delete();
-    message.channel.send(`${role.name} has been deleted.`);
+    await args.role.delete();
+    message.reply(`${args.role.name} has been deleted.`);
   }
 }
 

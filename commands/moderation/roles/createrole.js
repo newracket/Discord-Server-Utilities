@@ -9,24 +9,37 @@ class CreateRoleCommand extends CustomCommand {
       category: "Moderation",
       channel: "guild",
       userPermissions: ['MANAGE_ROLES'],
+      slashCommand: true,
       args: [{
-        id: "content",
+        id: "name",
+        type: "string",
+        description: "Name of role to create",
+        required: true,
         match: "content"
+      }, {
+        id: "color",
+        type: "string",
+        description: "Color of role to create",
+        required: true,
+        match: "none"
       }]
     });
   }
 
   async exec(message, args) {
-    const colorsList = ["default", "white", "aqua", "green", "blue", "yellow", "purple", "luminous_vivid_pink", "gold", "orange", "red", "grey", "darker_grey", "navy", "dark_aqua", "dark_green", "dark_blue", "dark_purple", "dark_vivid_pink", "dark_gold", "dark_orange", "dark_red", "dark_grey", "light_grey", "dark_navy", "blurple", "greyple", "dark_but_not_black", "not_quite_black", "random"];
-    const roleColor = args.content.split(" ").slice(-1)[0].toUpperCase();
-    let roleName = args.content.split(" ").slice(0, -1).join(" ");
-
-    if (!new RegExp(/^#[0-9A-F]{6}$/i).test(roleColor) && !colorsList.includes(roleColor.toLowerCase())) {
-      return message.channel.send("Error: No color specified. Use \"default\" if you want the role to have a default color.");
+    if (!args.color) {
+      args.color = args.name.split(" ").splice(-1).join(" ");
+      args.name = args.name.split(" ").slice(0, -1).join(" ");
     }
 
-    const role = await message.guild.roles.create({ data: { name: roleName, color: roleColor } });
-    message.channel.send(`<@&${role.id}> has been created.`);
+    const colorsList = ["default", "white", "aqua", "green", "blue", "yellow", "purple", "luminous_vivid_pink", "gold", "orange", "red", "grey", "darker_grey", "navy", "dark_aqua", "dark_green", "dark_blue", "dark_purple", "dark_vivid_pink", "dark_gold", "dark_orange", "dark_red", "dark_grey", "light_grey", "dark_navy", "blurple", "greyple", "dark_but_not_black", "not_quite_black", "random"];
+
+    if (!new RegExp(/^#[0-9A-F]{6}$/i).test(args.color) && !colorsList.includes(args.color.toLowerCase())) {
+      return message.reply("Error: No color specified. Use \"default\" if you want the role to have a default color.");
+    }
+
+    const role = await message.guild.roles.create({ name: args.name, color: args.color.toUpperCase() });
+    message.reply(`<@&${role.id}> has been created.`);
   }
 }
 
