@@ -10,14 +10,16 @@ class InteractionListener extends Listener {
   }
 
   async exec(interaction) {
-    const command = this.client.commandHandler.findCommand(interaction.commandName);
+    if (!this.client.slashDisabled) {
+      const command = this.client.commandHandler.findCommand(interaction.commandName);
 
-    if (command) {
-      if (command.userPermissions && command.userPermissions.filter(permission => interaction.member.permissions.has(permission)).length == 0) {
-        return interaction.reply(`You do not have permissions to do that. Permissions required: ${command.userPermissions.join(", ")}`);
+      if (command) {
+        if (command.userPermissions && command.userPermissions.filter(permission => interaction.member.permissions.has(permission)).length == 0) {
+          return interaction.reply(`You do not have permissions to do that. Permissions required: ${command.userPermissions.join(", ")}`);
+        }
+
+        command.exec(interaction, interaction.options.reduce((args, currentOption) => { args[currentOption.name] = resolveInteractionValue(currentOption); return args; }, {}));
       }
-
-      command.exec(interaction, interaction.options.reduce((args, currentOption) => { args[currentOption.name] = resolveInteractionValue(currentOption); return args; }, {}));
     }
   }
 }

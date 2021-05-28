@@ -285,8 +285,10 @@ function createCustomStructures() {
       }
 
       async reply(content, options) {
+        if (!options?.split) return super.reply(content, options);
+
         const apiMessage = content instanceof APIMessage ? content : APIMessage.create(this, content, options);
-        const { data } = await apiMessage.resolveData();
+        const { data } = apiMessage.resolveData();
 
         delete options["split"];
         data.content.forEach((splitContent, i) => {
