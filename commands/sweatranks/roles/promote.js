@@ -47,7 +47,7 @@ class PromoteCommand extends CustomCommand {
       roles = await Promise.all(roles.map(async role => await resolveRole(role, message.guild.roles.cache)));
 
       member.roles.set(roles);
-      return message.reply(this.messagesToSend[member.displayName].join("\n"));
+      return message.reply(this.messagesToSend[member.displayName].join("\n"), { split: true });
     }
 
     if (!this.messagesToSend[member.displayName]) {
@@ -95,7 +95,12 @@ class PromoteCommand extends CustomCommand {
       if (sweatranks.indexOf(lastRank) != sweatranks.length - 1) {
         roles.push(sweatranks[sweatranks.indexOf(lastRank) + 1]);
 
-        this.messagesToSend[member.displayName].push(`<@${member.id}> was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}.`);
+        if (member.displayName == "aniket") {
+          this.messagesToSend[member.displayName].push(`<@${member.id}> was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}. This is a cap promotion.`);
+        }
+        else {
+          this.messagesToSend[member.displayName].push(`<@${member.id}> was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}.`);
+        }
         return this.promoteMember(message, member, roles, repeatTimes - 1);
       }
       else {

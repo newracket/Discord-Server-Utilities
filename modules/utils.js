@@ -1,4 +1,5 @@
 const { Command, CommandHandler } = require('discord-akairo');
+const { Structures, APIMessage } = require("discord.js");
 
 class CustomCommand extends Command {
   constructor(id, options = {}) {
@@ -276,15 +277,41 @@ function resolveInteractionValue(interaction) {
   }
 }
 
+function createCustomStructures() {
+  Structures.extend("CommandInteraction", CommandInteraction => {
+    return class CustomCommandInteraction extends CommandInteraction {
+      constructor(client, data) {
+        super(client, data);
+      }
+
+      async reply(content, options) {
+        const apiMessage = content instanceof APIMessage ? content : APIMessage.create(this, content, options);
+        const { data } = await apiMessage.resolveData();
+
+        delete options["split"];
+        data.content.forEach((splitContent, i) => {
+          if (i == 0) {
+            super.reply(splitContent, options);
+          }
+          else {
+            this.followUp(splitContent, options);
+          }
+        });
+      }
+    }
+  });
+}
+
 module.exports = {
-  CustomCommand: CustomCommand,
-  CustomCommandHandler: CustomCommandHandler,
-  resolveRole: resolveRole,
-  resolveMember: resolveMember,
-  resolveMembers: resolveMembers,
-  resolveChannel: resolveChannel,
-  resolveChannels: resolveChannels,
-  resolveMessage: resolveMessage,
-  resolveInteractionValue: resolveInteractionValue,
-  createSlashCommand: createSlashCommand
+  CustomCommand,
+  CustomCommandHandler,
+  resolveRole,
+  resolveMember,
+  resolveMembers,
+  resolveChannel,
+  resolveChannels,
+  resolveMessage,
+  resolveInteractionValue,
+  createSlashCommand,
+  createCustomStructures
 };
