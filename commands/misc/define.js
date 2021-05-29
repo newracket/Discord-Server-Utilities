@@ -24,9 +24,6 @@ class DefinitionCommand extends CustomCommand {
 
     const definitionData = (await axios.get(`https://www.dictionaryapi.com/api/v3/references/collegiate/json/${args.word}?key=10c40550-08a5-4409-a3b1-15af69ba52ba`)).data;
 
-    if (args.word == "garbage") definitionData.push({ shortdef: "aniket" });
-    if (args.word == "sweat") definitionData.push({ shortdef: "justin" });
-
     if (typeof definitionData[0] == "string") return message.reply(`Definition not found. Some possible words are: \n\n${definitionData.join(", ")}`);
     message.reply(`__**Definitions of ${args.word}:**__\n\n${definitionData.map((definition, i) => `${i + 1}. ${definition.shortdef}`).join("\n")}`);
   }
