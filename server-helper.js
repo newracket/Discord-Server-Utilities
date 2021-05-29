@@ -14,7 +14,7 @@ class ServerHelperClient extends AkairoClient {
       directory: "./commands",
       prefix: prefix,
       allowMention: true,
-      ignorePermissions: this.ownerID
+      ignorePermissions: [this.ownerID]
     });
 
     this.listenerHandler = new ListenerHandler(this, {
