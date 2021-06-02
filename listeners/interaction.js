@@ -18,7 +18,7 @@ class InteractionListener extends Listener {
           return interaction.reply(`You do not have permissions to do that. Permissions required: ${command.userPermissions.join(", ")}`);
         }
 
-        if (interaction.options[0].options) {
+        if (interaction?.options[0]?.options) {
           command.exec(interaction, interaction.options[0].options.reduce((args, currentOption) => { args[currentOption.name] = resolveInteractionValue(currentOption); return args; }, { type: interaction.options[0].name }));
         }
         else {
