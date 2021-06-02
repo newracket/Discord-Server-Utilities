@@ -1,4 +1,5 @@
 const { Command, CommandHandler } = require('discord-akairo');
+const { MessageManager } = require('discord.js');
 const { Structures, APIMessage } = require("discord.js");
 
 class CustomCommand extends Command {
@@ -128,17 +129,22 @@ async function createSlashCommand(command, client) {
     if (existingCommands.size == 0) {
       existingCommands = await guild.commands.fetch();
     }
-
     const matchedCommand = existingCommands.find(existingCommand => ["name", "description"].filter(key => existingCommand[key] == commandOptions[key]).length == 2);
     let matchedPerfectly = false;
 
     if (matchedCommand) {
       matchedPerfectly = true;
-      matchedCommand.options.forEach((option, i) => {
-        if (["type", "name", "description", "required"].filter(key => option[key] == commandOptions.options[i][key]).length != 4) {
-          matchedPerfectly = false;
-        }
-      });
+
+      if (matchedCommand.options.length == commandOptions.options.length) {
+        commandOptions.options.forEach((option, i) => {
+          if (["type", "name", "description", "required"].filter(key => option[key] == matchedCommand.options[i][key]).length != 4) {
+            matchedPerfectly = false;
+          }
+        });
+      }
+      else {
+        matchedPerfectly = false;
+      }
     }
 
     if (!matchedPerfectly) {
@@ -171,13 +177,13 @@ async function createSlashCommand(command, client) {
 async function resolveRole(text, messageOrRoles, caseSensitive = false) {
   const classType = messageOrRoles?.constructor?.name;
 
-  if (!["Message", "Collection", "CommandInteraction"].includes(classType)) return undefined;
+  if (!["CustomMessage", "Collection", "CustomCommandInteraction"].includes(classType)) return undefined;
 
   if (text.match(/<@&\d*>/g)) {
     text = text.match(/<@&\d*>/g)[0].replace(/[<@&>]/g, "");
   }
 
-  if (classType == "Message" || classType == "CommandInteraction") {
+  if (classType == "CustomMessage" || classType == "CustomCommandInteraction") {
     messageOrRoles = await messageOrRoles.guild.roles.fetch();
   }
 
@@ -192,13 +198,13 @@ async function resolveRole(text, messageOrRoles, caseSensitive = false) {
 async function resolveMember(text, messageOrMembers, caseSensitive = false) {
   const classType = messageOrMembers?.constructor?.name;
 
-  if (!["Message", "Collection", "CommandInteraction"].includes(classType)) return undefined;
+  if (!["CustomMessage", "Collection", "CustomCommandInteraction"].includes(classType)) return undefined;
 
   if (text.match(/<@!\d*>/g)) {
     text = text.match(/<@!\d*>/g)[0].replace(/[<@!>]/g, "");
   }
 
-  if (classType == "Message" || classType == "CommandInteraction") {
+  if (classType == "CustomMessage" || classType == "CustomCommandInteraction") {
     messageOrMembers = await messageOrMembers.guild.members.fetch();
   }
 
@@ -227,13 +233,13 @@ async function resolveMembers(text, messageOrMembers, caseSensitive = false) {
 async function resolveChannel(text, messageOrChannels, caseSensitive = false) {
   const classType = messageOrChannels?.constructor?.name;
 
-  if (!["Message", "Collection", "CommandInteraction"].includes(classType)) return undefined;
+  if (!["CustomMessage", "Collection", "CustomCommandInteraction"].includes(classType)) return undefined;
 
   if (text.match(/<#\d*>/g)) {
     text = text.match(/<#\d*>/g)[0].replace(/[<#>]/g, "");
   }
 
-  if (classType == "Message" || classType == "CommandInteraction") {
+  if (classType == "CustomMessage" || classType == "CustomCommandInteraction") {
     messageOrChannels = messageOrChannels.guild.channels.cache;
   }
 
@@ -282,6 +288,8 @@ function createCustomStructures() {
     return class CustomCommandInteraction extends CommandInteraction {
       constructor(client, data) {
         super(client, data);
+
+        this.author = this.member.user;
       }
 
       async reply(content, options) {
@@ -299,6 +307,36 @@ function createCustomStructures() {
             this.followUp(splitContent, options);
           }
         });
+      }
+    }
+  });
+
+  Structures.extend("Message", Message => {
+    return class CustomMessage extends Message {
+      constructor(client, data, channel) {
+        super(client, data, channel);
+
+        this.replies = [];
+
+        if (this.reference) {
+          const channel = this.guild.channels.cache.get(this.reference.channelID);
+
+          if (channel) {
+            const message = channel.messages.cache.get(this.reference.messageID);
+
+            if (message) {
+              message.replies.push(this);
+            }
+          }
+        }
+      }
+
+      defer() {
+
+      }
+
+      editReply(content, options) {
+
       }
     }
   });

@@ -15,8 +15,7 @@ class RolePositionCommand extends CustomCommand {
         description: "Role to set position of",
         match: "notLast",
         required: true
-      },
-      {
+      }, {
         id: "position",
         type: "integer",
         description: "New position of role",
@@ -28,8 +27,8 @@ class RolePositionCommand extends CustomCommand {
   }
 
   async exec(message, args) {
-    const newRole = await args.role.setPosition(message.guild.roles.cache.size - args.position);
-    message.reply("The new position of your role is: " + (message.guild.roles.cache.size - newRole.position));
+    const newRole = await args.role.setPosition(args.position);
+    message.reply("The new position of your role is: " + (newRole.position));
   }
 }
 

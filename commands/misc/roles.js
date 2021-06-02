@@ -9,33 +9,43 @@ class RolesCommand extends CustomCommand {
       category: "Moderation",
       channel: "guild",
       slashCommand: true,
-      args: []
+      args: [{
+        id: "member",
+        type: "member",
+        description: "Member to display roles of. If omitted, will display all roles. ",
+        match: "content"
+      }]
     });
   }
 
-  async exec(message) {
-    const roles = (await message.guild.roles.fetch()).filter(role => role.position != 0);
-    roles.sort((a, b) => b.comparePositionTo(a));
+  async exec(message, args) {
+    let roles;
+    if (!args.member) {
+      roles = (await message.guild.roles.fetch()).filter(role => role.position != 0);
+      roles.sort((a, b) => b.comparePositionTo(a));
+    }
+    else {
+      roles = await args.member.roles.cache.filter(role => role.position != 0); ;
+      roles.sort((a, b) => b.comparePositionTo(a));
+    }
 
     const embeds = [];
     let currentEmbed = this.client.util.embed({
-      title: `**__Roles List:__**`
+      title: `**__Roles list for ${args.member ? args.member.displayName : "this server"}:__**`
     });
     let currentDescription = "";
 
     roles.forEach(role => {
-      const roleItem = `${roles.size - role.position + 1}: ${role}\n`;
+      const roleItem = `${role.position}: ${role}\n`;
 
-      if ((currentDescription + roleItem).length < 2048) {
-        currentDescription += roleItem;
-      }
-      else {
+      if ((currentDescription + roleItem).length > 2048) {
         currentEmbed.setDescription(currentDescription);
         embeds.push(currentEmbed);
 
         currentEmbed = this.client.util.embed({});
         currentDescription = "";
       }
+      currentDescription += roleItem;
     });
 
     currentEmbed.setDescription(currentDescription);

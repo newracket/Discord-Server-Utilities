@@ -8,7 +8,7 @@ class CounterCommand extends CustomCommand {
     super('counter', {
       aliases: ['counter'],
       description: "Counters an appeal",
-      usage: "counter <appeal number> <counter>",
+      usage: "counter <appeal number> <argument>",
       category: "Sweatranks",
       channel: "guild",
       args: [{

@@ -23,18 +23,20 @@ class TtsCommand extends CustomCommand {
   }
 
   async exec(message, args) {
+    if (!this.client.giotts && message.author.id == "536324005276155904") return message.reply("You do not have perms to use tts.");
     const nicks = nicksJSON.get();
 
     if (args.content.length < 0) {
-      message.channel.send("No message to say.");
+      message.reply("No message to say.");
       return;
     }
     else if (args.content.length > 400) {
-      message.channel.send("Message exceeds character limit of 400.");
+      message.reply("Message exceeds character limit of 400.");
       return;
     }
     else {
       if (!message.client.playing) {
+        message.defer();
         message.client.playing = true;
         let voiceChannel;
 
@@ -45,7 +47,7 @@ class TtsCommand extends CustomCommand {
           voiceChannel = await resolveChannel("633161578363224070", message);
         }
 
-        const nickname = nicks[message.member.user.id] != undefined ? nicks[message.member.user.id] : message.member.displayName;
+        const nickname = nicks[message.author.id] != undefined ? nicks[message.author.id] : message.member.displayName;
         const speech = nickname + " says " + args.content.split(" ").map(e => {
           if (e[0] == "<" && e[1] == ":" && e[e.length - 1] == ">") {
             return e.split(":")[1];
@@ -54,7 +56,7 @@ class TtsCommand extends CustomCommand {
         }).join(" ");
         const gtts = new gTTS(speech, "en");
 
-        gtts.save("voice.mp3", err => { if (err) message.channel.send(err); });
+        gtts.save("voice.mp3", err => { if (err) message.reply(err); });
 
         voiceChannel.join().then(connection => {
           const dispatcher = connection.play('./voice.mp3');
@@ -63,14 +65,12 @@ class TtsCommand extends CustomCommand {
             connection.disconnect();
             message.client.playing = false;
 
-            if (message?.constructor?.name == "CommandInteraction") {
-              message.defer();
-            }
+            message.editReply(`Said the message "${args.content}" in ${voiceChannel.name}.`);
           });
         });
       }
       else {
-        message.channel.send("Someone else is already using this.");
+        message.reply("Someone else is already using this.");
       }
     }
   }

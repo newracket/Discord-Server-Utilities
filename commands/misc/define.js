@@ -20,7 +20,7 @@ class DefinitionCommand extends CustomCommand {
   }
 
   async exec(message, args) {
-    if (!args.word) return message.reply("Word not specified");
+    if (!args.word) return message.reply("Word not specified.");
 
     const definitionData = (await axios.get(`https://www.dictionaryapi.com/api/v3/references/collegiate/json/${args.word}?key=10c40550-08a5-4409-a3b1-15af69ba52ba`)).data;
 

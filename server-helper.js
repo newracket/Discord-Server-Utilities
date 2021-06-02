@@ -3,6 +3,8 @@ const { CustomCommandHandler, createCustomStructures } = require("./modules/util
 const { prefix, token } = require("./config.json");
 
 class ServerHelperClient extends AkairoClient {
+  giotts = true;
+
   constructor() {
     super({
       ownerID: "301200493307494400",
