@@ -15,15 +15,18 @@ class PromoteCommand extends CustomCommand {
       channel: "guild",
       permittedRoles: ["726565862558924811", "820159352215961620"],
       slashCommand: true,
+      logCommand: true,
       args: [{
         id: "member",
         description: "Member to promote",
         type: "member",
+        match: "words",
         required: true
       }, {
         id: "times",
         description: "Times to promote",
         type: "integer",
+        match: "last",
         default: 1
       }]
     });
@@ -34,10 +37,19 @@ class PromoteCommand extends CustomCommand {
   async exec(message, args) {
     this.messagesToSend = {};
 
+    if (!args.member) return message.reply("You didn't specify anyone to promote.");
     if (!args.times) {
       args.times = 1;
     }
-    this.promoteMember(message, args.member, args.member.roles.cache.map(role => role.name), args.times);
+
+    if (Array.isArray(args.member)) {
+      args.member.forEach(member => {
+        this.promoteMember(message, member, member.roles.cache.map(role => role.name), args.times);
+      });
+    }
+    else {
+      return this.promoteMember(message, args.member, args.member.roles.cache.map(role => role.name), args.times);
+    }
   }
 
   async promoteMember(message, member, roles, repeatTimes) {
@@ -47,7 +59,8 @@ class PromoteCommand extends CustomCommand {
       roles = await Promise.all(roles.map(async role => await resolveRole(role, message.guild.roles.cache)));
 
       member.roles.set(roles);
-      return message.reply(this.messagesToSend[member.displayName].join("\n"), { split: true });
+      message.reply(this.messagesToSend[member.displayName].join("\n"), { split: true });
+      return `${member.displayName} was successfuly promoted ${this.messagesToSend[member.displayName].length} time${this.messagesToSend[member.displayName].length > 1 ? "s" : ""}`;
     }
 
     if (!this.messagesToSend[member.displayName]) {

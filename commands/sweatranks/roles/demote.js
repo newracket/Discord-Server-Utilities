@@ -14,9 +14,20 @@ class DemoteCommand extends CustomCommand {
       category: "Sweatranks",
       channel: "guild",
       permittedRoles: ["726565862558924811", "820159352215961620"],
+      slashCommand: true,
+      logCommand: true,
       args: [{
-        id: "content",
-        match: "content"
+        id: "member",
+        description: "Member to demote",
+        type: "member",
+        match: "words",
+        required: true
+      }, {
+        id: "times",
+        description: "Times to demote",
+        type: "integer",
+        match: "last",
+        default: 1
       }]
     });
 
@@ -24,33 +35,20 @@ class DemoteCommand extends CustomCommand {
   }
 
   async exec(message, args) {
-    args = args.content.split(" ");
-    let repeatTimes = 1;
-
-    if (!isNaN(parseInt(args[0]))) {
-      repeatTimes = parseInt(args[0]);
-    }
-    else if (!isNaN(parseInt(args.slice(-1)))) {
-      repeatTimes = parseInt(args.slice(-1));
-    }
-
     this.messagesToSend = {};
-    const guildMembers = await message.guild.members.fetch();
 
-    if (message.mentions.everyone || args.includes("everyone")) {
-      guildMembers.filter(member => !member.user.bot && member.roles.cache.has("775799853077758053")).forEach(async member => {
-        this.messagesToSend[member.displayName] = [];
-        await member.fetch(true);
-        this.demoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
+    if (!args.member) return message.reply("You didn't specify anyone to demote.");
+    if (!args.times) {
+      args.times = 1;
+    }
+
+    if (Array.isArray(args.member)) {
+      args.member.forEach(member => {
+        this.demoteMember(message, member, member.roles.cache.map(role => role.name), args.times);
       });
     }
     else {
-      const membersToModify = await resolveMembers(args.join(" "), message);
-
-      membersToModify.forEach(async member => {
-        await member.fetch(true);
-        await this.demoteMember(message, member, member.roles.cache.map(role => role.name), repeatTimes);
-      });
+      return this.demoteMember(message, args.member, args.member.roles.cache.map(role => role.name), args.times);
     }
   }
 
@@ -59,8 +57,8 @@ class DemoteCommand extends CustomCommand {
       roles = await Promise.all(roles.map(async role => await resolveRole(role, message.guild.roles.cache)));
 
       await member.roles.set(roles);
-      if (message.channel) await message.channel.send(this.messagesToSend[member.displayName].join("\n"), { split: true });
-      return;
+      if (message.channel) message.reply(this.messagesToSend[member.displayName].join("\n"), { split: true });
+      return `${member.displayName} was successfuly demoted ${this.messagesToSend[member.displayName].length} time${this.messagesToSend[member.displayName].length > 1 ? "s" : ""}`;
     }
 
     if (!this.messagesToSend[member.displayName]) {

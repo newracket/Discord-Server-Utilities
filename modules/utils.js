@@ -1,6 +1,5 @@
 const { Command, CommandHandler } = require('discord-akairo');
-const { MessageManager } = require('discord.js');
-const { Structures, APIMessage } = require("discord.js");
+const { Structures, APIMessage, Message, CommandInteraction, Collection } = require("discord.js");
 
 class CustomCommand extends Command {
   constructor(id, options = {}) {
@@ -30,6 +29,8 @@ class CustomCommand extends Command {
     this.slashOptions = options.slashOptions;
 
     this.args = options.args;
+
+    this.logCommand = options.logCommand;
   }
 }
 
@@ -175,15 +176,14 @@ async function createSlashCommand(command, client) {
 }
 
 async function resolveRole(text, messageOrRoles, caseSensitive = false) {
-  const classType = messageOrRoles?.constructor?.name;
-
-  if (!["CustomMessage", "Collection", "CustomCommandInteraction"].includes(classType)) return undefined;
+  if (messageOrRoles == undefined) throw "Error when resolving: Message not defined";
+  if (!(messageOrRoles instanceof Message) && !(messageOrRoles instanceof Collection) && !(messageOrRoles instanceof CommandInteraction)) return undefined;
 
   if (text.match(/<@&\d*>/g)) {
     text = text.match(/<@&\d*>/g)[0].replace(/[<@&>]/g, "");
   }
 
-  if (classType == "CustomMessage" || classType == "CustomCommandInteraction") {
+  if (messageOrRoles instanceof Message || messageOrRoles instanceof CommandInteraction) {
     messageOrRoles = await messageOrRoles.guild.roles.fetch();
   }
 
@@ -196,15 +196,14 @@ async function resolveRole(text, messageOrRoles, caseSensitive = false) {
 }
 
 async function resolveMember(text, messageOrMembers, caseSensitive = false) {
-  const classType = messageOrMembers?.constructor?.name;
-
-  if (!["CustomMessage", "Collection", "CustomCommandInteraction"].includes(classType)) return undefined;
+  if (messageOrMembers == undefined) throw "Error when resolving: Message not defined";
+  if (!(messageOrMembers instanceof Message) && !(messageOrMembers instanceof Collection) && !(messageOrMembers instanceof CommandInteraction)) return undefined;
 
   if (text.match(/<@!\d*>/g)) {
     text = text.match(/<@!\d*>/g)[0].replace(/[<@!>]/g, "");
   }
 
-  if (classType == "CustomMessage" || classType == "CustomCommandInteraction") {
+  if (messageOrMembers instanceof Message || messageOrMembers instanceof CommandInteraction) {
     messageOrMembers = await messageOrMembers.guild.members.fetch();
   }
 
@@ -231,15 +230,14 @@ async function resolveMembers(text, messageOrMembers, caseSensitive = false) {
 }
 
 async function resolveChannel(text, messageOrChannels, caseSensitive = false) {
-  const classType = messageOrChannels?.constructor?.name;
-
-  if (!["CustomMessage", "Collection", "CustomCommandInteraction"].includes(classType)) return undefined;
+  if (messageOrChannels == undefined) throw "Error when resolving: Message not defined";
+  if (!(messageOrChannels instanceof Message) && !(messageOrChannels instanceof Collection) && !(messageOrChannels instanceof CommandInteraction)) return undefined;
 
   if (text.match(/<#\d*>/g)) {
     text = text.match(/<#\d*>/g)[0].replace(/[<#>]/g, "");
   }
 
-  if (classType == "CustomMessage" || classType == "CustomCommandInteraction") {
+  if (messageOrChannels instanceof Message || messageOrChannels instanceof CommandInteraction) {
     messageOrChannels = messageOrChannels.guild.channels.cache;
   }
 

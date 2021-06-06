@@ -25,7 +25,7 @@ class RolesCommand extends CustomCommand {
       roles.sort((a, b) => b.comparePositionTo(a));
     }
     else {
-      roles = await args.member.roles.cache.filter(role => role.position != 0); ;
+      roles = await args.member.roles.cache.filter(role => role.position != 0);
       roles.sort((a, b) => b.comparePositionTo(a));
     }
 
