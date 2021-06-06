@@ -14,8 +14,7 @@ class MathCommand extends CustomCommand {
         type: "string",
         match: "content",
         description: "Math problem problems. For log, use the format log(number, base)."
-      }],
-      ownerOnly: true
+      }]
     });
   }
 
