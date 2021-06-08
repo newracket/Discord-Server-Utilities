@@ -68,10 +68,10 @@ class DemoteCommand extends CustomCommand {
     const lastRank = sweatranks.filter(rank => roles.includes(rank)).pop();
     if (lastRank != undefined) {
       if (lastRank == "Sweat") {
-        this.messagesToSend[member.displayName].push(`<@${member.id}> was demoted to Member.`);
+        this.messagesToSend[member.displayName].push(`${member} was demoted to Member.`);
       }
       else {
-        this.messagesToSend[member.displayName].push(`<@${member.id}> was demoted to ${sweatranks[sweatranks.indexOf(lastRank) - 1]}.`);
+        this.messagesToSend[member.displayName].push(`${member} was demoted to ${sweatranks[sweatranks.indexOf(lastRank) - 1]}.`);
       }
 
       roles.splice(roles.indexOf(lastRank), 1)
@@ -103,7 +103,7 @@ class DemoteCommand extends CustomCommand {
         }
       }
       else {
-        this.messagesToSend[member.displayName].push(`<@${member.id}> was demoted to ${casranks[casranks.indexOf(lastRank) + 1]} with 2 strikes.`);
+        this.messagesToSend[member.displayName].push(`${member} was demoted to ${casranks[casranks.indexOf(lastRank) + 1]} with 2 strikes.`);
         roles.push(casranks[casranks.indexOf(lastRank) + 1]);
 
         const strikesChannel = await resolveChannel(strikesChannelId, message);
