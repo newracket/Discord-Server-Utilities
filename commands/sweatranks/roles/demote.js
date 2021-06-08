@@ -56,7 +56,7 @@ class DemoteCommand extends CustomCommand {
     if (repeatTimes == 0) {
       roles = await Promise.all(roles.map(async role => await resolveRole(role, message.guild.roles.cache)));
 
-      await member.roles.set(roles);
+      await member.roles.set([...new Set(roles)]);
       if (message.channel) message.reply(this.messagesToSend[member.displayName].join("\n"), { split: true });
       return `${member.displayName} was successfuly demoted ${this.messagesToSend[member.displayName].length} time${this.messagesToSend[member.displayName].length > 1 ? "s" : ""}`;
     }

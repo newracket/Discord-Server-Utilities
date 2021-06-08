@@ -56,9 +56,10 @@ class PromoteCommand extends CustomCommand {
     const strikes = strikesJSON.get();
 
     if (repeatTimes == 0) {
-      roles = await Promise.all(roles.map(async role => await resolveRole(role, message.guild.roles.cache)));
+      const rolesCache = await message.guild.roles.fetch();
+      roles = await Promise.all(roles.map(async role => await resolveRole(role, rolesCache)));
 
-      member.roles.set(roles);
+      await member.roles.set([...new Set(roles)]);
       message.reply(this.messagesToSend[member.displayName].join("\n"), { split: true });
       return `${member.displayName} was successfuly promoted ${this.messagesToSend[member.displayName].length} time${this.messagesToSend[member.displayName].length > 1 ? "s" : ""}`;
     }
@@ -74,7 +75,7 @@ class PromoteCommand extends CustomCommand {
       if (strikes[member.id] == undefined) {
         const newMessage = await strikesChannel.send(`${member.displayName} - 1`)
         strikes[member.id] = { "messageId": newMessage.id, "value": 1 };
-        this.messagesToSend[member.displayName].push(`<@${member.id}> was given his first strike.`);
+        this.messagesToSend[member.displayName].push(`${member.id}> was given his first strike.`);
 
         strikesJSON.set(strikes);
         return this.promoteMember(message, member, roles, repeatTimes - 1);
@@ -85,7 +86,7 @@ class PromoteCommand extends CustomCommand {
 
         if (strikes[member.id].value == 3) {
           await strikesMessage.edit(`${member.displayName} - ${strikes[member.id].value} (Removed ${lastRank} Role)`);
-          this.messagesToSend[member.displayName].push(`<@${member.id}> was given his last strike. He has now been promoted.`);
+          this.messagesToSend[member.displayName].push(`${member.id}> was given his last strike. He has now been promoted.`);
 
           roles.splice(roles.indexOf(lastRank), 1);
           delete strikes[member.id];
@@ -95,7 +96,7 @@ class PromoteCommand extends CustomCommand {
         }
         else {
           await strikesMessage.edit(`${member.displayName} - ${strikes[member.id].value}`);
-          this.messagesToSend[member.displayName].push(`<@${member.id}> was given his second strike.`);
+          this.messagesToSend[member.displayName].push(`${member.id}> was given his second strike.`);
           strikesJSON.set(strikes);
 
           return this.promoteMember(message, member, roles, repeatTimes - 1);
@@ -109,10 +110,10 @@ class PromoteCommand extends CustomCommand {
         roles.push(sweatranks[sweatranks.indexOf(lastRank) + 1]);
 
         if (member.displayName == "aniket") {
-          this.messagesToSend[member.displayName].push(`<@${member.id}> was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}. This is a cap promotion.`);
+          this.messagesToSend[member.displayName].push(`${member.id}> was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}. This is a cap promotion.`);
         }
         else {
-          this.messagesToSend[member.displayName].push(`<@${member.id}> was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}.`);
+          this.messagesToSend[member.displayName].push(`${member.id}> was promoted to ${sweatranks[sweatranks.indexOf(lastRank) + 1]}.`);
         }
         return this.promoteMember(message, member, roles, repeatTimes - 1);
       }
