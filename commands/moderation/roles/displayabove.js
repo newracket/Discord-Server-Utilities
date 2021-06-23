@@ -37,11 +37,9 @@ class DisplayAboveCommand extends CustomCommand {
 
         if (role) {
           const roletwo = words.slice(i + 1).join(" ").trim();
-          console.log(roletwo);
           
           args.roleone = role;
           args.roletwo = await resolveRole(roletwo, roles);
-          console.log(args.roletwo);
           break;
         }
       }
@@ -50,7 +48,7 @@ class DisplayAboveCommand extends CustomCommand {
     if (!args.roleone) return message.reply("Role to display above not specified.");
     if (!args.roletwo) return message.reply("Second role not specified");
 
-    args.roleone.setHoist(true);
+    await args.roleone.setHoist(true);
     if (Role.comparePositions(args.roleone, args.roletwo) < -1) {
       args.roleone.setPosition(args.roletwo.position + 1);
     }
