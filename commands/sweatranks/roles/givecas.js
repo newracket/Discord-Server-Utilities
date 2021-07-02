@@ -48,7 +48,7 @@ class GiveCasCommand extends CustomCommand {
     }
     else {
       const memberRoles = member.roles.cache.filter(role => !sweatranks.includes(role.name)).map(role => role.id);
-      memberRoles.push(message.guild.roles.cache.find(role => role.name == "Cas").id);
+      memberRoles.push(message.guild.roles.cache.find(role => role.name == "Cas Kitten").id);
 
       await member.roles.set(memberRoles)
       message.channel.send(`Successfully gave Cas to <@${member.id}>`);

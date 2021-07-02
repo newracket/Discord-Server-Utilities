@@ -1,5 +1,5 @@
 const { Command, CommandHandler } = require('discord-akairo');
-const { Structures, APIMessage, Message, CommandInteraction, Collection } = require("discord.js");
+const { Structures, APIMessage, Message, CommandInteraction, Collection, MessageEmbed, TextChannel } = require("discord.js");
 
 class CustomCommand extends Command {
   constructor(id, options = {}) {
@@ -264,7 +264,7 @@ async function resolveChannels(text, messageOrChannels, caseSensitive = false) {
 }
 
 async function resolveMessage(channel, messageId, messageOrChannels) {
-  if (channel?.constructor?.name != "TextChannel") {
+  if (!(channel instanceof TextChannel)) {
     channel = await resolveChannel(channel, messageOrChannels);
   }
 
@@ -291,6 +291,13 @@ function createCustomStructures() {
       }
 
       async reply(content, options) {
+        if (content instanceof MessageEmbed) {
+          content = { embeds: [content] };
+        }
+        else if (typeof content == "number") {
+          content = content.toString();
+        }
+        
         if (!options?.split) return super.reply(content, options);
 
         const apiMessage = content instanceof APIMessage ? content : APIMessage.create(this, content, options);
@@ -305,6 +312,17 @@ function createCustomStructures() {
             this.followUp(splitContent, options);
           }
         });
+      }
+
+      async followUp(options) {
+        if (options instanceof MessageEmbed) {
+          options = { embeds: [options] };
+        }
+        else if (typeof options == "number") {
+          options = options.toString();
+        }
+
+        super.followUp(options);
       }
     }
   });
@@ -335,6 +353,32 @@ function createCustomStructures() {
 
       editReply(content, options) {
 
+      }
+
+      reply(options) {
+        if (options instanceof MessageEmbed) {
+          options = { embeds: [options] };
+        }
+        else if (typeof options == "number") {
+          options = options.toString();
+        }
+
+        super.reply(options);
+      }
+    }
+  });
+
+  Structures.extend("TextChannel", TextChannel => {
+    return class CustomTextChannel extends TextChannel {
+      send(options) {
+        if (options instanceof MessageEmbed) {
+          options = { embeds: [options] };
+        }
+        else if (typeof options == "number") {
+          options = options.toString();
+        }
+
+        return super.send(options);
       }
     }
   });

@@ -67,6 +67,10 @@ class TtsCommand extends CustomCommand {
 
             message.editReply(`Said the message "${args.content}" in ${voiceChannel.name}.`);
           });
+        })
+        .catch(err => {
+          message.channel.send(err);
+          message.client.playing = true;
         });
       }
       else {

@@ -1,3 +1,4 @@
+const { CommandInteraction } = require("discord.js");
 const { CustomCommand } = require("../../modules/utils");
 
 class RolesCommand extends CustomCommand {
@@ -55,12 +56,7 @@ class RolesCommand extends CustomCommand {
         message.reply(embed);
       }
       else {
-        if (message?.constructor?.name == "CommandInteraction") {
-          message.followUp(embed);
-        }
-        else {
-          message.channel.send(embed);
-        }
+        message.channel.send(embed);
       }
     });
   }

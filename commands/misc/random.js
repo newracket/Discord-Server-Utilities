@@ -20,7 +20,6 @@ class RandomCommand extends CustomCommand {
 
   async exec(message, args) {
     if (!args.options) args.options = "all";
-    console.log(args);
 
     let randomOptions = args.options.split(",");
     if (args.options.trim() == "all") {

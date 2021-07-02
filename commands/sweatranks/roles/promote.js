@@ -1,7 +1,7 @@
 const { sweatranks, casranks } = require("../../../jsons/ranks.json");
 const { strikesChannelId } = require("../../../config.json");
 const JSONFileManager = require("../../../modules/jsonfilemanager");
-const { CustomCommand, resolveMembers, resolveRole, resolveChannel, resolveMessage } = require("../../../modules/utils");
+const { CustomCommand, resolveRole, resolveChannel, resolveMessage } = require("../../../modules/utils");
 
 const strikesJSON = new JSONFileManager("strikes");
 
@@ -60,7 +60,7 @@ class PromoteCommand extends CustomCommand {
       roles = await Promise.all(roles.map(async role => await resolveRole(role, rolesCache)));
 
       await member.roles.set([...new Set(roles)]);
-      message.reply(this.messagesToSend[member.displayName].join("\n"), { split: true });
+      message.reply({ content: this.messagesToSend[member.displayName].join("\n"), split: true });
       return `${member.displayName} was successfuly promoted ${this.messagesToSend[member.displayName].length} time${this.messagesToSend[member.displayName].length > 1 ? "s" : ""}`;
     }
 

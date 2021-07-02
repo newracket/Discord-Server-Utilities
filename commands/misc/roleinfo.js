@@ -42,7 +42,7 @@ class RoleInfoCommand extends CustomCommand {
         inline: true
       }, {
         name: "**Position    **",
-        value: args.role.position,
+        value: args.role.position.toString(),
         inline: true
       }]
     });
