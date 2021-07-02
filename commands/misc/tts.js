@@ -57,11 +57,8 @@ class TtsCommand extends CustomCommand {
         }).join(" ");
         const gtts = new gTTS(speech, "en");
 
-        gtts.save("voice.mp3", err => { if (err) message.reply(err); });
-
-
         const player = createAudioPlayer();
-        const resource = createAudioResource("./voice.mp3", { inputType: StreamType.Arbitrary })
+        const resource = createAudioResource(gtts.stream())
         player.play(resource);
 
         const connection = joinVoiceChannel({ channelId: voiceChannel.id, guildId: voiceChannel.guild.id, adapterCreator: voiceChannel.guild.voiceAdapterCreator });
