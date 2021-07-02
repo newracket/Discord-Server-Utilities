@@ -1,3 +1,4 @@
+const { createAudioPlayer, createAudioResource, StreamType, joinVoiceChannel, entersState, VoiceConnectionStatus, AudioPlayerStatus } = require("@discordjs/voice");
 const gTTS = require("gtts");
 const JSONFileManager = require("../../modules/jsonfilemanager");
 const { CustomCommand, resolveChannel } = require("../../modules/utils");
@@ -58,19 +59,26 @@ class TtsCommand extends CustomCommand {
 
         gtts.save("voice.mp3", err => { if (err) message.reply(err); });
 
-        voiceChannel.join().then(connection => {
-          const dispatcher = connection.play('./voice.mp3');
 
-          dispatcher.on('finish', () => {
-            connection.disconnect();
-            message.client.playing = false;
+        const player = createAudioPlayer();
+        const resource = createAudioResource("./voice.mp3", { inputType: StreamType.Arbitrary })
+        player.play(resource);
 
-            message.editReply(`Said the message "${args.content}" in ${voiceChannel.name}.`);
-          });
-        })
-        .catch(err => {
-          message.channel.send(err);
-          message.client.playing = true;
+        const connection = joinVoiceChannel({ channelId: voiceChannel.id, guildId: voiceChannel.guild.id, adapterCreator: voiceChannel.guild.voiceAdapterCreator });
+        try {
+          await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
+        }
+        catch (error) {
+          message.reply(error);
+        }
+
+        connection.subscribe(player);
+        
+        player.on(AudioPlayerStatus.Idle, () => {
+          connection.destroy();
+          message.client.playing = false;
+
+          message.editReply(`Said the message "${args.content}" in ${voiceChannel.name}.`);
         });
       }
       else {

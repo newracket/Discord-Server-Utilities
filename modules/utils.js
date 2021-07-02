@@ -170,7 +170,7 @@ async function createSlashCommand(command, client) {
         permissions.push({ id: client.ownerID, type: "USER", permission: true });
       }
 
-      commandCreated.setPermissions(permissions);
+      commandCreated.permissions.set({ permissions: permissions });
     }
   });
 }
