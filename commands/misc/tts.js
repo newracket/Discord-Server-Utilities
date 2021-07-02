@@ -74,7 +74,14 @@ class TtsCommand extends CustomCommand {
 
         connection.subscribe(player);
         
+        let started = false;
+        player.on(AudioPlayerStatus.Playing, () => {
+          started = true;
+        })
+
         player.on(AudioPlayerStatus.Idle, () => {
+          if (!started) return;
+
           connection.destroy();
           message.client.playing = false;
 
