@@ -11,7 +11,7 @@ class MessageListener extends Listener {
   exec(message) {
     if (message.channel.id == "819649988757291015" && message.author != message.client.user) {
       try {
-        // return this.client.commandHandler.findCommand("tts").exec(message, { "content": message.content });
+        return this.client.commandHandler.findCommand("tts").exec(message, { "content": message.content });
       }
       catch (error) {
         return message.channel.send("Error: " + error);
