@@ -37,53 +37,67 @@ class TtsCommand extends CustomCommand {
     }
     else {
       if (!message.client.playing) {
-        message.defer();
-        message.client.playing = true;
-        let voiceChannel;
-
-        if (message.member.voice.channel) {
-          voiceChannel = message.member.voice.channel;
-        }
-        else {
-          voiceChannel = await resolveChannel("633161578363224070", message);
-        }
-
-        const nickname = nicks[message.author.id] != undefined ? nicks[message.author.id] : message.member.displayName;
-        const speech = nickname + " says " + args.content.split(" ").map(e => {
-          if (e[0] == "<" && e[1] == ":" && e[e.length - 1] == ">") {
-            return e.split(":")[1];
-          }
-          return e;
-        }).join(" ");
-        const gtts = new gTTS(speech, "en");
-
-        const player = createAudioPlayer();
-        const resource = createAudioResource(gtts.stream())
-        player.play(resource);
-
-        const connection = joinVoiceChannel({ channelId: voiceChannel.id, guildId: voiceChannel.guild.id, adapterCreator: voiceChannel.guild.voiceAdapterCreator });
+        let playingTimeout;
         try {
-          await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
+          message.defer();
+          message.client.playing = true;
+          let voiceChannel;
+
+          playingTimeout = setTimeout(function () {
+            if (message.client.playing) {
+              message.client.playing = false;
+            }
+          }, 20000);
+
+          if (message.member.voice.channel) {
+            voiceChannel = message.member.voice.channel;
+          }
+          else {
+            voiceChannel = await resolveChannel("633161578363224070", message);
+          }
+
+          const nickname = nicks[message.author.id] != undefined ? nicks[message.author.id] : message.member.displayName;
+          const speech = nickname + " says " + args.content.split(" ").map(e => {
+            if (e[0] == "<" && e[1] == ":" && e[e.length - 1] == ">") {
+              return e.split(":")[1];
+            }
+            return e;
+          }).join(" ");
+          const gtts = new gTTS(speech, "en");
+
+          const player = createAudioPlayer();
+          const resource = createAudioResource(gtts.stream())
+          player.play(resource);
+
+          const connection = joinVoiceChannel({ channelId: voiceChannel.id, guildId: voiceChannel.guild.id, adapterCreator: voiceChannel.guild.voiceAdapterCreator });
+          try {
+            await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
+          }
+          catch (error) {
+            message.reply(error);
+          }
+
+          connection.subscribe(player);
+
+          let started = false;
+          player.on(AudioPlayerStatus.Playing, () => {
+            started = true;
+          })
+
+          player.on(AudioPlayerStatus.Idle, () => {
+            if (!started) return;
+
+            connection.destroy();
+            message.client.playing = false;
+            clearTimeout(playingTimeout);
+
+            message.editReply(`Said the message "${args.content}" in ${voiceChannel.name}.`);
+          });
         }
         catch (error) {
-          message.reply(error);
-        }
-
-        connection.subscribe(player);
-        
-        let started = false;
-        player.on(AudioPlayerStatus.Playing, () => {
-          started = true;
-        })
-
-        player.on(AudioPlayerStatus.Idle, () => {
-          if (!started) return;
-
-          connection.destroy();
           message.client.playing = false;
-
-          message.editReply(`Said the message "${args.content}" in ${voiceChannel.name}.`);
-        });
+          clearTimeout(playingTimeout);
+        }
       }
       else {
         message.reply("Someone else is already using this.");
