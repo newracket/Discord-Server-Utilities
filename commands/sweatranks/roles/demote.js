@@ -2,6 +2,7 @@ const { sweatranks, casranks } = require("../../../jsons/ranks.json");
 const { strikesChannelId } = require("../../../config.json");
 const { CustomCommand, resolveMembers, resolveRole, resolveMessage, resolveChannel } = require("../../../modules/utils");
 const JSONFileManager = require("../../../modules/jsonfilemanager");
+const nicks = require("../../../jsons/nicks.json");
 
 const strikesJSON = new JSONFileManager("strikes");
 
@@ -37,7 +38,19 @@ class DemoteCommand extends CustomCommand {
   async exec(message, args) {
     this.messagesToSend = {};
 
-    if (!args.member) return message.reply("You didn't specify anyone to demote.");
+    if (!args.member || args.member.length == 0) {
+      const messageArgs = message.content.split(" ").slice(1);
+      const members = await message.guild.members.fetch();
+
+      messageArgs.forEach(messageArg => {
+        if (Object.values(nicks).includes(messageArg.toLowerCase().trim())) {
+          const discordID = Object.keys(nicks).find(key => nicks[key] == messageArg.toLowerCase().trim());
+          args.member.push(members.find(m => m.id == discordID));
+        }
+      });
+
+      if (args.member.length == 0) return message.reply("You didn't specify anyone to demote.");
+    }
     if (!args.times) {
       args.times = 1;
     }

@@ -1,5 +1,6 @@
 const { sweatranks, casranks } = require("../../../jsons/ranks.json");
 const { CustomCommand, resolveMembers } = require("../../../modules/utils");
+const nicks = require("../../../jsons/nicks.json");
 
 class GiveCasCommand extends CustomCommand {
   constructor() {
@@ -29,6 +30,15 @@ class GiveCasCommand extends CustomCommand {
     }
     else {
       const membersToModify = await resolveMembers(args.members, guildMembers);
+      const messageArgs = message.content.split(" ").slice(1);
+
+      messageArgs.forEach(messageArg => {
+        if (Object.values(nicks).includes(messageArg.toLowerCase().trim())) {
+          const discordID = Object.keys(nicks).find(key => nicks[key] == messageArg.toLowerCase().trim());
+          membersToModify.push(guildMembers.find(m => m.id == discordID));
+        }
+      });
+
       membersToModify.forEach(async member => {
         await member.fetch(true);
         this.giveCas(message, member);
