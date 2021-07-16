@@ -374,7 +374,7 @@ function createCustomStructures() {
           options = options.toString();
         }
 
-        super.reply(options);
+        super.edit(options);
       }
     }
   });
