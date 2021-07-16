@@ -30,7 +30,8 @@ class CompromiseCommand extends CustomCommand {
       .setColor("#ffe436")
       .setTitle(`Appeal #${args.appealNum} - Compromised`)
       .addField(`Reasoning for compromise from ${message.member.nickname}`, args.reason ? args.reason : "None");
-    await appealMessage.edit(newEmbed)
+
+    await appealMessage.edit(newEmbed);
     message.delete();
   }
 }

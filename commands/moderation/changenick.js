@@ -7,7 +7,7 @@ class ChangeNickCommand extends CustomCommand {
       aliases: ['changenick', 'cn'],
       description: "Changes the nickname of a member",
       usage: "changenick <mention members> <new nickname> OR changenick <member nicknames> <new nicknames>",
-      category: "moderation",
+      category: "Moderation",
       channel: "guild",
       permittedRoles: ["726565862558924811", "820159352215961620"],
       slashCommand: true,

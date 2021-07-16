@@ -30,7 +30,8 @@ class ApproveCommand extends CustomCommand {
       .setColor("#42f563")
       .setTitle(`Appeal #${args.appealNum} - Approved`)
       .addField(`Reasoning for approval from ${message.member.nickname}`, args.reason ? args.reason : "None");
-    await appealMessage.edit(newEmbed)
+      
+    await appealMessage.edit(newEmbed);
     message.delete();
   }
 }

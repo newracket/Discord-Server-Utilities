@@ -297,7 +297,7 @@ function createCustomStructures() {
         else if (typeof content == "number") {
           content = content.toString();
         }
-        
+
         if (!options?.split) return super.reply(content, options);
 
         const apiMessage = content instanceof APIMessage ? content : APIMessage.create(this, content, options);
@@ -356,6 +356,17 @@ function createCustomStructures() {
       }
 
       reply(options) {
+        if (options instanceof MessageEmbed) {
+          options = { embeds: [options] };
+        }
+        else if (typeof options == "number") {
+          options = options.toString();
+        }
+
+        super.reply(options);
+      }
+
+      edit(options) {
         if (options instanceof MessageEmbed) {
           options = { embeds: [options] };
         }

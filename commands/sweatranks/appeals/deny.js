@@ -31,7 +31,7 @@ class DenyCommand extends CustomCommand {
       .setTitle(`Appeal #${args.appealNum} - Denied`)
       .addField(`Reasoning for denial from ${message.member.nickname}`, args.reason ? args.reason : "None");
 
-    await appealMessage.edit(newEmbed)
+    await appealMessage.edit(newEmbed);
     message.delete();
   }
 }

@@ -30,7 +30,7 @@ class CounterCommand extends CustomCommand {
       .setTitle(`Appeal #${args.appealNum} - Awaiting Approval`)
       .addField(`Counter from ${message.member.nickname}`, args.counter ? args.counter : "None");
 
-    await appealMessage.edit(newEmbed)
+    await appealMessage.edit(newEmbed);
     message.delete();
   }
 }
