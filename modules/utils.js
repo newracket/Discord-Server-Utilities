@@ -1,5 +1,6 @@
 const { Command, CommandHandler } = require('discord-akairo');
 const { Structures, APIMessage, Message, CommandInteraction, Collection, MessageEmbed, TextChannel } = require("discord.js");
+const nicks = require("../jsons/nicks.json");
 
 class CustomCommand extends Command {
   constructor(id, options = {}) {
@@ -208,10 +209,12 @@ async function resolveMember(text, messageOrMembers, caseSensitive = false) {
   }
 
   if (caseSensitive) {
-    return messageOrMembers.get(text) || messageOrMembers.find(member => [member.displayName, member.id].includes(text.trim()));
+    return messageOrMembers.get(text) || messageOrMembers.find(member => [member.displayName, member.id].includes(text.trim()))
+      || messageOrMembers.get(nicks.getKeyFromValue(text.trim()));
   }
   else {
-    return messageOrMembers.get(text) || messageOrMembers.find(member => [member.displayName.toLowerCase(), member.id].includes(text.trim().toLowerCase()));
+    return messageOrMembers.get(text) || messageOrMembers.find(member => [member.displayName.toLowerCase(), member.id].includes(text.trim().toLowerCase()))
+      || messageOrMembers.get(nicks.getKeyFromValue(text.toLowerCase().trim()));
   }
 }
 
@@ -393,6 +396,10 @@ function createCustomStructures() {
       }
     }
   });
+
+  Object.prototype.getKeyFromValue = function(value) {
+    return Object.keys(this).find(key => this[key] === value);
+  }
 }
 
 module.exports = {

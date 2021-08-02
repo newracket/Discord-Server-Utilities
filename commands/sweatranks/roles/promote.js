@@ -43,9 +43,9 @@ class PromoteCommand extends CustomCommand {
       const members = await message.guild.members.fetch();
 
       messageArgs.forEach(messageArg => {
-        if (Object.values(nicks).includes(messageArg.toLowerCase().trim())) {
-          const discordID = Object.keys(nicks).find(key => nicks[key] == messageArg.toLowerCase().trim());
-          args.member.push(members.find(m => m.id == discordID));
+        const properNick = nicks.getKeyFromValue(messageArg);
+        if (properNick) {
+          args.member.push(members.get(properNick));
         }
       });
 
